@@ -1,12 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>get data json</title>
-</head>
-<body>
-    <?php
+<?php
     header('Content-Type: application/json');
 
     include("connect.php");
@@ -37,7 +29,4 @@
     echo json_encode($restaurants);
 
     $conn->close();
-    ?>
-
-</body>
-</html>
+?>
