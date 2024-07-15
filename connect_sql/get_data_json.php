@@ -3,16 +3,24 @@
 
     include("connect.php");
 
-    // 查詢資料庫
+    // 檢查是否設置了查詢條件
+    if (!isset($where_condition)) {
+        die("No query condition specified.");
+    }
+
+    // 聯合查詢，使用傳遞的查詢條件
     $sql = "
-            SELECT *
-            FROM 
-                additional_ a
-            JOIN 
-                detail d ON a.r_id = d.r_id
-            JOIN 
-                review r ON a.r_id = r.r_id
-        ";
+        SELECT *
+        FROM 
+            additional_ a
+        JOIN 
+            detail d ON a.r_id = d.r_id
+        JOIN 
+            review r ON a.r_id = r.r_id
+        WHERE 
+            $where_condition
+    ";
+    
     $result = $conn->query($sql);
 
     $restaurants = array();

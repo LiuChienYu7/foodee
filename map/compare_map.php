@@ -16,7 +16,7 @@
     <div id="map"></div>
 
     <script>
-    var map = L.map('map').setView([120.1032, 121.0115], 13);
+    var map = L.map('map').setView([51.505, -0.09], 13);
     <script>
     
     
