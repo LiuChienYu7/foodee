@@ -29,4 +29,8 @@
     echo json_encode($restaurants);
 
     $conn->close();
+<<<<<<< HEAD
 ?>
+=======
+?>
+>>>>>>> f658bc68ed9898776db04bcbe570e5b46bb85803
