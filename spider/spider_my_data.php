@@ -23,8 +23,8 @@
     const shiftX = 80; // 用于调整图表水平位置的偏移量
     const shiftY = 50;
     const center = {
-        x: size / 2 + margin -shiftX,
-        y: size / 2 + margin -shiftY
+        x: size / 2 + margin - shiftX,
+        y: size / 2 + margin - shiftY
     };
 
     const tooltip = d3.select(".tooltip");
@@ -102,7 +102,7 @@
     //餐廳顏色
     const color = d3.scaleOrdinal()
         .range(["#FF70AE", "#85B4FF", "#FFCE47"]); //紅、藍、黃
-        // .range(["#84C1FF", "#96FED1", "#FFA5A0"]); //藍色、紫色、粉紅色
+    // .range(["#84C1FF", "#96FED1", "#FFA5A0"]); //藍色、紫色、粉紅色
 
     //餐廳評分
     const DrawRate = (levelsCount, sideCount, ratingsData, index) => {
@@ -137,12 +137,12 @@
             .attr("r", 3) // 小點點的半徑
             .attr("fill", color(index - 1)) // 顏色與對應的多邊形相同
             .style("fill-opacity", 1);
-        };
+    };
 
     // 1~5顆星 刻度
     const drawAxisTicks = (levelsCount, sideCount, radius, centerX, centerY, offset) => {
         const group = g.append("g").attr("class", "axis-ticks");
-        
+
         for (let level = 1; level <= levelsCount; level++) {
             const hyp = (level / levelsCount) * radius;
             const points = calculatePolygonPoints(sideCount, hyp, centerX, centerY, offset);
@@ -202,108 +202,125 @@
         });
     };
 
-    //添加button到左上角
+    //添加button到左上角 要把button跟文字包在一起 動態才會正常
     const addButtons = (restaurantNames) => {
         const buttonColors = ["#FF70AE", "#85B4FF", "#FFCE47"];
-
-        const buttonGroup = svg.append("g")
-            .attr("transform", `translate(${margin},${margin})`);
-
+        const buttonGroup = svg.append("g").attr("transform", `translate(${margin},${margin})`);
         let xPosition = 10;
         let yPosition = 10;
-        var Punctuation = 0;
+        const buttonWidth = 35; // 初始按鈕寬度
+        const buttonHeight = 23; // 初始按鈕高度
+        const buttonPositions = []; // 保存每個按鈕的初始 xPosition
+
         restaurantNames.forEach((name, i) => {
-            //調整字串長度 讓button長度合理化 因為標點符號也算一個長度
             let Punctuation = name.length;
-            if (name.includes('-')) {
-                Punctuation = Punctuation - 2;
-            }
-            else if (name.includes('(')) {
-                Punctuation = Punctuation - 1.5;
-            }
-            const buttonWidth = 35; // 初始按钮宽度
-            const buttonHeight = 23; // 初始按钮高度
-            const expandedWidth = (Punctuation) * 14.5 + 15; // 动态计算扩展后的按钮宽度
-            // const buttonWidth = (Punctuation) * 14.5 + 15; // 動態計算按鈕寬度
-            console.log(Punctuation);
-            // const buttonHeight = 23;
-            buttonGroup.append("rect")
-                .attr("x", xPosition)
-                .attr("y", yPosition)
-                .attr("width", buttonWidth)
-                .attr("height", buttonHeight)
-                .attr("fill", buttonColors[i])
-                .style("fill-opacity", 0.5)
-                .attr("class", `button-${i + 1}`)
-                .attr("rx", 5) // 设置圆角半径
-                .attr("ry", 5) // 设置圆角半径
-                .on("mouseover", function (event, d) {
-                    // 变深色并扩展宽度
-                    d3.select(this)
+            if (name.includes('-')) Punctuation = Punctuation - 2;
+            else if (name.includes('(')) Punctuation = Punctuation - 1.5;
+            const expandedWidth = (Punctuation) * 14.5 + 15; // 動態計算擴展後的按鈕寬度
+
+            buttonPositions.push(xPosition); // 記錄每個按鈕的初始 xPosition
+
+            const buttonContainer = buttonGroup.append("g")
+                .attr("class", `button-container-${i + 1}`)
+                .attr("transform", `translate(${xPosition},${yPosition})`)
+                .on("mouseenter", function (event, d) {
+                    // 變深色並擴展寬度
+                    d3.select(this).select("rect")
                         .transition()
                         .duration(100)
                         .style("fill-opacity", 1)
                         .style("cursor", "pointer")
                         .attr("width", expandedWidth);
-                    
 
-                    // 显示餐厅名称
-                    buttonGroup.select(`.button-text-${i + 1}`)
+                    // 移動右邊的按鈕
+                    for (let j = i + 1; j < restaurantNames.length; j++) {
+                        d3.select(`.button-container-${j + 1}`)
+                            .transition()
+                            .duration(100)
+                            .attr("transform", `translate(${buttonPositions[j] + (expandedWidth - buttonWidth)},${yPosition})`);
+                    }
+
+                    // 顯示餐廳名稱
+                    d3.select(this).select("text")
                         .transition()
                         .duration(100)
                         .style("visibility", "visible");
-                        // .attr("fill", "black")
-                    // // 获取当前按钮的类名
-                    // const className = d3.select(this).attr("class");
 
-                    // // 使用 className 选择当前按钮并修改其样式
-                    // d3.select(`.${className}`)
-                    //     .style("fill-opacity", 1)  // 更改样式，例如背景颜色
-                    //     .style("cursor", "pointer");  // 更改光标样式
-                    
-                    //變深色
+                    // 變深色
                     d3.select(`.levels_rate.restaurant-${i + 1} path`)
                         .transition()
                         .duration(100)
-                        // console.log(`.levels_rate.restaurant-${i + 1} path`)
                         .style("fill-opacity", 0.9);
 
-                    // 修改其他雷达图样式
+                    // 修改其他雷達圖樣式
                     d3.selectAll(`.levels_rate:not(.restaurant-${i + 1}) path`)
                         .style("fill-opacity", 0.1);
+
+                    // 變深色的小點點
+                    d3.selectAll(`.levels_rate.restaurant-${i + 1} circle`)
+                        .transition()
+                        .duration(100)
+                        .style("fill-opacity", 1);
+
+                    // 其他雷達圖和小點點變淡
+                    d3.selectAll(`.levels_rate:not(.restaurant-${i + 1}) path`)
+                        .style("fill-opacity", 0.2);
+
+                    d3.selectAll(`.levels_rate:not(.restaurant-${i + 1}) circle`)
+                        .transition()
+                        .duration(100)
+                        .style("fill-opacity", 0.2);
                 })
-                .on("mouseout", function (event, d) {
-                    // 恢复样式
-                    d3.select(this)
-                        .style("fill-opacity", 0.5)  // 恢复背景颜色
-                        .style("cursor", "default")  // 恢复光标样式
+                .on("mouseleave", function (event, d) {
+                    // 恢復樣式
+                    d3.select(this).select("rect")
+                        .style("fill-opacity", 0.5)
+                        .style("cursor", "default")
                         .attr("width", buttonWidth);
 
-                    // 隐藏餐厅名称
-                    buttonGroup.select(`.button-text-${i + 1}`)
-                        .style("visibility", "hidden")
-                        // .attr("fill", "transparent");
+                    // 恢復右邊按鈕的位置
+                    for (let j = i + 1; j < restaurantNames.length; j++) {
+                        d3.select(`.button-container-${j + 1}`)
+                            .transition()
+                            .duration(100)
+                            .attr("transform", `translate(${buttonPositions[j]},${yPosition})`);
+                    }
 
-                    //雷達圖恢復
+                    // 隱藏餐廳名稱
+                    d3.select(this).select("text")
+                        .style("visibility", "hidden");
+
+                    // 雷達圖恢復
                     d3.selectAll(`.levels_rate path`)
                         .style("fill-opacity", 0.5);
-                    
+
+                    // 小點點恢復
+                    d3.selectAll(`.levels_rate circle`)
+                        .transition()
+                        .duration(100)
+                        .style("fill-opacity", 1);
                 });
 
-            buttonGroup.append("text")
-                .attr("x", xPosition + 10)
-                .attr("y", yPosition + buttonHeight / 1.3)
-                // .attr("text-anchor", "start")
+            buttonContainer.append("rect")
+                .attr("width", buttonWidth)
+                .attr("height", buttonHeight)
+                .attr("fill", buttonColors[i])
+                .style("fill-opacity", 0.5)
+                .attr("rx", 5) // 設置圓角半徑
+                .attr("ry", 5); // 設置圓角半徑
+
+            buttonContainer.append("text")
+                .attr("x", 10)
+                .attr("y", buttonHeight / 1.3)
                 .attr("class", `button-text-${i + 1}`)
                 .style("visibility", "hidden")
-                // .attr("fill", "transparent")
                 .attr("font-size", 14)
                 .text(name);
 
             xPosition += buttonWidth + 10; // 更新 xPosition 以便放置下一個按鈕
-            // yPosition += buttonHeight + 10;
         });
     };
+
     // Read the data from CSV
     d3.json("../connect_sql/get_data_json.php").then(function (data) {
         console.log(data);
@@ -330,12 +347,12 @@
             { label: "服務", value: +data[2].r_rate_service },
             { label: "划算度", value: +data[2].r_rate_value },
             { label: "衛生", value: +data[2].r_rate_clean }
-        ];  
+        ];
 
         // 畫出評分
-        DrawRate(NUM_OF_LEVEL, NUM_OF_SIDES, ratingsData1,1);
-        DrawRate(NUM_OF_LEVEL, NUM_OF_SIDES, ratingsData2,2);
-        DrawRate(NUM_OF_LEVEL, NUM_OF_SIDES, ratingsData3,3);
+        DrawRate(NUM_OF_LEVEL, NUM_OF_SIDES, ratingsData1, 1);
+        DrawRate(NUM_OF_LEVEL, NUM_OF_SIDES, ratingsData2, 2);
+        DrawRate(NUM_OF_LEVEL, NUM_OF_SIDES, ratingsData3, 3);
 
         //add button
         addButtons(restaurantNames); // 傳遞餐廳名稱給 addButtons 函數
