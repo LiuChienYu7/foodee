@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>filter</title>
+    <link rel="stylesheet" href="filter.css">
+    <!-- <script src="filter.js"></script> -->
+    <script src="https://kit.fontawesome.com/aa19eb2bb9.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="index-container">
+        <div class="left-panel" id="left-panel">
+            <div class="filter-container">
+                <div class="filter-fixed filter-search">
+                    <input type="text" placeholder="輸入想去的地點、類型...">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <div class="filter-fixed filter-time">
+                    <div class="filter-title">
+                        <label>營業時間</label>
+                    </div>
+                    <div class="opening-hours">
+                        <div>
+                            <label>一<input type="checkbox" name="" id=""></label>
+                        </div>
+                        <div>
+                            <label>二<input type="checkbox" name="" id=""></label>
+                        </div>
+                        <div>
+                            <label>三<input type="checkbox" name="" id=""></label>
+                        </div>
+                        <div>
+                            <label>四<input type="checkbox" name="" id=""></label>
+                        </div>
+                        <div>
+                            <label>五<input type="checkbox" name="" id=""></label>
+                        </div>
+                        <div>
+                            <label>六<input type="checkbox" name="" id=""></label>
+                        </div>
+                        <div>
+                            <label>七<input type="checkbox" name="" id=""></label>
+                        </div>
+                        
+                    </div>
+                    <div class="time-range">
+                        <input type="time">
+                        <span>~</span>
+                        <input type="time">
+                    </div>                
+                </div>
+                <div class="filter-item filter-price">
+                    <div class="filter-title">
+                        <label>價錢<span>(主要餐點)</span></label>
+                    </div>
+                    <div class="range-slider">
+                        <span class="slider-track"></span>
+                        <input type="range" name="min_val" class="min-val" step="50" min="0" max="3000" value="500" oninput="slideMin()">
+                        <input type="range" name="max_val" class="max-val" step="50" min="0" max="3000" value="2000" oninput="slideMax()">
+                        <div class="tooltip min-tooltip"></div>
+                        <div class="tooltip max-tooltip"></div>
+                    </div>
+                    <div class="input-box">
+                        <div class="min-box">
+                            <div class="input-wrap">
+                                <span class="input-addon">$</span>
+                                <input type="text" name="min_input" class="input-field min-input" onchange="setMinInput()">
+                            </div>
+                        </div>
+                        <span style="font-weight: bold;">~</span>
+                        <div class="max-box">
+                            <div class="input-wrap">
+                                <span class="input-addon">$</span>
+                                <input type="text" name="max_input" class="input-field max-input" onchange="setMaxInput()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="filter-item filter-star">
+                    <div class="filter-title">
+                        <label>評分</label>
+                    </div>
+                    <div class="select-btn">
+                        <span class="btn-text">選擇評分</span>
+                        <span class="arrow-dwn"><i class="fa-solid fa-chevron-down"></i></span>
+                    </div>
+                    
+                    <ul class="list-items">
+                        <li class="l-item">
+                            <span class="star-checkbox">
+                                <i class="fa-solid fa-check check-icon"></i>
+                            </span>
+                            <span class="item-text">3⭐</span>
+                        </li>
+                        <li class="l-item">
+                            <span class="star-checkbox">
+                                <i class="fa-solid fa-check check-icon"></i>
+                            </span>
+                            <span class="item-text">3.5⭐</span>
+                        </li>
+                        <li class="l-item">
+                            <span class="star-checkbox">
+                                <i class="fa-solid fa-check check-icon"></i>
+                            </span>
+                            <span class="item-text">4⭐</span>
+                        </li>
+                        <li class="l-item">
+                            <span class="star-checkbox">
+                                <i class="fa-solid fa-check check-icon"></i>
+                            </span>
+                            <span class="item-text">4.5⭐</span>
+                        </li>
+                        <li class="l-item">
+                            <span class="star-checkbox">
+                                <i class="fa-solid fa-check check-icon"></i>
+                            </span>
+                            <span class="item-text">5⭐</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="filter-item filter-vibe">
+                    <div class="filter-title">
+                        <label>氣氛</label>
+                    </div>
+                    <div class="vibe">
+                        <button class="vibe-button">昏暗</button>
+                        <button class="vibe-button">復古</button>
+                        <button class="vibe-button">溫馨</button>
+                        <button class="vibe-button">現代</button>
+                        <button class="vibe-button">工業</button>
+                        <button class="vibe-button">簡約</button>
+                        <button class="vibe-button">舒適</button>
+                        <button class="vibe-button">明亮</button>
+                        <button class="vibe-button">典雅</button>
+                        <button class="vibe-button">浪漫</button>
+                        <button class="vibe-button">高貴</button>
+                        <button class="vibe-button">寬敞</button>
+                        <button class="vibe-button">懷舊</button>
+                        <button class="vibe-button">家庭</button>
+                    </div>
+                </div>
+                <!-- Time Filter -->
+                <div class="filter-item filter-time">
+                    <div class="filter-title">
+                        <label>用餐時間限制</label>
+                        <button>無限制</button>
+                    </div>
+                    <div class="range-slider">
+                        <span class="slider-track"></span>
+                        <input type="range" name="min_time" class="min-time" step="15" min="0" max="180" value="60" oninput="slideTimeMin()">
+                        <input type="range" name="max_time" class="max-time" step="15" min="0" max="180" value="120" oninput="slideTimeMax()">
+                        <div class="tooltip min-time-tooltip"></div>
+                        <div class="tooltip max-time-tooltip"></div>
+                    </div>
+                    <div class="input-box">
+                        <div class="min-box">
+                            <div class="input-wrap">
+                                <input type="text" name="min_time_input" class="input-field-time min-time-input" onchange="setMinTimeInput()">
+                                <span class="input-addon-time" style="font-size: 0.75rem;">分鐘</span>
+                            </div>
+                        </div>
+                        <span style="font-weight: bold;">~</span>
+                        <div class="max-box">
+                            <div class="input-wrap">
+                                <input type="text" name="max_time_input" class="input-field-time max-time-input" onchange="setMaxTimeInput()">
+                                <span class="input-addon-time" style="font-size: 0.75rem;">分鐘</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="filter-item filter-parking">
+                    <div class="filter-title">
+                        <label><input type="checkbox">附設停車場</label>   
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="left-side-arr" id="left-side-arr">
+            <i class="fa-solid fa-caret-up"></i>
+        </div>
+        <div class="right-panel" id="right-panel">good morning</div>
+    </div>    
+    <script src="filter.js"></script>
+</body>
+</html>
