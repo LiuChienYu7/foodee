@@ -22,73 +22,72 @@
         <svg id="minimap" width="200" height="100"></svg>
     </div>
     <script>
-        const data = [
-            { 用餐時間: 60, 區間200: 5, 區間400: 3, 區間600: 4, 區間800: 2, 區間1000: 0 },
-            { 用餐時間: 90, 區間200: 4, 區間400: 6, 區間600: 7, 區間800: 4, 區間1000: 2 },
-            { 用餐時間: 120, 區間200: 7, 區間400: 7, 區間600: 8, 區間800: 5, 區間1000: 3 },
-            { 用餐時間: 150, 區間200: 11, 區間400: 9, 區間600: 9, 區間800: 6, 區間1000: 1 },
-            { 用餐時間: 0, 區間200: 10, 區間400: 7, 區間600: 10, 區間800: 7, 區間1000: 4 },
-            { 用餐時間: 9999, 區間200: 6, 區間400: 6, 區間600: 11, 區間800: 9, 區間1000: 5 }
-        ];
+// 將原本的靜態資料替換為 d3.json 方法讀取 JSON 數據
+d3.json('/index.json').then(function (data) {
+    const width = 1200;
+    const margin = { top: 20, right: 50, bottom: 50, left: 40 };
+    const circleRadius = 60;
+    const circleSpacing = 10;
+    const rowHeight = circleRadius * 2 + circleSpacing;
+    const groupSpacing = 30;
 
-        const width = 1200;
-        const margin = { top: 20, right: 50, bottom: 50, left: 40 };
-        const circleRadius = 60;
-        const circleSpacing = 10;
-        const rowHeight = circleRadius * 2 + circleSpacing;
-        const groupSpacing = 30;
+    const intervals = ["區間200", "區間400", "區間600", "區間800", "區間1000"];
+    let currentIntervals = ["區間200", "區間400", "區間600"];
 
-        const intervals = ["區間200", "區間400", "區間600", "區間800", "區間1000"];
-        let currentIntervals = ["區間200", "區間400", "區間600"];
+    const color = d3.scaleOrdinal(d3.schemeCategory10);
 
-        const color = d3.scaleOrdinal(d3.schemeCategory10);
+    function getCurrentIntervalTotals(intervals) {
+        const intervalTotals = {};
+        intervals.forEach(interval => {
+            intervalTotals[interval] = d3.sum(data, d => d[interval]);
+        });
+        return intervalTotals;
+    }
 
-        function getCurrentIntervalTotals(intervals) {
-            const intervalTotals = {};
-            intervals.forEach(interval => {
-                intervalTotals[interval] = d3.sum(data, d => d[interval]);
-            });
-            return intervalTotals;
+    function updateIntervals() {
+        if (!currentIntervals || currentIntervals.length === 0) {
+            console.warn("currentIntervals 为空或未定义，跳过更新。");
+            return;
         }
 
-        function updateIntervals() {
-    if (!currentIntervals || currentIntervals.length === 0) {
-        console.warn("currentIntervals 为空或未定义，跳过更新。");
-        return;
+        const intervalTotals = getCurrentIntervalTotals(currentIntervals);
+        const total = d3.sum(Object.values(intervalTotals));
+
+        if (isNaN(total) || total === 0) {
+            console.warn("Total 餐厅数为 NaN 或 0，跳过更新。");
+            return;
+        }
+
+        const intervalWidths = {};
+        currentIntervals.forEach(interval => {
+            intervalWidths[interval] = (intervalTotals[interval] / total) * (width - margin.left - margin.right);
+        });
+
+        const intervalPositions = {};
+        let currentPosition = margin.left;
+        currentIntervals.forEach(interval => {
+            intervalPositions[interval] = currentPosition;
+            currentPosition += intervalWidths[interval];
+        });
+
+        d3.select("#chart").selectAll("*").remove();
+        d3.select("#x-axis-svg").selectAll("*").remove();
+
+        const totalHeight = calculateTotalHeight(data, intervalWidths, rowHeight, groupSpacing, margin);
+        if (isNaN(totalHeight) || totalHeight === 0) {
+            console.error("Total height 计算失败，跳过绘图。");
+            return;
+        }
+
+        drawChart(intervalWidths, intervalPositions, total, totalHeight);
+        drawMinimap(intervalPositions, totalHeight, intervalWidths);
     }
 
-    const intervalTotals = getCurrentIntervalTotals(currentIntervals);
-    const total = d3.sum(Object.values(intervalTotals));
+    // 其他功能的實現 (如 drawChart, drawMinimap, calculateTotalHeight, calculatePositions, jumpToDiningTime 等)
 
-    if (isNaN(total) || total === 0) {
-        console.warn("Total 餐厅数为 NaN 或 0，跳过更新。");
-        return;
-    }
+    updateIntervals();
+});
 
-    const intervalWidths = {};
-    currentIntervals.forEach(interval => {
-        intervalWidths[interval] = (intervalTotals[interval] / total) * (width - margin.left - margin.right);
-    });
-
-    const intervalPositions = {};
-    let currentPosition = margin.left;
-    currentIntervals.forEach(interval => {
-        intervalPositions[interval] = currentPosition;
-        currentPosition += intervalWidths[interval];
-    });
-
-    d3.select("#chart").selectAll("*").remove();
-    d3.select("#x-axis-svg").selectAll("*").remove();
-
-    const totalHeight = calculateTotalHeight(data, intervalWidths, rowHeight, groupSpacing, margin);
-    if (isNaN(totalHeight) || totalHeight === 0) {
-        console.error("Total height 计算失败，跳过绘图。");
-        return;
-    }
-
-    drawChart(intervalWidths, intervalPositions, total, totalHeight);
-    drawMinimap(intervalPositions, totalHeight, intervalWidths);
-}
 
 
 function drawChart(intervalWidths, intervalPositions, total, totalHeight) {

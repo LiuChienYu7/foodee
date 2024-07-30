@@ -40,7 +40,7 @@
             .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
         // Read data
-        d3.json('http://localhost/foodee/index.php').then(function (data) {
+        d3.json('../connect_sql/get_data_json.php').then(function (data) {
 
             console.log(data);
 
@@ -96,7 +96,7 @@
                     .attr('y', 0);
             };
 
-            // Add Circles
+            // Add Circles(Photos)
             svg.append('defs'); // Ensure <defs> is present
 
             data.forEach((d, i) => {

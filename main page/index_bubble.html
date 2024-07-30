@@ -118,12 +118,12 @@
             // outer part (open hours & atmosphere)
 
             const radius = 60;
-            const leftData = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+            const leftData = [1, 1];
             const rightData = [1, 1, 1, 1, 1, 1, 1];
-            const color = d3.scaleOrdinal(d3.schemeSet3)
-                //.range(["#B8B8DC", "#C4E1E1", "lightgrey", "lightgrey", "#C4E1FF"]);
+            const color = d3.scaleOrdinal()
+                .range(["#FFF5EE", "#FFF5EE"]);
             const dayColor = d3.scaleOrdinal()
-                .range(["lightgrey", "#FFF0AC", "#FFD400", "#FFF0AC", "#FFF0AC", "#FFD400", "#FFD400", "#FFF0AC"]);
+                .range(["lightgrey", "#FFF0AC", "#FFD400", "#FFF0AC", "#FFF0AC", "#FFD400", "#FFD400"]);
             const leftPie = d3.pie()
                 .startAngle(-Math.PI)
                 .endAngle(0)
@@ -187,61 +187,61 @@
                 .text((d, i) => days[i]);
 
             // add bubbles outside the outer part
-            const smallCircleRadius = 10;
-            const iconOffset = radius + smallCircleRadius + 2;
+            const smallCircleRadius = 7;
+            const iconOffset = innerRadius + (radius - innerRadius) / 2;
+            const atmosOffset = radius + 10;
 
-            // Add star icon
-            circles.append('circle')
-                .attr('cx', Math.cos(-Math.PI / 5) * iconOffset)
-                .attr('cy', Math.sin(-Math.PI / 5) * iconOffset)
-                .attr('r', smallCircleRadius)
-                .attr('fill', 'white')
-                .attr('stroke', 'black')
-                .attr('stroke-width', '1px');
+            // Add star icon and score in the top-left quadrant
             circles.append("text")
-                .attr("x", Math.cos(-Math.PI / 5) * iconOffset)
-                .attr("y", Math.sin(-Math.PI / 5) * iconOffset)
+                .attr("x", Math.cos(-Math.PI / 1.2) * iconOffset)
+                .attr("y", Math.sin(-Math.PI / 1.2) * iconOffset)
                 .attr("text-anchor", "middle")
                 .attr("alignment-baseline", "middle")
-                .attr("font-size", "15px")
+                .attr("font-size", "13px")
                 .attr("class", "fas fa-star")
                 .attr("fill", "#FFD400")
-                //.attr("opacity", 0.5)
                 .text('\uf005'); // Font Awesome - star (Unicode)
 
             // Add score
             circles.append('text')
-                .attr('x', Math.cos(-Math.PI / 5) * iconOffset) // adjust the position
-                .attr('y', Math.sin(-Math.PI / 5) * iconOffset)
+                .attr('x', Math.cos(-Math.PI / 1.35) * iconOffset + 1.25) // adjust the position
+                .attr('y', Math.sin(-Math.PI / 1.35) * iconOffset + 1.25)
                 .attr('text-anchor', 'middle')
                 .attr('alignment-baseline', 'middle')
-                .attr('font-size', '7px')
+                .attr('font-size', '12px')
                 .attr('font-weight', 'bold')
                 .text(function (d) { return d.r_rating; });
 
-            // Add parking icon
-            circles.append('circle')
-                .attr('cx', Math.cos(-Math.PI / 4 + 0.5) * iconOffset)
-                .attr('cy', Math.sin(-Math.PI / 4 + 0.5) * iconOffset)
-                .attr('r', smallCircleRadius)
-                .attr('fill', 'white')
-                .attr('stroke', 'black')
-                .attr('stroke-width', '1px');
+            // Add parking icon in the bottom-left quadrant
             circles.append("text")
-                .attr("x", Math.cos(-Math.PI / 4 + 0.5) * iconOffset)
-                .attr("y", Math.sin(-Math.PI / 4 + 0.51) * iconOffset)
+                .attr("x", Math.cos(Math.PI / 1.5) * iconOffset)
+                .attr("y", Math.sin(Math.PI / 1.5) * iconOffset)
                 .attr("text-anchor", "middle")
                 .attr("alignment-baseline", "middle")
-                .attr("font-size", "15px")
+                .attr("font-size", "13px")
                 .attr("class", "fas fa-parking")
                 .attr('fill', d => {
                     if (d.r_has_parking == 1) {
                         return 'blue'; // If there is parking, set color to blue
                     } else {
-                        return 'lightgrey'; // If there is no parking, set color to light grey
+                        return 'grey'; // If there is no parking, set color to light grey
                     }
                 })
-                .text('\uf540');// Font Awesome - parking (Unicode)
+                .text('\uf540'); // Font Awesome - parking (Unicode)
+
+            // Add bubble to show the atmosphere
+            const atmosColor = d3.scaleOrdinal(d3.schemeSet3);
+            const numCircles = 10;
+            const angleStep = (Math.PI) / numCircles;
+
+            for (let i = 0; i < numCircles; i++) {
+                const angle = i * angleStep + Math.PI / 2; // Adjust angle to start from 90 degrees
+                circles.append('circle')
+                    .attr('cx', Math.cos(angle) * atmosOffset)
+                    .attr('cy', Math.sin(angle) * atmosOffset)
+                    .attr('r', smallCircleRadius)
+                    .attr('fill', atmosColor(i)); // Correctly call atmosColor function
+            }
 
 
 
