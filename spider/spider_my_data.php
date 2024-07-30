@@ -8,9 +8,9 @@
 <link rel="stylesheet" href="spider.css">
 
 <!-- Create a div where the graph will take place -->
-<div id="spider_chart">
+<!-- <div id="spider_chart">
     <div class="tooltip"></div>
-</div>
+</div> -->
 
 <script>
     const NUM_OF_SIDES = 4;
@@ -28,7 +28,7 @@
         y: size / 2 + margin - shiftY
     };
 
-    const tooltip = d3.select(".tooltip");
+    const tooltip = d3.select("svg.spider");
 
     // 計算多邊形頂點座標
     const calculatePolygonPoints = (numSides, radius, centerX, centerY, offset) => {

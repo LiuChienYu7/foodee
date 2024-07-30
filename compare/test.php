@@ -20,7 +20,7 @@ if ($link) {
     $all_restaurant_data = [];
     foreach ($r_ids as $r_id) {
         $query = "SELECT r_name, r_photo_env1, r_photo_env2, r_photo_env3, r_photo_food1, r_photo_food2, r_photo_food3, r_photo_food4, r_photo_food5, r_photo_door, r_photo_menu1, r_photo_menu2, r_photo_menu3 
-                  FROM additional 
+                  FROM additional_ 
                   WHERE r_id = $r_id";
         $result = mysqli_query($link, $query);
 
@@ -43,6 +43,8 @@ if ($link) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="compare_index.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="../word_tree/word_tree.css">
 </head>
 <body>
     <div class="container">
@@ -111,7 +113,15 @@ if ($link) {
         </div>
         <div class="info-container">
             <!-- This section can be used for additional content as per your design. -->
-            <h2>Additional Information</h2>
+            <!-- <h2>Additional Information</h2> -->
+            <div>
+                <svg class="word_tree" width="400" height="200"></svg>
+                <script type="text/javascript" src="../word_tree/word_tree_modify.js"></script>
+            </div>
+            <div>
+                <svg class="spider"></svg>
+                <script type="text/javascript" src="../spider/spider.js"></script>
+            </div>
             <p>Details, charts, and other elements can go here.</p>
         </div>
     </div>

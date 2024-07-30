@@ -50,17 +50,17 @@ const data = {
 };
 
 // 設定SVG的寬度和高度 大小
-const width = 700;
-const height = 400;
-const margin = { left: 150 };
-const svg = d3.select("svg")
+const width = 400;
+const height = 150;
+const margin = { left: 48 , right:30};
+const svg = d3.select("svg.word_tree")
     .attr("width", width)
     .attr("height", height)
     .append('g')
     .attr("transform", `translate(${margin.left}, 0)`);
 
 // 建立Cluster佈局
-const clusterLayout = d3.cluster().size([height - 150, width - 350]);
+const clusterLayout = d3.cluster().size([height, width-110]);
 const root = d3.hierarchy(data);
 clusterLayout(root);
 
@@ -90,7 +90,7 @@ node.append('text')
     .attr('dx', d => d.depth === 0 ? -10 : d.children ? -8 : 10)
     .style('text-anchor', d => d.children || d.depth === 0 ? 'end' : 'start')
     .style('fill', 'black')
-    .style('font-size', d => 27 - (d.depth * 6) + 'px');
+    .style('font-size', d => 20 - (d.depth * 5) + 'px');
 
 // 點擊事件處理
 function onClick(event, d) {
@@ -327,7 +327,8 @@ function update(source) {
             update => update.transition().duration(500)
                 .attr('transform', d => `translate(${d.y},${d.x})`)
                 .select('text')
-                .style('font-size', d => d.depth === 0 ? '27px' : '21px'),
+                // .style('font-size', d => d.depth === 0 ? '20px' : '10px'),
+                .style('font-size', d => 20 - (d.depth * 3) + 'px'), //這裡在寫一個function
             exit => exit.remove()
         );
 
