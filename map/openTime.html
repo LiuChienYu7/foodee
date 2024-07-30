@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Hours</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        .open {
+            fill: #FFFACD;
+        }
+        .closed {
+            fill: lightgray;
+        }
+        .label {
+            fill: black;
+            text-anchor: middle;
+            font-size: 12px;
+        }
+        .axis text {
+            font-size: 10px;
+        }
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+    </style>
+</head>
+<body>
+    <h1>Restaurant Operating Hours</h1>
+    <label for="restaurant-id">Enter Restaurant ID:</label>
+    <input type="text" id="restaurant-id" placeholder="Enter ID">
+    <button onclick="updateChart()">Show Hours</button>
+    <div id="chart"></div>
+
+    <script>
+        const data = [
+            {r_id: 6148592, r_hours_periods: "[{'status': 'open', 'day': 2, 'startTime': '1830', 'endTime': '0300'}, {'status': 'open', 'day': 3, 'startTime': '1830', 'endTime': '0300'}, {'status': 'open', 'day': 4, 'startTime': '1830', 'endTime': '0300'}, {'status': 'open', 'day': 5, 'startTime': '1830', 'endTime': '0400'}, {'status': 'open', 'day': 6, 'startTime': '1830', 'endTime': '0400'}, {'status': 'open', 'day': 7, 'startTime': '1830', 'endTime': '0300'}]"},
+            {r_id: 6940579, r_hours_periods: "[{'status': 'open', 'day': 1, 'startTime': '1130', 'endTime': '0500'}, {'status': 'open', 'day': 2, 'startTime': '1130', 'endTime': '0500'}, {'status': 'open', 'day': 3, 'startTime': '1130', 'endTime': '0500'}, {'status': 'open', 'day': 4, 'startTime': '1130', 'endTime': '0500'}, {'status': 'open', 'day': 5, 'startTime': '1130', 'endTime': '0500'}, {'status': 'open', 'day': 6, 'startTime': '1130', 'endTime': '0500'}, {'status': 'open', 'day': 7, 'startTime': '1130', 'endTime': '0500'}]"},
+            {r_id: 11832444, r_hours_periods: "[{'status': 'open', 'day': 1, 'startTime': '1130', 'endTime': '1400'}, {'status': 'open', 'day': 1, 'startTime': '1700', 'endTime': '2100'}, {'status': 'open', 'day': 2, 'startTime': '1130', 'endTime': '1400'}, {'status': 'open', 'day': 2, 'startTime': '1700', 'endTime': '2100'}, {'status': 'open', 'day': 3, 'startTime': '1130', 'endTime': '1400'}, {'status': 'open', 'day': 3, 'startTime': '1700', 'endTime': '2100'}, {'status': 'open', 'day': 4, 'startTime': '1130', 'endTime': '1400'}, {'status': 'open', 'day': 4, 'startTime': '1700', 'endTime': '2100'}, {'status': 'open', 'day': 5, 'startTime': '1130', 'endTime': '1400'}, {'status': 'open', 'day': 5, 'startTime': '1700', 'endTime': '2100'}, {'status': 'open', 'day': 6, 'startTime': '1130', 'endTime': '1400'}, {'status': 'open', 'day': 6, 'startTime': '1700', 'endTime': '2100'}, {'status': 'open', 'day': 7, 'startTime': '1130', 'endTime': '1400'}, {'status': 'open', 'day': 7, 'startTime': '1700', 'endTime': '2100'}]"},
+            {r_id: 8553697, r_hours_periods: "[{'status': 'open', 'day': 1, 'startTime': '1130', 'endTime': '1500'}, {'status': 'open', 'day': 1, 'startTime': '1730', 'endTime': '2200'}, {'status': 'open', 'day': 2, 'startTime': '1130', 'endTime': '1500'}, {'status': 'open', 'day': '2', 'startTime': '1730', 'endTime': '2200'}, {'status': 'open', 'day': 3, 'startTime': '1130', 'endTime': '1300'}, {'status': 'open', 'day': 3, 'startTime': '1730', 'endTime': '2200'}, {'status': 'open', 'day': 4, 'startTime': '1130', 'endTime': '1500'}, {'status': 'open', 'day': 4, 'startTime': '1730', 'endTime': '2200'}, {'status': 'open', 'day': 5, 'startTime': '1130', 'endTime': '1500'}, {'status': 'open', 'day': 5, 'startTime': '1730', 'endTime': '2200'}, {'status': 'open', 'day': 6, 'startTime': '1130', 'endTime': '2200'}, {'status': 'open', 'day': 7, 'startTime': '1130', 'endTime': '2200'}]"}
+        ];
+
+        const parseTime = d3.timeParse("%H%M");
+        const formatTime = d3.timeFormat("%H:%M");
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+        function updateChart() {
+            const id = parseInt(document.getElementById('restaurant-id').value, 10);
+            const restaurant = data.find(d => d.r_id === id);
+            if (!restaurant) {
+                alert("Restaurant ID not found.");
+                return;
+            }
+
+            const hoursPeriods = JSON.parse(restaurant.r_hours_periods.replace(/'/g, '"'));
+            const extendedData = [];
+
+            hoursPeriods.forEach(period => {
+                let start = parseTime(period.startTime);
+                let end = parseTime(period.endTime);
+                if (end < start) {
+                    extendedData.push({
+                        status: period.status,
+                        day: period.day,
+                        start: start,
+                        end: parseTime("2400"),
+                        nextDay: true
+                    });
+                    extendedData.push({
+                        status: period.status,
+                        day: (period.day % 7) + 1,
+                        start: parseTime("0000"),
+                        end: end,
+                        nextDay: true
+                    });
+                } else {
+                    extendedData.push({
+                        status: period.status,
+                        day: period.day,
+                        start: start,
+                        end: end,
+                        nextDay: false
+                    });
+                }
+            });
+
+            // Clear previous chart
+            d3.select("#chart").selectAll("*").remove();
+
+            const svg = d3.select("#chart").append("svg")
+                .attr("width", 900)
+                .attr("height", 500)
+                .append("g")
+                .attr("transform", "translate(50,50)");
+
+            const xScale = d3.scaleBand().domain(days).range([0, 800]).padding(0.1);
+            const yScale = d3.scaleTime()
+                .domain([parseTime("0000"), parseTime("2400")])
+                .range([0, 400]);
+
+            // Draw closed background rectangles
+            svg.selectAll(".closed-background")
+                .data(days)
+                .enter().append("rect")
+                .attr("class", "closed")
+                .attr("x", d => xScale(d))
+                .attr("y", 0)
+                .attr("width", xScale.bandwidth())
+                .attr("height", 400);
+
+            // Draw open rectangles
+            svg.selectAll(".open-bar")
+                .data(extendedData)
+                .enter().append("rect")
+                .attr("class", "open")
+                .attr("x", d => xScale(days[d.day - 1]))
+                .attr("y", d => yScale(d.start))
+                .attr("width", xScale.bandwidth())
+                .attr("height", d => yScale(d.end) - yScale(d.start));
+
+            // Add labels
+            svg.selectAll(".label")
+                .data(extendedData)
+                .enter().append("text")
+                .attr("class", "label")
+                .attr("x", d => xScale(days[d.day - 1]) + xScale.bandwidth() / 2)
+                .attr("y", d => (yScale(d.start) + yScale(d.end)) / 2)
+                .text(d => d.status === 'open' ? 'Open' : 'Closed')
+                .attr("text-anchor", "middle")
+                .attr("alignment-baseline", "middle");
+
+            // Add y-axis for time
+            const yAxis = d3.axisLeft(yScale).tickFormat(formatTime);
+            svg.append("g")
+                .attr("class", "axis")
+                .call(yAxis);
+
+            // Add x-axis for days
+            const xAxis = d3.axisTop(xScale);
+            svg.append("g")
+                .attr("class", "axis")
+                .attr("transform", "translate(0,0)")
+                .call(xAxis);
+        }
+    </script>
+</body>
+</html>
+
