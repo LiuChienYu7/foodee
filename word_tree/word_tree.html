@@ -1,11 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width==, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="word_tree.css">
 </head>
-<body>12123153
-    
+
+<body>
+    <!-- <div id="word_tree" style="padding-left: 60px"></div> -->
+    <svg width="700" height="400"></svg>
+    <script type="text/javascript" src="word_tree_modify.js"></script>
+    <script>
+        // const margin = 20;
+        const restaurantNames = ["餐廳1", "餐廳2", "餐廳3"];
+        const buttonColors = ["#FF70AE", "#85B4FF", "#FFCE47"];
+
+        // // 創建button
+        // const addButtons = (restaurantNames) => {
+        //     const buttonGroup = svg.append("g").attr("transform", `translate(${margin},${margin})`);
+        //     let xPosition = 10;
+        //     let yPosition = 10;
+        //     const buttonWidth = 35;
+        //     const buttonHeight = 23;
+        //     const buttonPositions = [];
+
+        //     restaurantNames.forEach((name, i) => {
+        //         let Punctuation = name.length;
+        //         if (name.includes('-')) Punctuation -= 2;
+        //         else if (name.includes('(')) Punctuation -= 1.5;
+        //         const expandedWidth = Punctuation * 14.5 + 15;
+
+        //         buttonPositions.push(xPosition);
+
+        //         const buttonContainer = buttonGroup.append("g")
+        //             .attr("class", `button-container-${i + 1}`)
+        //             .attr("transform", `translate(${xPosition},${yPosition})`)
+        //             .on("mouseenter", function () {
+        //                 d3.select(this).select("rect")
+        //                     .transition()
+        //                     .duration(100)
+        //                     .style("fill-opacity", 1)
+        //                     .style("cursor", "pointer")
+        //                     .attr("width", expandedWidth);
+
+        //                 for (let j = i + 1; j < restaurantNames.length; j++) {
+        //                     d3.select(`.button-container-${j + 1}`)
+        //                         .transition()
+        //                         .duration(100)
+        //                         .attr("transform", `translate(${buttonPositions[j] + (expandedWidth - buttonWidth)},${yPosition})`);
+        //                 }
+
+        //                 d3.select(this).select("text")
+        //                     .transition()
+        //                     .duration(100)
+        //                     .style("visibility", "visible");
+
+        //                 // 顯示選定餐廳的評論
+        //                 updateComments(comments[i]);
+        //             })
+        //             .on("mouseleave", function () {
+        //                 d3.select(this).select("rect")
+        //                     .style("fill-opacity", 0.5)
+        //                     .style("cursor", "default")
+        //                     .attr("width", buttonWidth);
+
+        //                 for (let j = i + 1; j < restaurantNames.length; j++) {
+        //                     d3.select(`.button-container-${j + 1}`)
+        //                         .transition()
+        //                         .duration(100)
+        //                         .attr("transform", `translate(${buttonPositions[j]},${yPosition})`);
+        //                 }
+
+        //                 d3.select(this).select("text")
+        //                     .style("visibility", "hidden");
+        //             });
+
+        //         buttonContainer.append("rect")
+        //             .attr("width", buttonWidth)
+        //             .attr("height", buttonHeight)
+        //             .attr("fill", buttonColors[i])
+        //             .style("fill-opacity", 0.5)
+        //             .attr("rx", 5)
+        //             .attr("ry", 5);
+
+        //         buttonContainer.append("text")
+        //             .attr("x", 10)
+        //             .attr("y", buttonHeight / 1.3)
+        //             .attr("class", `button-text-${i + 1}`)
+        //             .style("visibility", "hidden")
+        //             .attr("font-size", 14)
+        //             .text(name);
+
+        //         xPosition += buttonWidth + 10;
+        //     });
+        // };
+
+        
+
+        // // 動態調整SVG大小和樹形佈局
+        // window.addEventListener('resize', resize);
+
+        // function resize() {
+        //     width = document.documentElement.clientWidth;
+        //     height = window.innerHeight - 50;
+        //     svg.attr("width", width).attr("height", height);
+        //     treeLayout.size([height, width - 160]);
+        //     treeLayout(root);
+
+        //     svg.selectAll('path.link')
+        //         .attr('d', d3.linkHorizontal()
+        //             .x(d => d.y)
+        //             .y(d => d.x));
+
+        //     svg.selectAll('g.node')
+        //         .attr('transform', d => `translate(${d.y},${d.x})`);
+        // }
+
+
+        // 初始化按鈕和評論顯示
+        // addButtons(restaurantNames);
+    </script>
 </body>
+
 </html>
