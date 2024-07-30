@@ -5,10 +5,7 @@
 <script src="https://d3js.org/d3.v6.js"></script>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<<<<<<< HEAD
 <link rel="stylesheet" href="spider.css">
-=======
->>>>>>> bc3990e7b54e1e8219378bfeee1d08b1aa35ae24
 
 <!-- Create a div where the graph will take place -->
 <div id="spider_chart">
