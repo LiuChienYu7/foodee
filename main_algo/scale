@@ -101,6 +101,30 @@ function drawChart(intervalWidths, intervalPositions, total, totalHeight) {
         .attr("width", width)
         .attr("height", totalHeight);
 
+    // 創建圖片填充的圖案模式
+    const innerRadius = 45;
+    const createPattern = (id, url) => {
+        return svg.select('defs').append('pattern')
+            .attr('id', id)
+            .attr('patternUnits', 'objectBoundingBox')
+            .attr('width', 1)
+            .attr('height', 1)
+            .append('image')
+            .attr('xlink:href', url)
+            .attr('width', 2 * innerRadius)
+            .attr('height', 2 * innerRadius)
+            .attr('preserveAspectRatio', 'xMidYMid slice')
+            .attr('x', 0)
+            .attr('y', 0);
+    };
+
+    svg.append('defs'); // 確保 <defs> 存在
+
+    data.forEach((d, i) => {
+        const patternId = `pattern-${i}`;
+        createPattern(patternId, d.r_photo_env1);
+    });
+
     const positions = calculatePositions(data, intervalWidths, rowHeight, circleSpacing, margin, intervalPositions);
 
     svg.append("g")
@@ -114,7 +138,7 @@ function drawChart(intervalWidths, intervalPositions, total, totalHeight) {
         .attr("height", d => isNaN(d.height) || d.height < 0 ? 0 : d.height)
         .attr("class", "border");
 
-    // Adding the interval separators
+    // 添加間隔分隔線
     svg.append("g")
         .selectAll(".interval-separator")
         .data(Object.keys(intervalWidths))
@@ -126,44 +150,130 @@ function drawChart(intervalWidths, intervalPositions, total, totalHeight) {
         .attr("x2", d => intervalPositions[d] + intervalWidths[d])
         .attr("y2", totalHeight - margin.bottom)
         .attr("stroke", "black")
-        .attr("stroke-width", 1); // Adjust thickness as needed
+        .attr("stroke-width", 1); // 調整厚度
 
-    svg.append("g")
+    // 添加圈圈圖形
+    const circles = svg.append('g')
         .selectAll("circle")
-        .data(positions.filter(d => !d.label && !d.border))
+        .data(data)
         .enter()
-        .append("circle")
-        .attr("cx", d => d.x + circleRadius)
-        .attr("cy", d => d.y + circleRadius)
-        .attr("r", circleRadius)
-        .attr("fill", d => color(d.time))
-        .attr("stroke", "black")
-        .attr("class", d => `circle-${d.key}`);
+        .append("g")
+        .attr("transform", d => `translate(${intervalPositions[d.key]}, ${margin.top})`);
 
-    svg.append("g")
-        .selectAll("text")
-        .data(positions.filter(d => !d.label && !d.border))
+    circles.append("circle")
+        .attr("r", innerRadius)
+        .style("fill", d => `url(#pattern-${data.indexOf(d)})`); // 根據數據改變圖片
+
+    // 外圍部分（開放時間和氛圍）
+    const radius = 60;
+    const leftData = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+    const rightData = [1, 1, 1, 1, 1, 1, 1];
+    const color = d3.scaleOrdinal(d3.schemeSet3);
+    const dayColor = d3.scaleOrdinal()
+        .range(["lightgrey", "#FFF0AC", "#FFD400", "#FFF0AC", "#FFF0AC", "#FFD400", "#FFD400", "#FFF0AC"]);
+    const leftPie = d3.pie()
+        .startAngle(-Math.PI)
+        .endAngle(0)
+        .value(d => d);
+    const leftDataReady = leftPie(leftData);
+    const rightPie = d3.pie()
+        .startAngle(0)
+        .endAngle(Math.PI)
+        .value(d => d);
+    const rightDataReady = rightPie(rightData);
+    const arc = d3.arc()
+        .innerRadius(innerRadius)
+        .outerRadius(radius)
+        .cornerRadius(2);
+
+    // 為左半部分構建餅圖
+    circles.selectAll('path.left')
+        .data(leftDataReady)
         .enter()
-        .append("text")
-        .attr("x", d => d.x + circleRadius)
-        .attr("y", d => d.y + circleRadius)
-        .attr("dy", "0.35em")
+        .append('path')
+        .attr('class', 'left')
+        .attr('d', arc)
+        .attr('fill', (d, i) => color(i))
+        .attr("stroke", "white")
+        .style("stroke-width", "1px");
+
+    // 為右半部分構建餅圖
+    circles.selectAll('path.right')
+        .data(rightDataReady)
+        .enter()
+        .append('path')
+        .attr('class', 'right')
+        .attr('d', arc)
+        .attr('fill', (d, i) => dayColor(i))
+        .attr("stroke", "white")
+        .style("stroke-width", "1px");
+
+    // 添加天數標籤
+    const days = ["M", "T", "W", "T", "F", "S", "S"];
+    circles.selectAll('text.days')
+        .data(rightDataReady)
+        .enter()
+        .append('text')
+        .attr('class', 'days')
+        .attr('transform', d => {
+            const pos = d3.arc().innerRadius((radius + innerRadius) / 2).outerRadius((radius + innerRadius) / 2).centroid(d);
+            return `translate(${pos[0]},${pos[1]})`;
+        })
+        .attr('text-anchor', 'middle')
+        .attr('dy', '0.35em')
+        .attr('font-size', '10px')
+        .attr('font-weight', 'bold')
+        .text((d, i) => days[i]);
+
+    // 添加外部圓形和圖標
+    const smallCircleRadius = 10;
+    const iconOffset = radius + smallCircleRadius + 2;
+
+    // 添加星形圖標
+    circles.append('circle')
+        .attr('cx', Math.cos(-Math.PI / 5) * iconOffset)
+        .attr('cy', Math.sin(-Math.PI / 5) * iconOffset)
+        .attr('r', smallCircleRadius)
+        .attr('fill', 'white')
+        .attr('stroke', 'black')
+        .attr('stroke-width', '1px');
+    circles.append("text")
+        .attr("x", Math.cos(-Math.PI / 5) * iconOffset)
+        .attr("y", Math.sin(-Math.PI / 5) * iconOffset)
         .attr("text-anchor", "middle")
-        .text(d => d.time)
-        .attr("class", d => `text-${d.key}`);
+        .attr("alignment-baseline", "middle")
+        .attr("font-size", "15px")
+        .attr("class", "fas fa-star")
+        .attr("fill", "#FFD400")
+        .text('\uf005'); // Font Awesome - star (Unicode)
 
-    svg.append("g")
-        .selectAll("group-label")
-        .data(positions.filter(d => d.label))
-        .enter()
-        .append("text")
-        .attr("x", d => d.x)
-        .attr("y", d => d.y)
-        .attr("dy", "0.35em")
-        .attr("text-anchor", "start")
-        .attr("font-size", "12px")
-        .attr("font-weight", "bold")
-        .text(d => `用餐時間: ${d.time}`);
+    // 添加分數
+    circles.append('text')
+        .attr('x', Math.cos(-Math.PI / 5) * iconOffset)
+        .attr('y', Math.sin(-Math.PI / 5) * iconOffset)
+        .attr('text-anchor', 'middle')
+        .attr('alignment-baseline', 'middle')
+        .attr('font-size', '7px')
+        .attr('font-weight', 'bold')
+        .text(function (d) { return d.r_rating; });
+
+    // 添加停車圖標
+    circles.append('circle')
+        .attr('cx', Math.cos(-Math.PI / 4 + 0.5) * iconOffset)
+        .attr('cy', Math.sin(-Math.PI / 4 + 0.5) * iconOffset)
+        .attr('r', smallCircleRadius)
+        .attr('fill', 'white')
+        .attr('stroke', 'black')
+        .attr('stroke-width', '1px');
+    circles.append("text")
+        .attr("x", Math.cos(-Math.PI / 4 + 0.5) * iconOffset)
+        .attr("y", Math.sin(-Math.PI / 4 + 0.51) * iconOffset)
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .attr("font-size", "15px")
+        .attr("class", "fas fa-parking")
+        .attr('fill', d => d.r_has_parking == 1 ? 'blue' : 'lightgrey')
+        .text('\uf540'); // Font Awesome - parking (Unicode)
 
     const xAxisSvg = d3.select("#x-axis-svg");
     const xScale = d3.scaleLinear()
@@ -200,6 +310,7 @@ function drawChart(intervalWidths, intervalPositions, total, totalHeight) {
             }
         });
 }
+
 
 
         const intervalTotals = currentIntervals.map(interval => {
