@@ -137,11 +137,10 @@ items.forEach((item) => {
         let checkedItems = document.querySelectorAll(".l-item.checked .item-text"),
             btnText = document.querySelector(".btn-text");
 
-        if (checkedItems && checkedItems.length > 3) {
-            btnText.innerText = `已選擇${checkedItems.length}個`;
-        } else if (checkedItems && checkedItems.length > 0) {
-            let selectedText = Array.from(checkedItems).map(itemTextElement => itemTextElement.innerText).join(', ');
-            btnText.innerText = `${selectedText}`;
+        if (checkedItems && checkedItems.length > 0) {
+            // 獲取所有選中的星等
+            let selectedText = Array.from(checkedItems).map(itemTextElement => itemTextElement.innerText.replace('⭐', '')).join('、');
+            btnText.innerText = `${selectedText}⭐`;
         } else {
             btnText.innerText = "選擇評分";
         }
@@ -168,3 +167,40 @@ document.getElementById("left-side-arr").addEventListener("click", function() {
     }
 });
 
+// vibe button function
+const maxSelection = 5;
+const colors = ['color-1', 'color-2', 'color-3', 'color-4', 'color-5'];
+const vibeButtons = document.querySelectorAll('.vibe-button');
+let selectedButtons = [];
+let availableColors = [...colors]; // 用於管理可用顏色
+
+vibeButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        if (button.classList.contains('selected')) {
+            // 如果按鈕已經被選中，點擊時取消選中並移除顏色
+            button.classList.remove('selected');
+            const index = selectedButtons.indexOf(button);
+            selectedButtons.splice(index, 1);
+            const colorClass = colors.find(color => button.classList.contains(color));
+            button.classList.remove(colorClass); // 移除顏色類
+
+            // 將顏色放回可用顏色佇列並重新排序
+            availableColors.push(colorClass);
+            availableColors.sort((a, b) => colors.indexOf(a) - colors.indexOf(b)); // 根據colors排序
+        } else {
+            // 如果已選中的按鈕數量未達到最大值，分配顏色
+            if (selectedButtons.length < maxSelection && availableColors.length > 0) {
+                button.classList.add('selected');
+                selectedButtons.push(button);
+
+                // 使用佇列中編號最前的顏色
+                const colorClass = availableColors.shift();
+                button.classList.add(colorClass);
+            } else if (selectedButtons.length >= maxSelection) {
+                alert(`最多只能選擇 ${maxSelection} 個選項`);
+            }
+        }
+    });
+});
+
+//連接資料

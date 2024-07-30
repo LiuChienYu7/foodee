@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>filter</title>
     <link rel="stylesheet" href="filter.css">
-    <!-- <script src="filter.js"></script> -->
+    <!-- script -->
     <script src="https://kit.fontawesome.com/aa19eb2bb9.js" crossorigin="anonymous"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
     <div class="index-container">
@@ -16,6 +17,7 @@
                     <input type="text" placeholder="輸入想去的地點、類型...">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </div>
+                <!-- opening-hours -->
                 <div class="filter-fixed filter-time">
                     <div class="filter-title">
                         <label>營業時間</label>
@@ -25,7 +27,7 @@
                             <label>一<input type="checkbox" name="" id=""></label>
                         </div>
                         <div>
-                            <label>二<input type="checkbox" name="" id=""></label>
+                            <label>二<input type="checkbox" name="" id=""><span></span></label>
                         </div>
                         <div>
                             <label>三<input type="checkbox" name="" id=""></label>
@@ -45,11 +47,12 @@
                         
                     </div>
                     <div class="time-range">
-                        <input type="time">
+                        <input type="time" step="1800">
                         <span>~</span>
-                        <input type="time">
+                        <input type="time" step="1800">
                     </div>                
                 </div>
+                <!-- price -->
                 <div class="filter-item filter-price">
                     <div class="filter-title">
                         <label>價錢<span>(主要餐點)</span></label>
@@ -77,6 +80,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- stars -->
                 <div class="filter-item filter-star">
                     <div class="filter-title">
                         <label>評分</label>
@@ -119,6 +123,7 @@
                         </li>
                     </ul>
                 </div>
+                <!-- vibes -->
                 <div class="filter-item filter-vibe">
                     <div class="filter-title">
                         <label>氣氛</label>
@@ -140,7 +145,7 @@
                         <button class="vibe-button">家庭</button>
                     </div>
                 </div>
-                <!-- Time Filter -->
+                <!-- time -->
                 <div class="filter-item filter-time">
                     <div class="filter-title">
                         <label>用餐時間限制</label>
@@ -169,6 +174,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- parking -->
                 <div class="filter-item filter-parking">
                     <div class="filter-title">
                         <label><input type="checkbox">附設停車場</label>   
@@ -177,10 +183,14 @@
                 </div>
             </div>
         </div>
+        <!-- 收起btn -->
         <div class="left-side-arr" id="left-side-arr">
             <i class="fa-solid fa-caret-up"></i>
         </div>
-        <div class="right-panel" id="right-panel">good morning</div>
+        <!-- 右邊區域 -->
+        <div class="right-panel" id="right-panel">
+
+        </div>
     </div>    
     <script src="filter.js"></script>
 </body>
