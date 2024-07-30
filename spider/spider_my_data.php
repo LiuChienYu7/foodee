@@ -227,21 +227,14 @@
             const buttonContainer = buttonGroup.append("g")
                 .attr("class", `button-container-${i + 1}`)
                 .attr("transform", `translate(${xPosition},${yPosition})`)
-<<<<<<< HEAD
                 .style("cursor", "default")
-=======
->>>>>>> bc3990e7b54e1e8219378bfeee1d08b1aa35ae24
                 .on("mouseenter", function (event, d) {
                     // 變深色並擴展寬度
                     d3.select(this).select("rect")
                         .transition()
                         .duration(100)
                         .style("fill-opacity", 1)
-<<<<<<< HEAD
                         .style("cursor", "default")
-=======
-                        .style("cursor", "pointer")
->>>>>>> bc3990e7b54e1e8219378bfeee1d08b1aa35ae24
                         .attr("width", expandedWidth);
 
                     // 移動右邊的按鈕
@@ -319,12 +312,8 @@
                 .attr("fill", buttonColors[i])
                 .style("fill-opacity", 0.5)
                 .attr("rx", 5) // 設置圓角半徑
-<<<<<<< HEAD
                 .attr("ry", 5) // 設置圓角半徑
                 .style("cursor", "default"); // 設置游標為默認樣式
-=======
-                .attr("ry", 5); // 設置圓角半徑
->>>>>>> bc3990e7b54e1e8219378bfeee1d08b1aa35ae24
 
             buttonContainer.append("text")
                 .attr("x", 10)
@@ -332,15 +321,10 @@
                 .attr("class", `button-text-${i + 1}`)
                 .style("visibility", "hidden")
                 .attr("font-size", 14)
-<<<<<<< HEAD
                 .style("cursor", "default") // 設置游標為默認樣式
                 .text(name);
 
 
-=======
-                .text(name);
-
->>>>>>> bc3990e7b54e1e8219378bfeee1d08b1aa35ae24
             xPosition += buttonWidth + 10; // 更新 xPosition 以便放置下一個按鈕
         });
     };
