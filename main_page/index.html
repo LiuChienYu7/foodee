@@ -17,6 +17,9 @@
         <div id="filter" style="background-color: lightgray; width: 300px; height: 770px;">
             <h1>filter</h1>
         </div>
+        <div id="btn">
+            <button>button</button>
+        </div>
     </div>
     <style>
         #container {
@@ -40,7 +43,7 @@
             .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
         // Read data
-        d3.json('http://localhost/foodee/index.php').then(function (data) {
+        d3.json('http://localhost/foodee/connect_sql/index.php').then(function (data) {
 
             console.log(data);
 
