@@ -16,11 +16,11 @@ if ($link) {
         }
     }
 
-    // Fetch images and names for each restaurant
+    // Fetch images, names, vibes, dishes, and prices for each restaurant
     $all_restaurant_data = [];
     foreach ($r_ids as $r_id) {
-        $query = "SELECT r_name, r_photo_env1, r_photo_env2, r_photo_env3, r_photo_food1, r_photo_food2, r_photo_food3, r_photo_food4, r_photo_food5, r_photo_door, r_photo_menu1, r_photo_menu2, r_photo_menu3 
-                  FROM additional 
+        $query = "SELECT r_name, r_vibe, r_food_dishes, r_price_low, r_price_high, r_photo_env1, r_photo_env2, r_photo_env3, r_photo_food1, r_photo_food2, r_photo_food3, r_photo_food4, r_photo_food5, r_photo_door, r_photo_menu1, r_photo_menu2, r_photo_menu3 
+                  FROM compare
                   WHERE r_id = $r_id";
         $result = mysqli_query($link, $query);
 
@@ -73,6 +73,40 @@ if ($link) {
             align-items: center;
             justify-content: center;
             overflow: hidden; /* Hide overflow if name is too long */
+        }
+        .vibe-tags, .food-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px; /* 控制標籤間距 */
+            margin-bottom: 10px;
+        }
+        .restaurant-tag{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2px 5px;
+            background-color: #eee;
+            border-radius: 5px;
+            font-size: 0.8em;
+            color: #333;
+            white-space: nowrap; /* 防止文字換行 */
+            overflow: hidden; /* 隱藏超出部分 */
+            text-overflow: ellipsis; /* 當文字超出時顯示省略號 */
+        }
+        .price-tag {
+            background-color: #f0f0f0;
+            color: #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2px 5px;
+            background-color: #eee;
+            border-radius: 5px;
+            font-size: 0.8em;
+            color: #333;
+            white-space: nowrap; /* 防止文字換行 */
+            overflow: hidden; /* 隱藏超出部分 */
+            text-overflow: ellipsis; /* 當文字超出時顯示省略號 */
         }
         .image-container {
             position: relative;
@@ -160,6 +194,20 @@ if ($link) {
         .modal-next {
             right: 10px;
         }
+        h3 {
+            margin: 10px;
+        }
+        .price-range {
+            margin-top: 10px;
+            font-size: 1em;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2px 5px;
+            background-color: #eee;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -169,10 +217,20 @@ if ($link) {
             // Helper function to render image gallery for each restaurant
             function renderGallerySection($r_id, $restaurant_data) {
                 echo "<div class='gallery-section'>";
-                echo "<div class='restaurant-name'>" . htmlspecialchars($restaurant_data['r_name']) . "</div>";
+                echo "<div class='restaurant-name'>";
+                echo "<div>" . htmlspecialchars($restaurant_data['r_name']) . "</div>";
+                echo "</div>";
 
                 // Display environment images
-                echo "<h3>Environment</h3>";
+                echo "<h3>Environment</h3>";                
+                echo "<div class='vibe-tags'>";
+                if (!empty($restaurant_data['r_vibe'])) {
+                    $vibes = explode(',', $restaurant_data['r_vibe']);
+                    foreach ($vibes as $vibe) {
+                        echo "<div class='restaurant-tag'>" . htmlspecialchars(trim($vibe)) . "</div>";
+                    }
+                }
+                echo "</div>";
                 echo "<div class='image-container'>";
                 foreach (['r_photo_env1', 'r_photo_env2', 'r_photo_env3', 'r_photo_door'] as $index => $field) {
                     if (!empty($restaurant_data[$field])) {
@@ -186,6 +244,14 @@ if ($link) {
 
                 // Display food images
                 echo "<h3>Food</h3>";
+                echo "<div class='food-tags'>";
+                if (!empty($restaurant_data['r_food_dishes'])) {
+                    $dishes = explode(',', $restaurant_data['r_food_dishes']);
+                    foreach ($dishes as $dish) {
+                        echo "<div class='restaurant-tag'>" . htmlspecialchars(trim($dish)) . "</div>";
+                    }
+                }
+                echo "</div>";
                 echo "<div class='image-container'>";
                 foreach (['r_photo_food1', 'r_photo_food2', 'r_photo_food3', 'r_photo_food4', 'r_photo_food5'] as $index => $field) {
                     if (!empty($restaurant_data[$field])) {
@@ -197,8 +263,13 @@ if ($link) {
                 echo "<span class='nav-arrow next' onclick='nextImage(this)'>&#10095;</span>";
                 echo "</div>";
 
-                // Display other images
-                echo "<h3>Others</h3>";
+                // Display price range
+                echo "<h3>MENU</h3>";
+                echo "<div class='vibe-tags'>";
+                if (!empty($restaurant_data['r_price_low']) && !empty($restaurant_data['r_price_high'])) {
+                    echo "<div class='price-tag'>Price Range: $" . htmlspecialchars($restaurant_data['r_price_low']) . " ~ $" . htmlspecialchars($restaurant_data['r_price_high']) . "</div>";
+                }
+                echo "</div>";
                 echo "<div class='image-container'>";
                 foreach (['r_photo_menu1', 'r_photo_menu2', 'r_photo_menu3'] as $index => $field) {
                     if (!empty($restaurant_data[$field])) {
@@ -213,7 +284,6 @@ if ($link) {
                 echo "</div>";
             }
 
-            // Display the galleries for each restaurant
             if ($all_restaurant_data) {
                 foreach ($all_restaurant_data as $r_id => $restaurant_data) {
                     if ($restaurant_data) {
@@ -235,55 +305,58 @@ if ($link) {
     </div>
 
     <!-- The Modal -->
-    <div id="myModal" class="modal">
+    <div id="imageModal" class="modal">
         <span class="modal-close" onclick="closeModal()">&times;</span>
-        <span class="modal-prev" onclick="changeModalImage(-1)">&#10094;</span>
-        <span class="modal-next" onclick="changeModalImage(1)">&#10095;</span>
-        <div class="modal-content">
-            <img id="modalImage" src="" alt="Expanded Image">
-        </div>
+        <img class="modal-content" id="modalImg">
+        <span class="modal-prev" onclick="prevModalImage()">&lt;</span>
+        <span class="modal-next" onclick="nextModalImage()">&gt;</span>
     </div>
 
     <script>
-        let currentImageIndex = 0;
-        let currentImageArray = [];
+        function openModal(element) {
+            var modal = document.getElementById("imageModal");
+            var modalImg = document.getElementById("modalImg");
+            modal.style.display = "block";
+            modalImg.src = element.src;
+        }
 
-        // JavaScript for navigating images in gallery
+        function closeModal() {
+            var modal = document.getElementById("imageModal");
+            modal.style.display = "none";
+        }
+
         function prevImage(arrow) {
             const section = arrow.closest('.image-container');
-            const images = section.querySelectorAll('.gallery-img');
-            images[currentImageIndex].classList.remove('active');
-            currentImageIndex = (currentImageIndex -1 + images.length) % images.length;
-            images[currentImageIndex].classList.add('active');
+            const images = section.querySelectorAll('img');
+            let currentIndex = Array.from(images).findIndex(img => img.classList.contains('active'));
+            images[currentIndex].classList.remove('active');
+            currentIndex = (currentIndex - 1 + images.length) % images.length;
+            images[currentIndex].classList.add('active');
         }
 
         function nextImage(arrow) {
             const section = arrow.closest('.image-container');
-            const images = section.querySelectorAll('.gallery-img');
-            images[currentImageIndex].classList.remove('active');
-            currentImageIndex = (currentImageIndex + 1) % images.length;
-            images[currentImageIndex].classList.add('active');
+            const images = section.querySelectorAll('img');
+            let currentIndex = Array.from(images).findIndex(img => img.classList.contains('active'));
+            images[currentIndex].classList.remove('active');
+            currentIndex = (currentIndex + 1) % images.length;
+            images[currentIndex].classList.add('active');
         }
 
-        // Function to open the modal and display the clicked image
-        function openModal(imgElement) {
-            currentImageIndex = Array.from(imgElement.parentNode.children).filter(child => child.tagName === 'IMG').indexOf(imgElement);
-            currentImageArray = Array.from(imgElement.parentNode.children).filter(child => child.tagName === 'IMG');
-            const modal = document.getElementById("myModal");
-            const modalImg = document.getElementById("modalImage");
-            modal.style.display = "block";
-            modalImg.src = imgElement.src;
+        function prevModalImage() {
+            const modalImg = document.getElementById("modalImg");
+            const images = Array.from(document.querySelectorAll('.image-container img'));
+            const currentIndex = images.findIndex(img => img.src === modalImg.src);
+            const prevIndex = (currentIndex - 1 + images.length) % images.length;
+            modalImg.src = images[prevIndex].src;
         }
 
-        // Function to change modal image
-        function changeModalImage(direction) {
-            currentImageIndex = (currentImageIndex + direction + currentImageArray.length) % currentImageArray.length;
-            document.getElementById("modalImage").src = currentImageArray[currentImageIndex].src;
-        }
-
-        // Function to close the modal
-        function closeModal() {
-            document.getElementById("myModal").style.display = "none";
+        function nextModalImage() {
+            const modalImg = document.getElementById("modalImg");
+            const images = Array.from(document.querySelectorAll('.image-container img'));
+            const currentIndex = images.findIndex(img => img.src === modalImg.src);
+            const nextIndex = (currentIndex + 1) % images.length;
+            modalImg.src = images[nextIndex].src;
         }
     </script>
 </body>
