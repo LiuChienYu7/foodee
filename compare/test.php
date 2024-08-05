@@ -19,8 +19,13 @@ if ($link) {
     // Fetch images, names, vibes, dishes, and prices for each restaurant
     $all_restaurant_data = [];
     foreach ($r_ids as $r_id) {
+<<<<<<< HEAD:map/test.php
         $query = "SELECT r_name, r_vibe, r_food_dishes, r_price_low, r_price_high, r_photo_env1, r_photo_env2, r_photo_env3, r_photo_food1, r_photo_food2, r_photo_food3, r_photo_food4, r_photo_food5, r_photo_door, r_photo_menu1, r_photo_menu2, r_photo_menu3 
                   FROM compare
+=======
+        $query = "SELECT r_name, r_photo_env1, r_photo_env2, r_photo_env3, r_photo_food1, r_photo_food2, r_photo_food3, r_photo_food4, r_photo_food5, r_photo_door, r_photo_menu1, r_photo_menu2, r_photo_menu3 
+                  FROM additional_ 
+>>>>>>> 57be64322e2a1c76276099f824ea6abe3d5b69b6:compare/test.php
                   WHERE r_id = $r_id";
         $result = mysqli_query($link, $query);
 
@@ -39,9 +44,11 @@ if ($link) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< HEAD:map/test.php
     <style>
         body, html {
             margin: 0;
@@ -209,13 +216,32 @@ if ($link) {
             border-radius: 5px;
         }
     </style>
+=======
+    <link rel="stylesheet" href="compare_index.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="../word_tree/word_tree.css">
+
+    <!-- map -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" /> <!--leaflet css file-->
+    <link rel="stylesheet" src="../map/compare_map.css">
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- edgeMarker -->
+    <script src="../map/leaflet_edgeMarker.js"></script>
+>>>>>>> 57be64322e2a1c76276099f824ea6abe3d5b69b6:compare/test.php
 </head>
+
 <body>
     <div class="container">
         <div class="gallery-container">
             <?php
             // Helper function to render image gallery for each restaurant
-            function renderGallerySection($r_id, $restaurant_data) {
+            function renderGallerySection($r_id, $restaurant_data)
+            {
                 echo "<div class='gallery-section'>";
                 echo "<div class='restaurant-name'>";
                 echo "<div>" . htmlspecialchars($restaurant_data['r_name']) . "</div>";
@@ -299,8 +325,20 @@ if ($link) {
         </div>
         <div class="info-container">
             <!-- This section can be used for additional content as per your design. -->
-            <h2>Additional Information</h2>
-            <p>Details, charts, and other elements can go here.</p>
+            <!-- <h2>Additional Information</h2> -->
+            <div>
+                <svg class="word_tree" width="400" height="200"></svg>
+                <svg class="spider" width="300" height="300"></svg>
+            <div id = "map">
+                <svg class="map" width ="600" height = "400"></svg>
+            </div>
+                <script type="module">
+                    import '../word_tree/word_tree_modify.js';
+                    import '../spider/spider.js';
+                    import '../map/compare_map.js'
+                </script>
+            </div>
+            <!-- <p>Details, charts, and other elements can go here.</p> -->
         </div>
     </div>
 
@@ -327,11 +365,18 @@ if ($link) {
 
         function prevImage(arrow) {
             const section = arrow.closest('.image-container');
+<<<<<<< HEAD:map/test.php
             const images = section.querySelectorAll('img');
             let currentIndex = Array.from(images).findIndex(img => img.classList.contains('active'));
             images[currentIndex].classList.remove('active');
             currentIndex = (currentIndex - 1 + images.length) % images.length;
             images[currentIndex].classList.add('active');
+=======
+            const images = section.querySelectorAll('.gallery-img');
+            images[currentImageIndex].classList.remove('active');
+            currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+            images[currentImageIndex].classList.add('active');
+>>>>>>> 57be64322e2a1c76276099f824ea6abe3d5b69b6:compare/test.php
         }
 
         function nextImage(arrow) {
@@ -360,4 +405,5 @@ if ($link) {
         }
     </script>
 </body>
+
 </html>
