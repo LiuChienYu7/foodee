@@ -39,19 +39,34 @@ if ($link) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="compare_index.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <link rel="stylesheet" href="../word_tree/word_tree.css">
+
+    <!-- map -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" /> <!--leaflet css file-->
+    <link rel="stylesheet" src="../map/compare_map.css">
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- edgeMarker -->
+    <script src="../map/leaflet_edgeMarker.js"></script>
 </head>
+
 <body>
     <div class="container">
         <div class="gallery-container">
             <?php
             // Helper function to render image gallery for each restaurant
-            function renderGallerySection($r_id, $restaurant_data) {
+            function renderGallerySection($r_id, $restaurant_data)
+            {
                 echo "<div class='gallery-section'>";
                 echo "<div class='restaurant-name'>" . htmlspecialchars($restaurant_data['r_name']) . "</div>";
 
@@ -116,13 +131,17 @@ if ($link) {
             <!-- <h2>Additional Information</h2> -->
             <div>
                 <svg class="word_tree" width="400" height="200"></svg>
-                <script type="text/javascript" src="../word_tree/word_tree_modify.js"></script>
+                <svg class="spider" width="300" height="300"></svg>
+            <div id = "map">
+                <svg class="map" width ="600" height = "400"></svg>
             </div>
-            <div>
-                <svg class="spider"></svg>
-                <script type="text/javascript" src="../spider/spider.js"></script>
+                <script type="module">
+                    import '../word_tree/word_tree_modify.js';
+                    import '../spider/spider.js';
+                    import '../map/compare_map.js'
+                </script>
             </div>
-            <p>Details, charts, and other elements can go here.</p>
+            <!-- <p>Details, charts, and other elements can go here.</p> -->
         </div>
     </div>
 
@@ -145,7 +164,7 @@ if ($link) {
             const section = arrow.closest('.image-container');
             const images = section.querySelectorAll('.gallery-img');
             images[currentImageIndex].classList.remove('active');
-            currentImageIndex = (currentImageIndex -1 + images.length) % images.length;
+            currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
             images[currentImageIndex].classList.add('active');
         }
 
@@ -179,4 +198,5 @@ if ($link) {
         }
     </script>
 </body>
+
 </html>

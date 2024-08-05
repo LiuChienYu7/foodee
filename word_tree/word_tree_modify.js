@@ -50,17 +50,17 @@ const data = {
 };
 
 // 設定SVG的寬度和高度 大小
-const width = 400;
-const height = 150;
+const word_tree_width = 400;
+const word_tree_height = 150;
 const margin = { left: 48 , right:30};
 const svg = d3.select("svg.word_tree")
-    .attr("width", width)
-    .attr("height", height)
+    .attr("width", word_tree_width)
+    .attr("height", word_tree_height)
     .append('g')
     .attr("transform", `translate(${margin.left}, 0)`);
 
 // 建立Cluster佈局
-const clusterLayout = d3.cluster().size([height, width-110]);
+const clusterLayout = d3.cluster().size([word_tree_height, word_tree_width-110]);
 const root = d3.hierarchy(data);
 clusterLayout(root);
 

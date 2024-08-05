@@ -1,7 +1,9 @@
 const NUM_OF_SIDES = 4;
 const NUM_OF_LEVEL = 5;
-// const margin = 10; // 增加邊距
-const size = Math.min(window.innerWidth, window.innerHeight, 400) - margin * 2;
+const margin = 10; // 增加邊距
+const spider_width = 300; // 設置固定寬度
+const spider_height = 300; // 設置固定高度
+const size = Math.min(spider_width, spider_height) - margin * 2; // 使用固定的寬度和高度
 const offset = Math.PI;
 const polyangle = (Math.PI * 2) / NUM_OF_SIDES;
 const r = 0.8 * size;
@@ -50,9 +52,8 @@ const drawPath = (points, g) => {
 
 // 繪製多邊形
 const svg_spider = d3.select("svg.spider")
-    .append("svg")
-    .attr("width", size + margin * 2)
-    .attr("height", size + margin * 2);
+    .attr("width", spider_width)  // 確保設置為固定寬度
+    .attr("height", spider_height); // 確保設置為固定高度
 
 const g = svg_spider.append("g")
     .attr("transform", `translate(${margin},${margin})`);

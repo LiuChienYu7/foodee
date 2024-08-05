@@ -16,7 +16,9 @@
     const NUM_OF_SIDES = 4;
     const NUM_OF_LEVEL = 5;
     const margin = 10; // 增加邊距
-    const size = Math.min(window.innerWidth, window.innerHeight, 400) - margin * 2;
+    const spider_width = window.innerWidth;
+    const spider_height = window.innerHeight;
+    const size = Math.min(spider_width, spider_height, 400) - margin * 2;
     const offset = Math.PI;
     const polyangle = (Math.PI * 2) / NUM_OF_SIDES;
     const r = 0.8 * size;
