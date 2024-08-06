@@ -19,13 +19,8 @@ if ($link) {
     // Fetch images, names, vibes, dishes, and prices for each restaurant
     $all_restaurant_data = [];
     foreach ($r_ids as $r_id) {
-<<<<<<< HEAD:map/test.php
         $query = "SELECT r_name, r_vibe, r_food_dishes, r_price_low, r_price_high, r_photo_env1, r_photo_env2, r_photo_env3, r_photo_food1, r_photo_food2, r_photo_food3, r_photo_food4, r_photo_food5, r_photo_door, r_photo_menu1, r_photo_menu2, r_photo_menu3 
                   FROM compare
-=======
-        $query = "SELECT r_name, r_photo_env1, r_photo_env2, r_photo_env3, r_photo_food1, r_photo_food2, r_photo_food3, r_photo_food4, r_photo_food5, r_photo_door, r_photo_menu1, r_photo_menu2, r_photo_menu3 
-                  FROM additional_ 
->>>>>>> 57be64322e2a1c76276099f824ea6abe3d5b69b6:compare/test.php
                   WHERE r_id = $r_id";
         $result = mysqli_query($link, $query);
 
@@ -48,191 +43,6 @@ if ($link) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD:map/test.php
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            height: 100%;
-        }
-        .container {
-            display: flex;
-            height: 100vh;
-            max-width: 1368px;
-            margin: auto;
-            padding: 20px;
-        }
-        .gallery-container {
-            width: 75%;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
-        .gallery-section {
-            width: 32%;
-            margin-bottom: 10px;
-        }
-        .restaurant-name {
-            text-align: center;
-            height: 50px; /* Set a fixed height for restaurant names */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden; /* Hide overflow if name is too long */
-        }
-        .vibe-tags, .food-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px; /* 控制標籤間距 */
-            margin-bottom: 10px;
-        }
-        .restaurant-tag{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2px 5px;
-            background-color: #eee;
-            border-radius: 5px;
-            font-size: 0.8em;
-            color: #333;
-            white-space: nowrap; /* 防止文字換行 */
-            overflow: hidden; /* 隱藏超出部分 */
-            text-overflow: ellipsis; /* 當文字超出時顯示省略號 */
-        }
-        .price-tag {
-            background-color: #f0f0f0;
-            color: #555;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2px 5px;
-            background-color: #eee;
-            border-radius: 5px;
-            font-size: 0.8em;
-            color: #333;
-            white-space: nowrap; /* 防止文字換行 */
-            overflow: hidden; /* 隱藏超出部分 */
-            text-overflow: ellipsis; /* 當文字超出時顯示省略號 */
-        }
-        .image-container {
-            position: relative;
-            width: 100%;
-            padding-top: 50%; /* Adjusted aspect ratio */
-            overflow: hidden;
-            margin-bottom: 10px;
-        }
-        .image-container img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            cursor: pointer;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-        .image-container img.active {
-            opacity: 1;
-        }
-        .nav-arrow {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            font-size: 24px;
-            color: white;
-            text-shadow: 0px 0px 5px black;
-            z-index: 2;
-        }
-        .prev {
-            left: 10px;
-        }
-        .next {
-            right: 10px;
-        }
-        .info-container {
-            width: 40%;
-            padding-left: 20px;
-            box-sizing: border-box;
-        }
-        /* Modal styles */
-        .modal {
-            display: none; /* Hidden by default */
-            position: fixed;
-            z-index: 999;
-            padding-top: 50px;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.9);
-        }
-        .modal-content {
-            margin: auto;
-            display: block;
-            width: 80%;
-            max-width: 700px;
-            position: relative;
-        }
-        .modal-content img {
-            width: 100%;
-            height: auto;
-        }
-        .modal-close, .modal-prev, .modal-next {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 40px;
-            color: #fff;
-            cursor: pointer;
-            text-shadow: 0px 0px 5px black;
-        }
-        .modal-close {
-            top: 15px;
-            right: 35px;
-            transform: translate(0, 0);
-        }
-        .modal-prev {
-            left: 10px;
-        }
-        .modal-next {
-            right: 10px;
-        }
-        h3 {
-            margin: 10px;
-        }
-        .price-range {
-            margin-top: 10px;
-            font-size: 1em;
-            color: #333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2px 5px;
-            background-color: #eee;
-            border-radius: 5px;
-        }
-    </style>
-=======
-    <link rel="stylesheet" href="compare_index.css">
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <link rel="stylesheet" href="../word_tree/word_tree.css">
-
-    <!-- map -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" /> <!--leaflet css file-->
-    <link rel="stylesheet" src="../map/compare_map.css">
-    <!-- Make sure you put this AFTER Leaflet's CSS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <!-- edgeMarker -->
-    <script src="../map/leaflet_edgeMarker.js"></script>
->>>>>>> 57be64322e2a1c76276099f824ea6abe3d5b69b6:compare/test.php
 </head>
 
 <body>
@@ -365,18 +175,11 @@ if ($link) {
 
         function prevImage(arrow) {
             const section = arrow.closest('.image-container');
-<<<<<<< HEAD:map/test.php
             const images = section.querySelectorAll('img');
             let currentIndex = Array.from(images).findIndex(img => img.classList.contains('active'));
             images[currentIndex].classList.remove('active');
             currentIndex = (currentIndex - 1 + images.length) % images.length;
             images[currentIndex].classList.add('active');
-=======
-            const images = section.querySelectorAll('.gallery-img');
-            images[currentImageIndex].classList.remove('active');
-            currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
-            images[currentImageIndex].classList.add('active');
->>>>>>> 57be64322e2a1c76276099f824ea6abe3d5b69b6:compare/test.php
         }
 
         function nextImage(arrow) {
