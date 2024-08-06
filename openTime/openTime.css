@@ -1,0 +1,20 @@
+.open {
+    fill: #FFFACD;
+}
+.closed {
+    fill: lightgray;
+}
+.label {
+    fill: black;
+    text-anchor: middle;
+    font-size: 12px;
+}
+.axis text {
+    font-size: 10px;
+}
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
