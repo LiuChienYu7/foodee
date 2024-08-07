@@ -156,20 +156,8 @@ if ($link) {
         </div>
         <div class="info-container">
             <!-- This section can be used for additional content as per your design. -->
-            <!-- <h2>Additional Information</h2> -->
-            <div>
-                <svg class="word_tree" width="400" height="200"></svg>
-                <svg class="spider" width="300" height="300"></svg>
-            <div id = "map">
-                <svg class="map" width ="600" height = "400"></svg>
-            </div>
-                <script type="module">
-                    import '../word_tree/word_tree_modify.js';
-                    import '../spider/spider.js';
-                    import '../map/compare_map.js'
-                </script>
-            </div>
-            <!-- <p>Details, charts, and other elements can go here.</p> -->
+            <h2>Additional Information</h2>
+            <p>Details, charts, and other elements can go here.</p>
         </div>
     </div>
 
