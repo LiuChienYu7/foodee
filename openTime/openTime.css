@@ -1,20 +1,29 @@
 .open {
-    fill: #FFFACD;
+    fill: steelblue;
 }
 .closed {
     fill: lightgray;
 }
-.label {
-    fill: black;
-    text-anchor: middle;
-    font-size: 12px;
-}
-.axis text {
-    font-size: 10px;
-}
 .axis path,
 .axis line {
     fill: none;
-    stroke: #000;
     shape-rendering: crispEdges;
+}
+.label {
+    font-size: 12px;
+    fill: black;
+}
+.button-container {
+    margin: 20px;
+    text-align: center;
+}
+.chart-container {
+    position: relative;
+    margin-top: 20px;
+}
+.toggle-buttons {
+    margin: 10px;
+}
+.toggle-buttons button {
+    margin: 5px;
 }
