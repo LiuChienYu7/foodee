@@ -60,45 +60,15 @@ mysqli_close($link);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurant Hours</title>
+    <link rel="stylesheet" href="openTime.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <style>
-        .open {
-            fill: steelblue;
-        }
-        .closed {
-            fill: lightgray;
-        }
-        .axis path,
-        .axis line {
-            fill: none;
-            shape-rendering: crispEdges;
-        }
-        .label {
-            font-size: 12px;
-            fill: black;
-        }
-        .button-container {
-            margin: 20px;
-            text-align: center;
-        }
-        .chart-container {
-            position: relative;
-            margin-top: 20px;
-        }
-        .toggle-buttons {
-            margin: 10px;
-        }
-        .toggle-buttons button {
-            margin: 5px;
-        }
-    </style>
 </head>
 <body>
     <h1>Restaurant Operating Hours</h1>
     <div class="button-container">
         <?php if (!empty($restaurant_ids)): ?>
             <?php foreach ($restaurant_ids as $index => $r_id): ?>
-                <button onclick="showRestaurantData(<?php echo $r_id; ?>)">
+                <button id="button-<?php echo $r_id; ?>" onclick="showRestaurantData(<?php echo $r_id; ?>)">
                     <?php echo htmlspecialchars($restaurant_names[$r_id]); ?>
                 </button>
             <?php endforeach; ?>
@@ -156,10 +126,11 @@ mysqli_close($link);
                 }
             });
 
-            d3.select("#chart").selectAll("*").remove();
+            const svgContainer = d3.select("#chart");
+            svgContainer.selectAll("*").remove();
 
-            const svg = d3.select("#chart").append("svg")
-                .attr("width", displayMode === 'detailed' ? 1200 : 900)
+            const svg = svgContainer.append("svg")
+                .attr("width", displayMode === 'detailed' ? 1200 : 0)
                 .attr("height", displayMode === 'detailed' ? 500 : 200)
                 .append("g")
                 .attr("transform", "translate(50,50)");
@@ -186,6 +157,10 @@ mysqli_close($link);
                     .attr("x", d => xScale(days[d.day - 1]))
                     .attr("y", d => yScale(d.start))
                     .attr("width", xScale.bandwidth())
+                    .attr("height", d => yScale(d.end) - yScale(d.start))
+                    .transition()
+                    .duration(500)
+                    .attr("y", d => yScale(d.start))
                     .attr("height", d => yScale(d.end) - yScale(d.start));
 
                 svg.selectAll(".label")
@@ -255,6 +230,12 @@ mysqli_close($link);
         function showRestaurantData(restaurantId) {
             const hoursPeriods = data[restaurantId];
             updateChart(hoursPeriods);
+
+            // Highlight the selected button
+            document.querySelectorAll('.button-container button').forEach(button => {
+                button.classList.remove('selected');
+            });
+            document.getElementById(`button-${restaurantId}`).classList.add('selected');
         }
 
         function showWeekdays() {

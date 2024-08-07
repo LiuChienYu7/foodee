@@ -1,29 +1,81 @@
-.open {
-    fill: steelblue;
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
 }
-.closed {
-    fill: lightgray;
-}
-.axis path,
-.axis line {
-    fill: none;
-    shape-rendering: crispEdges;
-}
-.label {
-    font-size: 12px;
-    fill: black;
-}
-.button-container {
-    margin: 20px;
+
+h1 {
     text-align: center;
-}
-.chart-container {
-    position: relative;
     margin-top: 20px;
 }
-.toggle-buttons {
-    margin: 10px;
+
+.button-container {
+    text-align: center;
+    margin: 20px;
 }
-.toggle-buttons button {
+
+.button-container button {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px 20px;
     margin: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.button-container button:hover {
+    background-color: #e0e0e0;
+}
+
+.button-container button.selected {
+    background-color: #ffeb3b; /* Yellow for selected button */
+    transform: scale(1.05);
+}
+
+.toggle-buttons {
+    text-align: center;
+    margin: 20px;
+}
+
+.toggle-buttons button {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.toggle-buttons button:hover {
+    background-color: #e0e0e0;
+}
+
+.chart-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.open {
+    fill: #4caf50; /* Green for open hours */
+    stroke: #388e3c;
+    stroke-width: 1;
+}
+
+.closed {
+    fill: #f44336; /* Red for closed hours */
+    stroke: #d32f2f;
+    stroke-width: 1;
+}
+
+.label {
+    font-size: 12px;
+    fill: #000;
+}
+
+.axis path, .axis line {
+    fill: none;
+    shape-rendering: crispEdges;
 }
