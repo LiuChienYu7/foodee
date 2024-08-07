@@ -49,10 +49,72 @@ const data = {
     ]
 };
 
+// fetch(jsonUrl)
+//     .then(response => response.json())
+//     .then(rawData => {
+//         // 初始化資料結構
+//         const data = {
+//             name: "評論",
+//             children: [
+//                 {
+//                     name: "食物",
+//                     children: [
+//                         {
+//                             name: restaurant.food_comment_sum,
+//                             children: [
+//                                 { name: restaurant.food_review1 },
+//                                 { name: restaurant.food_review2 },
+//                                 { name: restaurant.food_review3 }
+//                             ]
+//                         }
+//                     ]
+//                 },
+//                 {
+//                     name: "服務",
+//                     children: [
+//                         {
+//                             name: restaurant.service_comment_sum,
+//                             children: [
+//                                 { name: restaurant.service_review1 },
+//                                 { name: restaurant.service_review2 },
+//                                 { name: restaurant.service_review3 }
+//                             ]
+//                         }
+//                     ]
+//                 },
+//                 {
+//                     name: "划算",
+//                     children: [
+//                         {
+//                             name: restaurant.value_comment_sum,
+//                             children: [
+//                                 { name: restaurant.value_review1 },
+//                                 { name: restaurant.value_review2 },
+//                                 { name: restaurant.value_review3 }
+//                             ]
+//                         }
+//                     ]
+//                 },
+//                 {
+//                     name: "環境",
+//                     children: [
+//                         {
+//                             name: restaurant.atmosphere_comment_sum,
+//                             children: [
+//                                 { name: restaurant.atmosphere_review1 },
+//                                 { name: restaurant.atmosphere_review2 },
+//                                 { name: restaurant.atmosphere_review3 }
+//                             ]
+//                         }
+//                     ]
+//                 }
+//             ]
+//         }
+//     })
 // 設定SVG的寬度和高度 大小
 const word_tree_width = 400;
 const word_tree_height = 150;
-const margin = { left: 48 , right:30};
+const margin = { left: 48, right: 30 };
 const svg = d3.select("svg.word_tree")
     .attr("width", word_tree_width)
     .attr("height", word_tree_height)
@@ -60,7 +122,7 @@ const svg = d3.select("svg.word_tree")
     .attr("transform", `translate(${margin.left}, 0)`);
 
 // 建立Cluster佈局
-const clusterLayout = d3.cluster().size([word_tree_height, word_tree_width-110]);
+const clusterLayout = d3.cluster().size([word_tree_height, word_tree_width - 110]);
 const root = d3.hierarchy(data);
 clusterLayout(root);
 
@@ -92,11 +154,15 @@ node.append('text')
     .style('fill', 'black')
     .style('font-size', d => 20 - (d.depth * 5) + 'px');
 
+// 全局变量
+// let temp = [];
+
 // 點擊事件處理
 function onClick(event, d) {
     if (d.depth === 0) {
         // 根節點：展開所有節點
         expandAll(root);
+        // location.reload();
     } else {
         // 其他節點：僅顯示選中的節點和其子節點，隱藏其他同層節點
         toggleChildren(d);
@@ -104,32 +170,66 @@ function onClick(event, d) {
     update(root);
 }
 
-// function expandAll(d) {
-//     if (d._children) {
-//         d.children = d._children;
-//         d._children = null;
-//     }
-//     if (d.children) {
-//         d.children.forEach(expandAll);
-//     }
-// }
+
 function expandAll(d) {
+    console.log("Expanding Node:", d.data.name);
+
+    // 恢复当前节点的所有子节点
     if (d._children) {
         d.children = d._children;
         d._children = null;
     }
 
+    // 恢复父节点的所有兄弟节点
     if (d.temp) {
         d.temp.forEach(sibling => {
-            addSibling(d.parent, sibling);
+            console.log("Restoring sibling:", sibling.data.name);
+            if (sibling.parent) {
+                sibling.parent.children.push(sibling);
+            }
         });
-        d.temp = null;
+        d.temp = []; // 清空 temp
+    } else {
+        console.log("d.temp is undefined or empty");
     }
 
+    // 递归恢复所有子节点
     if (d.children) {
         d.children.forEach(expandAll);
     }
+
+    console.log("After Expand:", d);
+    console.log("d.children:", d.children);
+    // console.log("d.temp:", d.temp);
+    // if (d.temp) {
+    //     d.temp.forEach((sibling, index) => {
+    //         console.log(`Index ${index}:`, sibling);
+    //     });
+    // } else {
+    //     console.log("d.temp is undefined or empty");
+    // }
 }
+
+// function expandAll(d) {
+//     console.log("Expanding Node:", d.data.name);
+//     if (d._children) {
+//         d.children = d._children;
+//         d._children = null;
+//     }
+
+//     if (d.parent && Array.isArray(d.temp) && d.temp.length > 0) {
+//         d.temp.forEach(sibling => {
+//             addSibling(d.parent, sibling);
+//         });
+//         // d.parent.temp = null;
+//         d.temp = null;
+//     }
+
+//     if (d.children) {
+//         d.children.forEach(expandAll);
+//     }
+//     console.log("After Expand:", d);
+// }
 
 function getSiblingNodes(node) { //選取同一層沒被選到的node
     if (node.parent) {
@@ -140,37 +240,25 @@ function getSiblingNodes(node) { //選取同一層沒被選到的node
 
 function toggleChildren(d) {
 
-    // if (d.depth == 1) {
-
     if (d.parent) { //同一個父節點的其他節點小孩會被收起來 並把兄弟節點們存起來
-        if (!d.sibling_itself) d.sibling_itself = [];
 
         d.parent.children.forEach(sibling => {
             if (sibling !== d) {
                 collapse(sibling);
             }
         });
-        console.log(d.sibling_itself);
+        // 确保仅保留当前节点
+        d.parent.children = [d];
     }
-    // }
-    // else if (d.depth == 2) {
 
-    // }
-    // else { //d.depth == 3
-    //     if (d.parent) {
-    //         if (!d.sibling_itself) d.sibling_itself = [];
-
-    //         d.parent.children.forEach(sibling => {
-    //             if (sibling !== d) {
-    //                 collapse(sibling);
-    //                 d.sibling_itself.push(sibling);
-    //             }
-    //         });
-    //         console.log(d.sibling_itself);
-    //     }
-    // }
+    // 展开当前节点的子节点
+    if (d._children) {
+        d.children = d._children;
+        d._children = null;
+    }
 
 }
+
 //把踢跳的兄弟節點 加回tree裡面
 function addSibling(parentNode, newNode) {
     // 确保 parentNode 有 children 属性
@@ -186,121 +274,44 @@ function addSibling(parentNode, newNode) {
 }
 
 function collapse(d) {
+    console.log("Collapsing Node:", d.data.name);
     if (d.children) {
         d._children = d.children;
         d.children = null;
 
+        // 單個sibling被存起來  但這裡好像沒存好
         if (!d.temp) d.temp = [];
-        if (d.parent && d.parent.children) {
-            d.parent.children.forEach(sibling => {
-                if (sibling !== d) {
-                    d.temp.push(sibling);
-                }
-            });
-            d.parent.children = [d]; // 只保留当前节点 d
+        // if (d.parent && d.parent.children) {
+        //     console.log("temp in collapse: ", d.temp);
+        //     d.parent.children.forEach(sibling => {
+        //         if (sibling !== d) {
+        //             d.temp.push(sibling);
+        //         }
+        //     });
+        //     d.parent.children = [d]; // 只保留当前节点 d
+        // }
+        if (d.parent) {
+            d.temp.push(d);
+            // d.parent.children = [d]; // 只保留当前节点 d
         }
+        console.log("d.parent.children",d.parent.children);
+        // console.log("temp in collapse: ", d.temp);
     }
 
     if (d._children) {
         d._children.forEach(collapse);
-
-        // //不知道這裡怎麼寫
-        // d.temp.forEach(d.temp =>{
-        //     addSibling(d.parent,d.temp);
-        //     d.temp = null;
-        // })
-
     }
-    console.log("Current Node:", d);
-    console.log("Parent's Children:", d.parent ? d.parent.children : null);
-    console.log("Temp before pushing siblings:", d.temp);
-
+    
+    console.log("After Collapse:", d);
+    console.log("d._children:", d._children);
+    // console.log("d.temp:", d.temp);
+    // if (d.temp) {
+    //     d.temp.forEach((sibling, index) => {
+    //         console.log(`Index ${index}:`, sibling);
+    //     });
+    // }
 }
-// function toggleChildren(d) {
 
-//     if (d.depth == 1) {
-
-//         if (d.parent) { //同一個父節點的其他節點會被收起來
-//             d.parent.children.forEach(sibling => {
-//                 if (sibling !== d) {
-//                     collapse(sibling);
-//                     // console.log(sibling);
-//                     // console.log(sibling);
-//                 }
-//             });
-//         }
-//     }
-//     else if (d.depth == 2) {
-
-//     }
-//     else { //d.depth == 3
-//         if (d.parent) {
-//             d.parent.children.forEach(sibling => {
-//                 if (sibling !== d) {
-//                     collapse(sibling);
-//                 }
-//             });
-//         }
-//     }
-//     update(d);
-// }
-
-// function collapse(d) {
-//     if (d.children) {
-//         d._children = d.children;
-//         d.children = null;
-//     }
-//     else if (d.parent && d.parent.children) { //同一個父節點的其他節點會被收起來
-//         if (!d.parent.tempChildren) d.parent.tempChildren = [];
-
-//         d.parent.children.forEach(sibling => {
-//             if (sibling !== d && !d.parent.tempChildren.includes(sibling)) {
-//                 d.parent.tempChildren.push(sibling);
-//                 console.log(d.parent.tempChildren);
-//             }
-//         });
-//         d.parent.children = [d];
-//     }
-//     // if (d.parent && d.parent.children) {
-//     //     // 确保 tempChildren 存在
-//     //     if (!d.parent.tempChildren) d.parent.tempChildren = [];
-
-//     //     d.parent.tempChildren = getSiblingNodes(d);
-//     //     console.log(d.parent.tempChildren)
-//     // // 确保不重复添加兄弟节点
-//     // d.parent.children.forEach(child => {
-//     //     if (child !== d && !d.parent.tempChildren.includes(child)) {
-//     //         d.parent.tempChildren.push(child);
-//     //         // console.log(d.parent.tempChildren)
-//     //     }
-//     // });
-
-//     // 仅保留当前节点 d
-//     // d.parent.children = [d];
-//     // }
-
-//     else if (d._children) {
-//         d._children.forEach(collapse);
-//     }
-// }
-
-// function expandAll(d) {
-//     if (d._children) {
-//         d.children = d._children;
-//         d._children = null;
-//     }
-
-//     else if (d.tempChildren) {
-//         if (!d.children) d.children = [];
-//         d.children = d.children.concat(d.tempChildren);
-//         d.tempChildren = null;
-//     }
-
-//     else if (d.children) {
-//         d.children.forEach(expandAll);
-//     }
-
-// }
 // 更新函數
 function update(source) {
     // var node = root.descendants().filter(d => !d.hidden);

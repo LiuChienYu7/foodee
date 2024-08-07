@@ -44,7 +44,25 @@ if ($link) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="0807.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="../word_tree/word_tree.css">
+
+    <!-- map -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" /> <!--leaflet css file-->
+    <link rel="stylesheet" src="../map/compare_map.css">
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- edgeMarker -->
+    <script src="../map/leaflet_edgeMarker.js"></script>
+
+    <!-- openTime -->
+    <link rel="stylesheet" href="../openTime/openTime.php" />
+    <link rel="stylesheet" href="../openTime/openTime.css" />
 </head>
 <body>
     <div class="container">
@@ -155,21 +173,39 @@ if ($link) {
             ?>
         </div>
         <div class="info-container">
-            <!-- This section can be used for additional content as per your design. -->
-            <!-- <h2>Additional Information</h2> -->
-            <div>
-                <svg class="word_tree" width="400" height="200"></svg>
-                <svg class="spider" width="300" height="300"></svg>
-            <div id = "map">
-                <svg class="map" width ="600" height = "400"></svg>
+            <div class="upper-section">
+                <svg class="word_tree" width="300" height="200"></svg>
             </div>
-                <script type="module">
-                    import '../word_tree/word_tree_modify.js';
-                    import '../spider/spider.js';
-                    import '../map/compare_map.js'
-                </script>
+
+            <div class="resizer-horizontal-1"></div> <!-- 新增的水平分隔條 -->
+
+            <div class="middle-section">
+                <svg class="spider" width="300" height="200"></svg>
+                <!-- <svg class = "openDay_Time" width="300" height="300"></svg> -->
             </div>
-            <!-- <p>Details, charts, and other elements can go here.</p> -->
+             <!--
+            <div class="middle-section2" style="flex: auto;">
+                <p>營業時間</p>
+                <svg class = "openDay_Time" width="300" height="300"></svg>
+            </div>
+            -->
+            <div class="resizer-horizontal-2"></div> <!-- 新增的水平分隔條 -->
+
+            <div class="lower-section">
+                <div id="map" width="300" height="250">
+                    <svg class="map" width="280" height="280"></svg>
+                </div>
+            </div>
+
+            <div class="button_container">
+                <button id="shareButton">分享</button>
+            </div>
+
+            <script type="module">
+                import '../word_tree/word_tree_modify.js';
+                import '../spider/spider.js';
+                import '../map/compare_map.js'
+            </script>
         </div>
     </div>
 
