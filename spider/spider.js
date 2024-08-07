@@ -2,17 +2,17 @@ const NUM_OF_SIDES = 4;
 const NUM_OF_LEVEL = 5;
 const margin = 10; // 增加邊距
 const spider_width = 300; // 設置固定寬度
-const spider_height = 300; // 設置固定高度
+const spider_height = 250; // 設置固定高度
 const size = Math.min(spider_width, spider_height) - margin * 2; // 使用固定的寬度和高度
 const offset = Math.PI;
 const polyangle = (Math.PI * 2) / NUM_OF_SIDES;
 const r = 0.8 * size;
-const r_0 = r / 4;
+const r_0 = r / 2.5;
 const shiftX = 80; // 用于调整图表水平位置的偏移量
 const shiftY = 50;
 const center = {
     x: size / 2 + margin - shiftX,
-    y: size / 2 + margin - shiftY
+    y: size / 2 + 5 - shiftY
 };
 
 // const tooltip = d3.select("svg.spider");
@@ -56,11 +56,12 @@ const svg_spider = d3.select("svg.spider")
     .attr("height", spider_height); // 確保設置為固定高度
 
 const g = svg_spider.append("g")
-    .attr("transform", `translate(${margin},${margin})`);
+    .attr("transform", `translate(${margin + 50},${margin + 70})`);
 
 //畫出spider chart 表格
 const generateAndDrawLevels = (levelsCount, sideCount) => {
     for (let level = 1; level <= levelsCount; level++) {
+        // if (level > 2) {
         const hyp = (level / levelsCount) * r_0;
 
         const points = [];
@@ -82,7 +83,8 @@ const generateAndDrawLevels = (levelsCount, sideCount) => {
                 .y(d => d.y)([...points, points[0]]))
             .attr("fill", "none")
             .attr("stroke", level === levelsCount ? "#000000" : "#9D9D9D") // 最外層的線條顏色較深
-            .attr("stroke-width", level === levelsCount ? 1.5 : 1); // 最外層的線條較粗
+            .attr("stroke-width", 0.4);
+        // }
     };
 }
 
@@ -135,24 +137,26 @@ const drawAxisTicks = (levelsCount, sideCount, radius, centerX, centerY, offset)
         const points = calculatePolygonPoints(sideCount, hyp, centerX, centerY, offset);
 
         points.forEach((point, i) => {
-            // console.log(point.x)
+            if (i === 3) {
+                // console.log(point.x)
 
-            console.log(i)
-            // 调整刻度位置
-            if (i == 1) { // 顶部点
-                point.x -= 4; // 左移
-            } else if (i == 3) { // 底部点
-                point.y -= 3;
+                // console.log(i)
+                // 调整刻度位置
+                // if (i == 1) { // 顶部点
+                // point.x -= 4; // 左移
+                // } else if (i == 3) { // 底部点
+                //     point.y -= 3;
                 point.x += 3; // 右移
+                // }
+                group.append("text")
+                    .attr("x", point.x)
+                    .attr("y", point.y)
+                    .attr("dy", "-0.35em")
+                    .attr("text-anchor", "middle")
+                    .attr("font-size", "10px")
+                    .attr("fill", "black")
+                    .text(level);
             }
-            group.append("text")
-                .attr("x", point.x)
-                .attr("y", point.y)
-                .attr("dy", "-0.35em")
-                .attr("text-anchor", "middle")
-                .attr("font-size", "10px")
-                .attr("fill", "#5B5B5B")
-                .text(level);
         });
     }
 };
@@ -176,7 +180,7 @@ const generateAndDrawLines = (sideCount) => {
 //添加標籤
 const addLabels = () => {
     const labels = ["食物", "服務", "划算", "衛生"];
-    const labelOffset = 20; // 用來調整標籤位置的偏移量
+    const labelOffset = 15; // 用來調整標籤位置的偏移量
     const labelPoints = calculatePolygonPoints(NUM_OF_SIDES, r_0 + labelOffset, center.x, center.y, offset);
 
     labelPoints.forEach((point, index) => {
@@ -185,6 +189,7 @@ const addLabels = () => {
             .attr("y", point.y)
             .attr("dy", "0.3em")
             .attr("text-anchor", "middle")
+            .attr("font-size", '14px')
             .text(labels[index]);
     });
 };
@@ -212,6 +217,12 @@ const addButtons = (restaurantNames) => {
             .attr("transform", `translate(${xPosition},${yPosition})`)
             .style("cursor", "default")
             .on("mouseenter", function (event, d) {
+                // // 記錄原始順序
+                // originalOrder.length = 0;
+                // d3.selectAll(".levels_rate").each(function () {
+                //     originalOrder.push(this);
+                // });
+
                 // 變深色並擴展寬度
                 d3.select(this).select("rect")
                     .transition()
@@ -234,11 +245,14 @@ const addButtons = (restaurantNames) => {
                     .duration(100)
                     .style("visibility", "visible");
 
+                // 變深色並將選中的雷達圖移到最上層
+                d3.select(`.levels_rate.restaurant-${i + 1}`).raise();
+
                 // 變深色
                 d3.select(`.levels_rate.restaurant-${i + 1} path`)
                     .transition()
                     .duration(100)
-                    .style("fill-opacity", 0.9);
+                    .style("fill-opacity", 0.5);
 
                 // 修改其他雷達圖樣式
                 d3.selectAll(`.levels_rate:not(.restaurant-${i + 1}) path`)
@@ -252,12 +266,15 @@ const addButtons = (restaurantNames) => {
 
                 // 其他雷達圖和小點點變淡
                 d3.selectAll(`.levels_rate:not(.restaurant-${i + 1}) path`)
-                    .style("fill-opacity", 0.2);
+                    .style("fill-opacity", 0.1);
 
                 d3.selectAll(`.levels_rate:not(.restaurant-${i + 1}) circle`)
                     .transition()
                     .duration(100)
                     .style("fill-opacity", 0.2);
+
+                // 確保刻度層仍然在最上層
+                d3.select(".axis-ticks").raise();
             })
             .on("mouseleave", function (event, d) {
                 // 恢復樣式
@@ -278,9 +295,14 @@ const addButtons = (restaurantNames) => {
                 d3.select(this).select("text")
                     .style("visibility", "hidden");
 
+                // // 恢復雷達圖順序
+                // originalOrder.forEach(function (element) {
+                //     d3.select(element).raise();
+                // });
+
                 // 雷達圖恢復
                 d3.selectAll(`.levels_rate path`)
-                    .style("fill-opacity", 0.5);
+                    .style("fill-opacity", 0);
 
                 // 小點點恢復
                 d3.selectAll(`.levels_rate circle`)
@@ -314,30 +336,30 @@ const addButtons = (restaurantNames) => {
 
 // Read the data from CSV
 d3.json("../connect_sql/get_data_json.php").then(function (data) {
-    console.log(data);
+    // console.log(data);
 
-    const restaurantNames = data.slice(0, 3).map(d => d.r_name); // 獲取前三個餐廳的名稱\
+    const restaurantNames = data.slice(5, 8).map(d => d.r_name); // 獲取前三個餐廳的名稱\
 
     // 假設我們只需要前三個餐廳的信息來生成 spider chart
     const ratingsData1 = [
-        { label: "食物", value: +data[0].r_rating_food },
-        { label: "服務", value: +data[0].r_rate_service },
-        { label: "划算度", value: +data[0].r_rate_value },
-        { label: "衛生", value: +data[0].r_rate_clean }
+        { label: "食物", value: +data[5].r_rating_food },
+        { label: "服務", value: +data[5].r_rate_service },
+        { label: "划算度", value: +data[5].r_rate_value },
+        { label: "衛生", value: +data[5].r_rate_clean }
     ];
 
     const ratingsData2 = [
-        { label: "食物", value: +data[1].r_rating_food },
-        { label: "服務", value: +data[1].r_rate_service },
-        { label: "划算度", value: +data[1].r_rate_value },
-        { label: "衛生", value: +data[1].r_rate_clean }
+        { label: "食物", value: +data[6].r_rating_food },
+        { label: "服務", value: +data[6].r_rate_service },
+        { label: "划算度", value: +data[6].r_rate_value },
+        { label: "衛生", value: +data[6].r_rate_clean }
     ];
 
     const ratingsData3 = [
-        { label: "食物", value: +data[2].r_rating_food },
-        { label: "服務", value: +data[2].r_rate_service },
-        { label: "划算度", value: +data[2].r_rate_value },
-        { label: "衛生", value: +data[2].r_rate_clean }
+        { label: "食物", value: +data[7].r_rating_food },
+        { label: "服務", value: +data[7].r_rate_service },
+        { label: "划算度", value: +data[7].r_rate_value },
+        { label: "衛生", value: +data[7].r_rate_clean }
     ];
 
     // 畫出評分
@@ -348,9 +370,9 @@ d3.json("../connect_sql/get_data_json.php").then(function (data) {
     //add button
     addButtons(restaurantNames); // 傳遞餐廳名稱給 addButtons 函數
 
-    drawAxisTicks(NUM_OF_LEVEL, 4, r_0, center.x, center.y, offset);
     generateAndDrawLevels(NUM_OF_LEVEL, NUM_OF_SIDES);
     generateAndDrawLines(NUM_OF_SIDES);
+    drawAxisTicks(NUM_OF_LEVEL, 4, r_0, center.x, center.y, offset);
     // 添加標籤
     addLabels();
     // 添加刻度
@@ -367,10 +389,11 @@ d3.json("../connect_sql/get_data_json.php").then(function (data) {
         .style("stroke", function (d, i) {
             return color(i); // 根據索引應用顏色
         })
+        .attr("stroke-width", 1.5)
         .style("fill", function (d, i) {
             return color(i); // 根據索引應用顏色
         })
-        .style("fill-opacity", 0.5);
+        .style("fill-opacity", 0);
 
 }).catch(function (error) {
     console.error("Error loading data: ", error);
