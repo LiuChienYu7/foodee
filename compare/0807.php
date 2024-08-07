@@ -173,6 +173,7 @@ if ($link) {
             ?>
         </div>
         <div class="info-container">
+<<<<<<< HEAD
             <div class="upper-section">
                 <svg class="word_tree" width="300" height="200"></svg>
             </div>
@@ -206,6 +207,11 @@ if ($link) {
                 import '../spider/spider.js';
                 import '../map/compare_map.js'
             </script>
+=======
+            <!-- This section can be used for additional content as per your design. -->
+            <h2>Additional Information</h2>
+            <p>Details, charts, and other elements can go here.</p>
+>>>>>>> 088c30262ecafb9fe598f53007571fea963e0a6f
         </div>
     </div>
 
