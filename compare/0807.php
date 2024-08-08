@@ -177,7 +177,7 @@ if ($link) {
                 <svg class="word_tree" width="300" height="200"></svg>
             </div>
 
-            <div class="resizer-horizontal-1"></div> <!-- 新增的水平分隔條 -->
+            <!-- <div class="resizer-horizontal-1"></div> 新增的水平分隔條 -->
 
             <div class="middle-section">
                 <svg class="spider" width="300" height="200"></svg>
@@ -187,7 +187,7 @@ if ($link) {
             <div class="middle-section2" style="flex: auto;">
                     <?php include '../openTime/openTime.php'; ?>
             </div>
-            <div class="resizer-horizontal-2"></div> <!-- 新增的水平分隔條 -->
+            <!-- <div class="resizer-horizontal-2"></div> 新增的水平分隔條 -->
 
             <div class="lower-section">
                 <div id="map" width="300" height="250">
