@@ -101,6 +101,9 @@ mysqli_close($link);
             transform: translateX(-50%);
             z-index: 1000;
         }
+        .chart-container {
+            width:auto;
+        }
     </style>
 </head>
 <body>
@@ -126,7 +129,7 @@ mysqli_close($link);
     <script>
         const parseTime = d3.timeParse("%H%M");
         const formatTime = d3.timeFormat("%H:%M");
-        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        const days = ['1', '2', '3', '4', '5', '6', '7'];
 
         const data = <?php echo json_encode($all_restaurant_data); ?>;
         const restaurantNames = <?php echo json_encode($restaurant_names); ?>;
@@ -169,15 +172,15 @@ mysqli_close($link);
             svgContainer.selectAll("*").remove();
 
             const svg = svgContainer.append("svg")
-                .attr("width", 1200)
-                .attr("height", 500)
+                .attr("width", 300)
+                .attr("height", 300)
                 .append("g")
                 .attr("transform", "translate(50,50)");
 
-            const xScale = d3.scaleBand().domain(days).range([0, 1100]).padding(0.1);
+            const xScale = d3.scaleBand().domain(days).range([0, 200]).padding(0.1);
             const yScale = d3.scaleTime()
                 .domain([parseTime("0000"), parseTime("2400")])
-                .range([0, 400]);
+                .range([0, 200]);
 
             if (displayMode === 'detailed') {
                 svg.selectAll(".closed-background")
@@ -187,7 +190,7 @@ mysqli_close($link);
                     .attr("x", d => xScale(d))
                     .attr("y", 0)
                     .attr("width", xScale.bandwidth())
-                    .attr("height", 400);
+                    .attr("height", 200);
 
                 svg.selectAll(".open-bar")
                     .data(extendedData)
@@ -208,7 +211,7 @@ mysqli_close($link);
                     .attr("class", "label")
                     .attr("x", d => xScale(days[d.day - 1]) + xScale.bandwidth() / 2)
                     .attr("y", d => (yScale(d.start) + yScale(d.end)) / 2)
-                    .text(d => d.status === 'open' ? 'Open' : 'Closed')
+                    .text(d => d.status === 'open' ? '' : 'Closed')
                     .attr("text-anchor", "middle")
                     .attr("alignment-baseline", "middle");
 
@@ -240,11 +243,10 @@ mysqli_close($link);
                     })
                     .attr("cx", d => xScale(d) + xScale.bandwidth() / 2)
                     .attr("cy", 50)
-                    .attr("r", 20);
+                    .attr("r", 13);
 
                 svg.selectAll(".label")
                     .data(days)
-                    .enter().append("text")
                     .attr("class", "label")
                     .attr("x", d => xScale(d) + xScale.bandwidth() / 2)
                     .attr("y", 110)

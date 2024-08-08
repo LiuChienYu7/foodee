@@ -185,10 +185,7 @@ if ($link) {
             </div>
 
             <div class="middle-section2" style="flex: auto;">
-                <p>營業時間</p>
-                <div class="open-time-chart-container">
                     <?php include '../openTime/openTime.php'; ?>
-                </div>
             </div>
             <div class="resizer-horizontal-2"></div> <!-- 新增的水平分隔條 -->
 
