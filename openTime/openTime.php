@@ -60,8 +60,48 @@ mysqli_close($link);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurant Hours</title>
-    <link rel="stylesheet" href="openTime.css">
+    <link rel="stylesheet" href="./openTime.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .button-container button {
+            margin: 5px;
+            padding: 10px;
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            max-width: 150px;
+            cursor: pointer;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .button-container button:hover {
+            background-color: #ddd;
+        }
+        .button-container button .full-name {
+            display: none;
+            position: absolute;
+            white-space: nowrap;
+            background-color: #fff;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .button-container button:hover .full-name {
+            display: block;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+        }
+    </style>
 </head>
 <body>
     <div class="button-container">
@@ -129,15 +169,15 @@ mysqli_close($link);
             svgContainer.selectAll("*").remove();
 
             const svg = svgContainer.append("svg")
-                .attr("width", displayMode === 'detailed' ? 1200 : 0)
-                .attr("height", displayMode === 'detailed' ? 500 : 200)
+                .attr("width", 1200)
+                .attr("height", 500)
                 .append("g")
                 .attr("transform", "translate(50,50)");
 
-            const xScale = d3.scaleBand().domain(days).range([0, displayMode === 'detailed' ? 1100 : 800]).padding(0.1);
+            const xScale = d3.scaleBand().domain(days).range([0, 1100]).padding(0.1);
             const yScale = d3.scaleTime()
                 .domain([parseTime("0000"), parseTime("2400")])
-                .range([0, displayMode === 'detailed' ? 400 : 200]);
+                .range([0, 400]);
 
             if (displayMode === 'detailed') {
                 svg.selectAll(".closed-background")
@@ -190,13 +230,6 @@ mysqli_close($link);
                         status: dayData ? dayData.status : 'closed'
                     };
                 });
-
-                const xScale = d3.scaleBand().domain(days).range([0, 800]).padding(0.1);
-                const svg = d3.select("#chart").append("svg")
-                    .attr("width", 900)
-                    .attr("height", 200)
-                    .append("g")
-                    .attr("transform", "translate(50,50)");
 
                 svg.selectAll(".status-circle")
                     .data(days)

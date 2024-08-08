@@ -59,14 +59,14 @@ h1 {
 }
 
 .open {
-    fill: #4caf50; /* Green for open hours */
-    stroke: #388e3c;
+    fill: #FFD700; /* Green for open hours */
+    stroke: #FFD700;
     stroke-width: 1;
 }
 
 .closed {
-    fill: #f44336; /* Red for closed hours */
-    stroke: #d32f2f;
+    fill: #DCDCDC; /* Red for closed hours */
+    stroke: #DCDCDC;
     stroke-width: 1;
 }
 
