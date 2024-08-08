@@ -64,7 +64,6 @@ mysqli_close($link);
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
-    <h1>Restaurant Operating Hours</h1>
     <div class="button-container">
         <?php if (!empty($restaurant_ids)): ?>
             <?php foreach ($restaurant_ids as $index => $r_id): ?>
