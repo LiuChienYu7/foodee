@@ -181,7 +181,7 @@ if ($link) {
 
             <div class="middle-section">
                 <svg class="spider" width="300" height="200"></svg>
-                <!-- <svg class = "openDay_Time" width="300" height="300"></svg> -->
+                <!-- <svg class = "openDay_Time" width="300" height="300"></svg>  -->
             </div>
 
             <div class="middle-section2" style="flex: auto;">
