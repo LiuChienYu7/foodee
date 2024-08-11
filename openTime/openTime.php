@@ -60,11 +60,53 @@ mysqli_close($link);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurant Hours</title>
-    <link rel="stylesheet" href="openTime.css">
+    <link rel="stylesheet" href="./openTime.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .button-container button {
+            margin: 5px;
+            padding: 10px;
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            max-width: 150px;
+            cursor: pointer;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .button-container button:hover {
+            background-color: #ddd;
+        }
+        .button-container button .full-name {
+            display: none;
+            position: absolute;
+            white-space: nowrap;
+            background-color: #fff;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .button-container button:hover .full-name {
+            display: block;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+        }
+        .chart-container {
+            width:auto;
+        }
+    </style>
 </head>
 <body>
-    <h1>Restaurant Operating Hours</h1>
     <div class="button-container">
         <?php if (!empty($restaurant_ids)): ?>
             <?php foreach ($restaurant_ids as $index => $r_id): ?>
@@ -87,7 +129,7 @@ mysqli_close($link);
     <script>
         const parseTime = d3.timeParse("%H%M");
         const formatTime = d3.timeFormat("%H:%M");
-        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        const days = ['1', '2', '3', '4', '5', '6', '7'];
 
         const data = <?php echo json_encode($all_restaurant_data); ?>;
         const restaurantNames = <?php echo json_encode($restaurant_names); ?>;
@@ -130,15 +172,15 @@ mysqli_close($link);
             svgContainer.selectAll("*").remove();
 
             const svg = svgContainer.append("svg")
-                .attr("width", displayMode === 'detailed' ? 1200 : 0)
-                .attr("height", displayMode === 'detailed' ? 500 : 200)
+                .attr("width", 300)
+                .attr("height", 300)
                 .append("g")
                 .attr("transform", "translate(50,50)");
 
-            const xScale = d3.scaleBand().domain(days).range([0, displayMode === 'detailed' ? 1100 : 800]).padding(0.1);
+            const xScale = d3.scaleBand().domain(days).range([0, 200]).padding(0.1);
             const yScale = d3.scaleTime()
                 .domain([parseTime("0000"), parseTime("2400")])
-                .range([0, displayMode === 'detailed' ? 400 : 200]);
+                .range([0, 200]);
 
             if (displayMode === 'detailed') {
                 svg.selectAll(".closed-background")
@@ -148,7 +190,7 @@ mysqli_close($link);
                     .attr("x", d => xScale(d))
                     .attr("y", 0)
                     .attr("width", xScale.bandwidth())
-                    .attr("height", 400);
+                    .attr("height", 200);
 
                 svg.selectAll(".open-bar")
                     .data(extendedData)
@@ -169,7 +211,7 @@ mysqli_close($link);
                     .attr("class", "label")
                     .attr("x", d => xScale(days[d.day - 1]) + xScale.bandwidth() / 2)
                     .attr("y", d => (yScale(d.start) + yScale(d.end)) / 2)
-                    .text(d => d.status === 'open' ? 'Open' : 'Closed')
+                    .text(d => d.status === 'open' ? '' : 'Closed')
                     .attr("text-anchor", "middle")
                     .attr("alignment-baseline", "middle");
 
@@ -192,13 +234,6 @@ mysqli_close($link);
                     };
                 });
 
-                const xScale = d3.scaleBand().domain(days).range([0, 800]).padding(0.1);
-                const svg = d3.select("#chart").append("svg")
-                    .attr("width", 900)
-                    .attr("height", 200)
-                    .append("g")
-                    .attr("transform", "translate(50,50)");
-
                 svg.selectAll(".status-circle")
                     .data(days)
                     .enter().append("circle")
@@ -208,11 +243,10 @@ mysqli_close($link);
                     })
                     .attr("cx", d => xScale(d) + xScale.bandwidth() / 2)
                     .attr("cy", 50)
-                    .attr("r", 20);
+                    .attr("r", 13);
 
                 svg.selectAll(".label")
                     .data(days)
-                    .enter().append("text")
                     .attr("class", "label")
                     .attr("x", d => xScale(d) + xScale.bandwidth() / 2)
                     .attr("y", 110)

@@ -10,7 +10,7 @@ const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 fetch('../connect_sql/get_data_json.php')
     .then(response => response.json())
     .then(data => {
-        console.log(data);
+        // console.log(data);
         data.forEach(function (restaurants) {
             var marker = L.marker([restaurants.r_latitude, restaurants.r_longitude], {
                 isRestaurant: true // 設置 isRestaurant 屬性 讓edgeMarker辨別是餐廳
@@ -36,7 +36,7 @@ fetch('../connect_sql/get_data_map_json.php')
             // shadowAnchor: [4, 62],  // the same for the shadow
             // popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
         });
-        console.log(data);
+        // console.log(data);
         data.forEach(function (transportation) {
             if (transportation.id.includes('C')) {
                 LRT_points.push([transportation.latitude, transportation.longitude])
@@ -131,7 +131,7 @@ fetch('../connect_sql/get_data_json.php')
                     let shortestDistance = Infinity;
                     let shortestLine = null;
 
-                    console.log(`Processing restaurant: ${restaurant.r_name}`);
+                    // console.log(`Processing restaurant: ${restaurant.r_name}`);
 
                     // 處理捷運站
                     if (restaurant.r_MRT) {
@@ -139,7 +139,7 @@ fetch('../connect_sql/get_data_json.php')
                         const mrtStation = stationMap[mrtStationName];
                         if (mrtStation) {
                             const mrtDistance = parseFloat(restaurant.r_MRT_dist_km);
-                            console.log(`MRT Station: ${mrtStationName}, Distance: ${mrtDistance} km`);
+                            // console.log(`MRT Station: ${mrtStationName}, Distance: ${mrtDistance} km`);
                             if (mrtDistance < shortestDistance) {
                                 shortestDistance = mrtDistance;
                                 shortestLine = L.polyline([restaurantLatLng, [mrtStation.lat, mrtStation.lng]], {
@@ -155,7 +155,7 @@ fetch('../connect_sql/get_data_json.php')
                         const lrtStation = stationMap[lrtStationName];
                         if (lrtStation) {
                             const lrtDistance = parseFloat(restaurant.r_LRT_dist_km);
-                            console.log(`LRT Station: ${lrtStationName}, Distance: ${lrtDistance} km`);
+                            // console.log(`LRT Station: ${lrtStationName}, Distance: ${lrtDistance} km`);
                             if (lrtDistance < shortestDistance) {
                                 shortestDistance = lrtDistance;
                                 shortestLine = L.polyline([restaurantLatLng, [lrtStation.lat, lrtStation.lng]], {
@@ -167,7 +167,7 @@ fetch('../connect_sql/get_data_json.php')
 
                     // 將最短的線添加到圖層群組中
                     if (shortestLine) {
-                        console.log(`Shortest Line for ${restaurant.r_name}: ${shortestDistance} km`);
+                        // console.log(`Shortest Line for ${restaurant.r_name}: ${shortestDistance} km`);
                         lineGroup.addLayer(shortestLine);
                     }
                 });
