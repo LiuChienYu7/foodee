@@ -48,8 +48,6 @@ if ($link) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="0807.css">
-<<<<<<< HEAD
-=======
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <link rel="stylesheet" href="../word_tree/word_tree.css">
 
@@ -65,7 +63,6 @@ if ($link) {
 
     <!-- openTime -->
     <link rel="stylesheet" href="../openTime/openTime.css" />
->>>>>>> 27587ccf5c4559d487bbf30a232e24d7a8457d28
 </head>
 <body>
     <div class="container">
