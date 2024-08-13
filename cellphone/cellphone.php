@@ -23,10 +23,10 @@ if ($link) {
         }
     }
 
-    // Fetch images, names, vibes, dishes, and prices for each restaurant
+    // Fetch images, names, vibes, dishes, prices, and ratings for each restaurant
     foreach ($r_ids as $r_id) {
         $query = "SELECT r_name, r_vibe, r_food_dishes, r_price_low, r_price_high, r_photo_env1, r_photo_env2, r_photo_env3, r_photo_food1, r_photo_food2, r_photo_food3, r_photo_food4, r_photo_food5, r_photo_door, r_photo_menu1, r_photo_menu2, r_photo_menu3,
-                         special_comment_sum, notice_comment_sum
+                         r_rating, special_comment_sum, notice_comment_sum
                   FROM compare
                   WHERE r_id = $r_id";
         $result = mysqli_query($link, $query);
@@ -78,16 +78,18 @@ if ($link) {
             margin: auto;
         }
 
-        .mySlides {
-            display: none;
+        .mySlides img {
+            width: 100%; /* 設定圖片寬度為100% */
+            height: 300px; /* 固定圖片高度 */
+            object-fit: cover; /* 圖片的大小會根據容器大小進行調整，保持內容不被拉伸 */
         }
 
         .prev, .next {
             cursor: pointer;
             position: absolute;
-            top: 50%;
+            top: 25%;
             width: auto;
-            margin-top: -22px;
+            /*margin-top: -22px;*/
             padding: 16px;
             color: white;
             font-weight: bold;
@@ -106,14 +108,32 @@ if ($link) {
             background-color: rgba(0,0,0,0.8);
         }
 
+        .info {
+            width: 50%; /* 限制info區域寬度不超過頁面50% */
+            margin: 0px 5px;
+        }
+
         .restaurant-name {
             font-size: 24px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin: 10px 0px;
         }
 
-        .vibe-tags {
-            margin-bottom: 15px;
+        .star-rating {
+            margin-top: 5px;
+        }
+
+        .star-rating img {
+            height: 20px; /* 設定統一的高度 */
+            vertical-align: middle; /* 對齊方式 */
+        }
+
+        .vibe-tags, .food-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px; /* 控制標籤間距 */
+            margin: 10px 0;
+            font-size: 20px;
         }
 
         .vibe-tags .restaurant-tag {
@@ -124,10 +144,36 @@ if ($link) {
             border-radius: 5px;
         }
 
+        .price-tag {
+            font-weight: bold;
+            color: #555;
+        }
+
         .gallery-container {
             margin: 20px 0;
         }
+
+        /* 新增的CSS，确保 .middle-graph 和 .info 高度一致 */
+        .middle {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            align-items: stretch; /* 保证子元素高度一致 */
+        }
+
+        .middle-graph {
+            flex: 1;
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin-left: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
     </style>
+        <!-- openTime -->
+        <link rel="stylesheet" href="../openTime/openTime.css" />
 </head>
 <body>
     <div class="container">
@@ -136,26 +182,72 @@ if ($link) {
             function renderGallerySection($r_id, $restaurant_data, $index) {
                 $activeClass = $index === 0 ? 'active-restaurant' : '';
                 echo "<div class='restaurant-section $activeClass' id='restaurant-$index'>";
-                echo "<div class='restaurant-name'><div>" . htmlspecialchars($restaurant_data['r_name']) . "</div></div>";
 
                 // Image slider container
                 echo "<div class='slideshow-container'>";
 
                 // Environment images
-                $env_images = ['r_photo_env1', 'r_photo_env2', 'r_photo_env3', 'r_photo_door'];
+                $env_images = ['r_photo_food1', 'r_photo_food2', 'r_photo_food3', 'r_photo_food4', 'r_photo_food5', 'r_photo_menu1', 'r_photo_menu2', 'r_photo_menu3','r_photo_env1', 'r_photo_env2', 'r_photo_env3', 'r_photo_door'];
                 foreach ($env_images as $field_index => $field) {
                     if (!empty($restaurant_data[$field])) {
                         echo "<div class='mySlides environment-{$r_id}'>";
-                        echo "<img src='{$restaurant_data[$field]}' style='width:100%'>";
+                        echo "<img src='{$restaurant_data[$field]}' alt='Restaurant Image'>";
                         echo "</div>";
                     }
                 }
 
-                // Navigation arrows
+                // 包裝餐廳名字、星級評分和價格標籤
+                echo "<div class='middle'>";
+                
+                // Left section (info)
+                echo "<div class='info'>";
+                echo "<div class='restaurant-name'>" . htmlspecialchars($restaurant_data['r_name']) . "</div>";
+                
+                // Render star rating
+                if (isset($restaurant_data['r_rating'])) {
+                    $rating = floatval($restaurant_data['r_rating']);
+                    $fullStars = floor($rating);
+                    $halfStar = ($rating - $fullStars) >= 0.5;
+                    echo "<div class='star-rating'>";
+                    for ($i = 0; $i < 5; $i++) {
+                        if ($i < $fullStars) {
+                            echo "<img src='full_star.png' alt='Full Star'>";
+                        } elseif ($i == $fullStars && $halfStar) {
+                            echo "<img src='half_star.png' alt='Half Star'>";
+                        }
+                    }
+                    echo "</div>";
+                }
+
+                // Display vibe tags
+                echo "<div class='vibe-tags'>";
+                if (!empty($restaurant_data['r_vibe'])) {
+                    $vibes = explode('，', $restaurant_data['r_vibe']);
+                    foreach ($vibes as $vibe) {
+                        echo "<div class='restaurant-tag'>" . htmlspecialchars(trim($vibe)) . "</div>";
+                    }
+                }
+                echo "</div>";
+
+                // Display price range
+                echo "<div class='vibe-tags'>";
+                if (!empty($restaurant_data['r_price_low']) && !empty($restaurant_data['r_price_high'])) {
+                    echo "<div class='price-tag'> $" . htmlspecialchars($restaurant_data['r_price_low']) . " ~ $" . htmlspecialchars($restaurant_data['r_price_high']) . "</div>";
+                }
+                echo "</div>";
+
+                echo "</div>"; // End of info
+                
+                // Right section (middle-graph)
+                echo "<div class='middle-graph'>";
+                include '../openTime/openTime.php'; // 包含openTime.php生成的圖表
+                echo "</div>";
+
+                echo "</div>"; // End of middle
+                
                 echo "<a class='prev' onclick='plusSlides(-1, \"environment-{$r_id}\")'>&#10094;</a>";
                 echo "<a class='next' onclick='plusSlides(1, \"environment-{$r_id}\")'>&#10095;</a>";
 
-                echo "</div>";
                 echo "</div>";
             }
 
