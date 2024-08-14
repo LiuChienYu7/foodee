@@ -50,130 +50,8 @@ if ($link) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="0807.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <link rel="stylesheet" href="../word_tree/word_tree.css">
-    <style>
-        .restaurant-section {
-            display: none;
-        }
-        .active-restaurant {
-            display: block;
-        }
-        .nav-button {
-            margin: 10px;
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .nav-button:hover {
-            background-color: #45a049;
-        }
+    <link rel="stylesheet" href="cellphone.css">
 
-        /* CSS for image slider */
-        .slideshow-container {
-            position: relative;
-            max-width: 100%;
-            margin: auto;
-        }
-
-        .mySlides img {
-            width: 100%; /* 設定圖片寬度為100% */
-            height: 300px; /* 固定圖片高度 */
-            object-fit: cover; /* 圖片的大小會根據容器大小進行調整，保持內容不被拉伸 */
-        }
-
-        .prev, .next {
-            cursor: pointer;
-            position: absolute;
-            top: 25%;
-            width: auto;
-            /*margin-top: -22px;*/
-            padding: 16px;
-            color: white;
-            font-weight: bold;
-            font-size: 18px;
-            transition: 0.6s ease;
-            border-radius: 0 3px 3px 0;
-            user-select: none;
-        }
-
-        .next {
-            right: 0;
-            border-radius: 3px 0 0 3px;
-        }
-
-        .prev:hover, .next:hover {
-            background-color: rgba(0,0,0,0.8);
-        }
-
-        .info {
-            width: 50%; /* 限制info區域寬度不超過頁面50% */
-            margin: 0px 5px;
-        }
-
-        .restaurant-name {
-            font-size: 24px;
-            font-weight: bold;
-            margin: 10px 0px;
-        }
-
-        .star-rating {
-            margin-top: 5px;
-        }
-
-        .star-rating img {
-            height: 20px; /* 設定統一的高度 */
-            vertical-align: middle; /* 對齊方式 */
-        }
-
-        .vibe-tags, .food-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px; /* 控制標籤間距 */
-            margin: 10px 0;
-            font-size: 20px;
-        }
-
-        .vibe-tags .restaurant-tag {
-            display: inline-block;
-            background-color: #f1f1f1;
-            padding: 5px;
-            margin-right: 5px;
-            border-radius: 5px;
-        }
-
-        .price-tag {
-            font-weight: bold;
-            color: #555;
-        }
-
-        .gallery-container {
-            margin: 20px 0;
-        }
-
-        /* 新增的CSS，确保 .middle-graph 和 .info 高度一致 */
-        .middle {
-            display: flex;
-            flex-direction: row;
-            width: 100%;
-            align-items: stretch; /* 保证子元素高度一致 */
-        }
-
-        .middle-graph {
-            flex: 1;
-            background-color: #f9f9f9;
-            padding: 10px;
-            margin-left: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-sizing: border-box;
-        }
-    </style>
-        <!-- openTime -->
-        <link rel="stylesheet" href="../openTime/openTime.css" />
 </head>
 <body>
     <div class="container">
@@ -197,11 +75,11 @@ if ($link) {
                 }
 
                 // 包裝餐廳名字、星級評分和價格標籤
-                echo "<div class='middle'>";
-                
-                // Left section (info)
                 echo "<div class='info'>";
-                echo "<div class='restaurant-name'>" . htmlspecialchars($restaurant_data['r_name']) . "</div>";
+                
+                // Restaurant name and rating
+                echo "<div class='restaurant-name'>";
+                echo "<div>" . htmlspecialchars($restaurant_data['r_name']) . "</div>";
                 
                 // Render star rating
                 if (isset($restaurant_data['r_rating'])) {
@@ -227,6 +105,12 @@ if ($link) {
                         echo "<div class='restaurant-tag'>" . htmlspecialchars(trim($vibe)) . "</div>";
                     }
                 }
+                if (!empty($restaurant_data['r_food_dishes'])) {
+                    $vibes = explode('、', $restaurant_data['r_food_dishes']);
+                    foreach ($vibes as $vibe) {
+                        echo "<div class='restaurant-tag'>" . htmlspecialchars(trim($vibe)) . "</div>";
+                    }
+                }
                 echo "</div>";
 
                 // Display price range
@@ -236,18 +120,19 @@ if ($link) {
                 }
                 echo "</div>";
 
-                echo "</div>"; // End of info
-                
-                // Right section (middle-graph)
-                echo "<div class='middle-graph'>";
-                include '../openTime/openTime.php'; // 包含openTime.php生成的圖表
-                echo "</div>";
+                echo "</div>"; // 結束 info?>
 
-                echo "</div>"; // End of middle
+                <div class="middle-section2" style="flex: auto;">
+                    <?php include '../openTime/openTime.php'; ?>
+                </div>
+                <?php
+                echo "</div>";
                 
+                // Navigation arrows
                 echo "<a class='prev' onclick='plusSlides(-1, \"environment-{$r_id}\")'>&#10094;</a>";
                 echo "<a class='next' onclick='plusSlides(1, \"environment-{$r_id}\")'>&#10095;</a>";
 
+                echo "</div>";
                 echo "</div>";
             }
 
