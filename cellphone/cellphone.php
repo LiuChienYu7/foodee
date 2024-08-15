@@ -145,12 +145,20 @@ if ($link) {
         .price-tag {
             font-weight: bold;
             color: #555;
+            margin-left: 10px;
         }
 
         .gallery-container {
             margin: 20px 0;
         }
-        #map{
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        #map {
             width: -webkit-fill-available;
             height: 150px;
         }
@@ -204,40 +212,16 @@ if ($link) {
                     echo "</div>";
                 }
                 
-
-                // 顯示vibe標籤
-                echo "<div class='vibe-tags'>";
-                if (!empty($restaurant_data['r_vibe'])) {
-                    $vibes = explode('，', $restaurant_data['r_vibe']);
-                    foreach ($vibes as $vibe) {
-                        echo "<div class='restaurant-tag'>" . htmlspecialchars(trim($vibe)) . "</div>";
-                    }
-                }
-                echo "</div>";
-
-                // 顯示菜餚標籤
-                echo "<div class='vibe-tags'>";
-                if (!empty($restaurant_data['r_food_dishes'])) {
-                    $dishes = explode('、', $restaurant_data['r_food_dishes']);
-                    foreach ($dishes as $dish) {
-                        echo "<div class='restaurant-tag'>" . htmlspecialchars(trim($dish)) . "</div>";
-                    }
-                }
-                echo "</div>";
-
-                // 顯示價格範圍
-                echo "<div class='price-tag'>";
-                // 顯示停車資訊
+                // 顯示價格範圍和停車資訊在同一行
+                echo "<div class='info-row'>";
                 if (isset($restaurant_data['r_has_parking'])) {
                     $parkingImage = $restaurant_data['r_has_parking'] == 1 ? 'parking.png' : 'no_parking.png';
-                    echo "<div><img src='$parkingImage' alt='Parking Info' width='20px'></div>";
+                    echo "<div style='display: inline-block;'><img src='$parkingImage' alt='Parking Info' width='20px'></div>";
                 }
                 if (!empty($restaurant_data['r_price_low']) && !empty($restaurant_data['r_price_high'])) {
-                    echo "$" . htmlspecialchars($restaurant_data['r_price_low']) . " ~ $" . htmlspecialchars($restaurant_data['r_price_high']);
+                    echo "<div class='price-tag' style='display: inline-block; margin-left: 10px;'>$" . htmlspecialchars($restaurant_data['r_price_low']) . " ~ $" . htmlspecialchars($restaurant_data['r_price_high']) . "</div>";
                 }
                 echo "</div>";
-
-                
 
                 echo "</div>"; // 結束 info
                 ?>
