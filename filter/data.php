@@ -34,6 +34,14 @@ JOIN
 WHERE 1=1
 ";
 
+// 新增篩選條件 - 根據 r_ids
+if (isset($_GET['r_ids'])) {
+    $rIds = explode(',', $_GET['r_ids']);
+    $rIds = array_map('intval', $rIds); // 确保 r_id 是整数类型
+    $rIdConditions = implode(',', $rIds);
+    $sql .= " AND additional_.r_id IN ($rIdConditions)";
+}
+
 // 篩選條件 - 停車場
 if (isset($_GET['hasParking'])) {
     $hasParking = intval($_GET['hasParking']);

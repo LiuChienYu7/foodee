@@ -549,7 +549,9 @@ input[type="range"]::-moz-range-thumb{
     color: #333;
     cursor: pointer;
     border-radius: 50%; /* 使元素呈現圓形 */
+    background-color: #e4e4e4;
     transition: background-color 0.3s ease-in-out;
+
 }
 
 /* 當選中時的樣式 */
@@ -629,4 +631,13 @@ input[type="range"]::-moz-range-thumb{
     border: solid white;
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
+}
+
+#loading {
+    display: none;
+    font-size: 16px;
+    margin-top: 10px;
+}
+.fa-solid{
+    cursor: pointer;
 }
