@@ -1,0 +1,81 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.button-container {
+    text-align: center;
+    margin: 20px;
+}
+
+.button-container button {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.button-container button:hover {
+    background-color: #e0e0e0;
+}
+
+.button-container button.selected {
+    background-color: #ffeb3b; /* Yellow for selected button */
+    transform: scale(1.05);
+}
+
+.toggle-buttons {
+    text-align: center;
+    margin: 20px;
+}
+
+.toggle-buttons button {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.toggle-buttons button:hover {
+    background-color: #e0e0e0;
+}
+
+.chart-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.open {
+    fill: #FFD700; /* Green for open hours */
+    stroke: #FFD700;
+    stroke-width: 1;
+}
+
+.closed {
+    fill: #DCDCDC; /* Red for closed hours */
+    stroke: #DCDCDC;
+    stroke-width: 1;
+}
+
+.label {
+    font-size: 12px;
+    fill: #000;
+}
+
+.axis path, .axis line {
+    fill: none;
+    shape-rendering: crispEdges;
+}

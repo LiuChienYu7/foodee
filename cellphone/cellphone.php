@@ -194,8 +194,6 @@ if ($link) {
                             echo "<img src='full_star.png' alt='Full Star'>";
                         } elseif ($i == $fullStars && $halfStar) {
                             echo "<img src='half_star.png' alt='Half Star'>";
-                        } else {
-                            echo "<img src='empty_star.png' alt='Empty Star'>";
                         }
                     }
                     echo "</div>";
@@ -230,10 +228,6 @@ if ($link) {
 
                 echo "</div>"; // 結束 info
                 
-                // 在此處引入 openTime.php
-                echo "<div class='graph'>";
-                include '../openTime/openTime.php';
-                echo "</div>";
 
                 // 圖片導航箭頭
                 echo "<a class='prev' onclick='plusSlides(-1, \"environment-{$r_id}\")'>&#10094;</a>";
