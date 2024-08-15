@@ -1,5 +1,4 @@
 <?php
-ob_start(); // 開啟緩衝區
 header('Content-Type: text/html; charset=UTF-8');
 
 // 資料庫連線設置
@@ -11,49 +10,48 @@ $dbname = 'foodee';
 // 建立資料庫連線
 $link = mysqli_connect($host, $dbuser, $dbpassword, $dbname);
 
-if (!$link) {
-    die("Failed to connect to the database: " . mysqli_connect_error());
-}
-
-mysqli_query($link, 'SET NAMES utf8');
-
 // 初始化變數
 $all_restaurant_data = [];
 $restaurant_ids = [];
 $restaurant_names = [];
 
-// 從 URL 查詢參數獲取餐廳 ID
-for ($i = 1; $i <= 3; $i++) {
-    if (isset($_GET["r_id$i"])) {
-        $r_id = intval($_GET["r_id$i"]);
-        $restaurant_ids[] = $r_id;
-        
-        // 查詢每個餐廳的名稱
-        $query_name = "SELECT r_name FROM detail WHERE r_id = $r_id";
-        $result_name = mysqli_query($link, $query_name);
+if ($link) {
+    mysqli_query($link, 'SET NAMES utf8');
 
-        if ($result_name && mysqli_num_rows($result_name) > 0) {
-            $row_name = mysqli_fetch_assoc($result_name);
-            $restaurant_names[$r_id] = $row_name['r_name'];
-        } else {
-            echo "Error in query: " . mysqli_error($link);
-            $restaurant_names[$r_id] = 'Unknown';
-        }
+    // 從 URL 查詢參數獲取餐廳 ID
+    for ($i = 1; $i <= 3; $i++) {
+        if (isset($_GET["r_id$i"])) {
+            $r_id = intval($_GET["r_id$i"]);
+            $restaurant_ids[] = $r_id;
+            
+            // 查詢每個餐廳的名稱
+            $query_name = "SELECT r_name FROM detail WHERE r_id = $r_id";
+            $result_name = mysqli_query($link, $query_name);
 
-        // 查詢每個餐廳的營業時間
-        $query_hours = "SELECT r_hours_periods FROM detail WHERE r_id = $r_id";
-        $result_hours = mysqli_query($link, $query_hours);
+            if ($result_name) {
+                $row_name = mysqli_fetch_assoc($result_name);
+                $restaurant_names[$r_id] = $row_name['r_name'];
+            } else {
+                echo "Error in query: " . mysqli_error($link);
+                $restaurant_names[$r_id] = 'Unknown';
+            }
 
-        if ($result_hours && mysqli_num_rows($result_hours) > 0) {
-            $row_hours = mysqli_fetch_assoc($result_hours);
-            $all_restaurant_data[$r_id] = $row_hours['r_hours_periods'];
-        } else {
-            echo "Error in query: " . mysqli_error($link);
-            $all_restaurant_data[$r_id] = null;
+            // 查詢每個餐廳的營業時間
+            $query_hours = "SELECT r_hours_periods FROM detail WHERE r_id = $r_id";
+            $result_hours = mysqli_query($link, $query_hours);
+
+            if ($result_hours) {
+                $row_hours = mysqli_fetch_assoc($result_hours);
+                $all_restaurant_data[$r_id] = $row_hours['r_hours_periods'];
+            } else {
+                echo "Error in query: " . mysqli_error($link);
+                $all_restaurant_data[$r_id] = null;
+            }
         }
     }
+} else {
+    echo "Failed to connect to the database: " . mysqli_connect_error();
 }
-
 mysqli_close($link);
 ?>
 <!DOCTYPE html>
@@ -61,11 +59,40 @@ mysqli_close($link);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restaurant Info</title>
+    <title>Restaurant Hours</title>
     <link rel="stylesheet" href="./openTime.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
-        
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .button-container button {
+            margin: 5px;
+            padding: 10px;
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            max-width: 150px;
+            cursor: pointer;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .button-container button:hover {
+            color: #fff;
+        }
+        .chart-container {
+            width: auto;
+        }
+        .highlight {
+            opacity: 1 !important;
+        }
+        .dim {
+            opacity: 0.2;
+        }
     </style>
 </head>
 <body>
@@ -86,25 +113,6 @@ mysqli_close($link);
 
     <div id="chart" class="chart-container"></div>
 
-    <div class="slideshow-container">
-        <div class="mySlides">
-            <img src="image1.jpg" style="width:100%">
-        </div>
-
-        <div class="mySlides">
-            <img src="image2.jpg" style="width:100%">
-        </div>
-
-        <div class="mySlides">
-            <img src="image3.jpg" style="width:100%">
-        </div>
-
-        <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
-        <a class="next" onclick="plusSlides(1)">&#10095;</a>
-    </div>
-
-    <?php include '../openTime/openTime.php'; ?>
-
     <script>
         const parseTime = d3.timeParse("%H%M");
         const formatTime = d3.timeFormat("%H:%M");
@@ -112,8 +120,7 @@ mysqli_close($link);
 
         const data = <?php echo json_encode($all_restaurant_data); ?>;
         const restaurantNames = <?php echo json_encode($restaurant_names); ?>;
-        const restaurantIds = <?php echo json_encode($restaurant_ids); ?>;
-        const colors = ['#d62828', '#00a896', '#5fa8d3'];
+        const colors = ['#d62828', '#00a896', '#5fa8d3'];  // 為三家餐廳指定紅色、綠色和藍色
 
         function updateChart(restaurantsData) {
             const svgContainer = d3.select("#chart");
@@ -132,6 +139,7 @@ mysqli_close($link);
 
             restaurantsData.forEach((hoursPeriods, index) => {
                 const extendedData = [];
+
                 const allHoursPeriods = JSON.parse(hoursPeriods.replace(/'/g, '"'));
 
                 allHoursPeriods.forEach(period => {
@@ -168,12 +176,12 @@ mysqli_close($link);
                     .enter().append("rect")
                     .attr("class", "open-bar open-bar-" + index)
                     .attr("x", d => xScale(days[d.day - 1]))
-                    .attr("y", yScale(parseTime("2400")))
+                    .attr("y", yScale(parseTime("2400")))  // 初始設置於底部
                     .attr("width", xScale.bandwidth())
-                    .attr("height", 0)
-                    .attr("fill", colors[index])
+                    .attr("height", 0)  // 初始高度為0
+                    .attr("fill", colors[index])  // 使用指定的顏色
                     .attr("opacity", 0.7)
-                    .transition()
+                    .transition()  // 加入動畫效果
                     .duration(750)
                     .attr("y", d => yScale(d.start))
                     .attr("height", d => yScale(d.end) - yScale(d.start));
@@ -195,6 +203,7 @@ mysqli_close($link);
             d3.selectAll('.open-bar').classed('dim', true);
             d3.selectAll('.open-bar-' + index).classed('highlight', true).classed('dim', false);
             
+            // 將按鈕顏色與圖表顏色對應
             d3.select(`#button-${restaurantIds[index]}`)
                 .style("background-color", colors[index])
                 .style("color", "#fff");
@@ -203,6 +212,7 @@ mysqli_close($link);
         function resetHighlight() {
             d3.selectAll('.open-bar').classed('dim', false).classed('highlight', false);
 
+            // 恢復按鈕原色
             d3.selectAll('.button-container button')
                 .style("background-color", "#f0f0f0")
                 .style("color", "#000");
@@ -212,6 +222,7 @@ mysqli_close($link);
             const hoursPeriods = data[restaurantId];
             updateChart([hoursPeriods]);
 
+            // Highlight the selected button
             document.querySelectorAll('.button-container button').forEach(button => {
                 button.classList.remove('selected');
             });
@@ -219,38 +230,10 @@ mysqli_close($link);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            updateChart(Object.values(data));
-
-            // 初始化圖片切換功能
-            let slideIndex = 1;
-            showSlides(slideIndex);
-
-            document.querySelectorAll('.prev').forEach(element => {
-                element.addEventListener('click', () => plusSlides(-1));
-            });
-
-            document.querySelectorAll('.next').forEach(element => {
-                element.addEventListener('click', () => plusSlides(1));
-            });
+            updateChart(Object.values(data));  // 顯示所有餐廳的詳細營業時間
         });
 
-        function plusSlides(n) {
-            showSlides(slideIndex += n);
-        }
-
-        function showSlides(n) {
-            let i;
-            let slides = document.getElementsByClassName("mySlides");
-            if (n > slides.length) { slideIndex = 1; }
-            if (n < 1) { slideIndex = slides.length; }
-            for (i = 0; i < slides.length; i++) {
-                slides[i].style.display = "none";  
-            }
-            slides[slideIndex-1].style.display = "block";  
-        }
+        const restaurantIds = <?php echo json_encode($restaurant_ids); ?>;
     </script>
 </body>
 </html>
-<?php
-ob_end_flush();
-?>

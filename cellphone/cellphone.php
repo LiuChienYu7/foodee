@@ -81,7 +81,7 @@ if ($link) {
         }
 
         .mySlides img {
-            width: 100%;
+            width: -webkit-fill-available;
             height: 200px;
             object-fit: cover;
         }
@@ -89,9 +89,9 @@ if ($link) {
         .prev, .next {
             cursor: pointer;
             position: absolute;
-            top: 20%;
+            top: 10%;
             width: auto;
-            margin-top: -22px;
+            /*margin-top: -22px;*/
             padding: 16px;
             color: white;
             font-weight: bold;
@@ -111,7 +111,7 @@ if ($link) {
         }
 
         .info {
-            margin: 0 auto;
+            margin: 5px;
         }
 
         .restaurant-name {
@@ -149,6 +149,10 @@ if ($link) {
 
         .gallery-container {
             margin: 20px 0;
+        }
+        #map{
+            width: -webkit-fill-available;
+            height: 150px;
         }
     </style>
 </head>
@@ -236,8 +240,16 @@ if ($link) {
                 
 
                 echo "</div>"; // 結束 info
+                ?>
+    
+                <div class="graph" style="width: -webkit-fill-available;">
+                    <?php include '../openTime/openTime.php'; ?>
+                </div>
+                <div class="graph" style="width: -webkit-fill-available;">
+                    <?php include '../map/compare_map.php'; ?>
+                </div>
                 
-
+                <?php
                 // 圖片導航箭頭
                 echo "<a class='prev' onclick='plusSlides(-1, \"environment-{$r_id}\")'>&#10094;</a>";
                 echo "<a class='next' onclick='plusSlides(1, \"environment-{$r_id}\")'>&#10095;</a>";
