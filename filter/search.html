@@ -28,7 +28,7 @@
 
             document.getElementById('loading').style.display = 'block';
 
-            fetch(`/foodee/search.php?query=${encodeURIComponent(query)}`)
+            fetch(`search.php?query=${encodeURIComponent(query)}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('網絡回應不正確');

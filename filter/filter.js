@@ -54,11 +54,6 @@ function setArea() {
     // 更新工具提示的位置
     minTooltip.style.left = minPricePercent + "%";
     maxTooltip.style.left = maxPricePercent + "%";
-
-    // range.style.left = (minVal.value / sliderMaxValue) * 100 + "%";
-    // minTooltip.style.left = (minVal.value / sliderMaxValue) * 100 + "%";
-    // range.style.right = 100 - (maxVal.value / sliderMaxValue) * 100 + "%";
-    // maxTooltip.style.right = 100 - (maxVal.value / sliderMaxValue) * 100 + "%";
 }
 
 
@@ -155,25 +150,7 @@ function setMaxTimeInput() {
     slideTimeMax();
 }
 
-
-
-// document.addEventListener("click", (event) => {
-//     // 如果點擊的不是 selectBtn 或 listItems，則隱藏 listItems
-//     if (!selectBtn.contains(event.target) && !listItems.contains(event.target)) {
-//         selectBtn.classList.remove("open");
-//         listItems.classList.remove("open");
-//     }
-// });
-
-// // panel function
-// document.getElementById("left-side-arr").addEventListener("click", function() {
-//     var leftPanel = document.getElementById("left-panel");
-//     if (leftPanel.classList.contains("collapsed")) {
-//         leftPanel.classList.remove("collapsed");
-//     } else {
-//         leftPanel.classList.add("collapsed");
-//     }
-// });
+let restaurantIds = []; 
 
 document.addEventListener('DOMContentLoaded', function () {
     const maxSelection = 5;
@@ -209,6 +186,55 @@ document.addEventListener('DOMContentLoaded', function () {
     checkboxes.forEach(checkbox => {
         checkbox.checked = true;  // 設置 checkbox 為已選擇狀態
     });
+    function fetchData() {
+        let query = document.getElementById('search').value.trim();
+        if (query === "") {
+            alert("請輸入查詢字串");
+            return;
+        }
+        
+        // 清除之前的错误信息
+        d3.select("#results").html(""); 
+
+        document.getElementById('loading').style.display = 'block';
+    
+        fetch(`search.php?query=${encodeURIComponent(query)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('網絡回應不正確');
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('loading').style.display = 'none';
+                
+                // 2. 清空之前存储的 r_id
+                restaurantIds = [];
+    
+                if (data.error) {
+                    // 只在有错误时显示错误信息
+                    console.error("Error:", data.error);
+                    d3.select("#results").html("錯誤: " + data.error);
+                } else {
+                    // 处理成功返回的数据，但不显示
+                    data.forEach(d => {
+                        // 将 r_id 存储到数组中
+                        restaurantIds.push(d.r_id);
+                    });
+    
+                    // 在控制台中打印 r_id 数组
+                    console.log("Found restaurant IDs:", restaurantIds);
+                    
+                    // 调用 applyFilters 使用最新的 restaurantIds 进行过滤
+                    applyFilters();
+                }
+            })
+            .catch(error => {
+                document.getElementById('loading').style.display = 'none';
+                console.error('獲取數據錯誤:', error);
+                d3.select("#results").html("無法取得數據，請稍後再試。");
+            });
+    }
 
     // 更新篩選條件
     function applyFilters() {
@@ -228,6 +254,9 @@ document.addEventListener('DOMContentLoaded', function () {
         button.classList.add("selected");
         const selectedDays = Array.from(document.querySelectorAll('.day-label.active'))
             .map(label => label.getAttribute('data-day'));
+
+        // 基于 restaurantIds 进行初步筛选
+        let filteredIds = restaurantIds; // 默认使用全局的 restaurantIds
 
 
         let url = 'http://localhost/food_project/filter/data.php?';
@@ -265,6 +294,12 @@ document.addEventListener('DOMContentLoaded', function () {
             url += `selectedDays=${selectedDays.join(',')}&`;
         }
 
+        // 添加 restaurantIds 作为筛选条件
+        if (filteredIds.length > 0) {
+            const idsQuery = filteredIds.join(',');
+            url += `r_ids=${idsQuery}&`;
+        }
+
         url = url.endsWith('&') ? url.slice(0, -1) : url;
 
         console.log('Request URL:', url); // 輸出請求 URL 以便檢查
@@ -289,6 +324,16 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
+    // 通过 JavaScript 绑定事件，而不是在 HTML 中使用 onclick
+    document.querySelector('.fa-magnifying-glass').addEventListener('click', fetchData);
+
+    // 监听输入框的按键事件
+    document.getElementById('search').addEventListener('keypress', function (event) {
+        if (event.key === 'Enter') { // 检测是否按下 Enter 键
+            fetchData(); // 触发搜索
+        }
+    });
+    
     // 監聽每個按鈕的點擊事件
     vibeButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -352,7 +397,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-
     // stars selection
     const selectBtn = document.querySelector(".select-btn");
     const listItems = document.querySelector(".list-items");
@@ -387,17 +431,3 @@ document.addEventListener('DOMContentLoaded', function () {
     updateTimeSliders();
     applyFilters();
 });
-
-// window.onload = function() {
-//     console.log("Window loaded");
-//     applyFilters();
-//     slideMin();
-//     slideMax();
-//     minTimeVal.value = 60; // 設置 min slider 預設值
-//     maxTimeVal.value = 120; // 設置 max slider 預設值
-//     slideTimeMin();
-//     slideTimeMax();
-//     setTimeArea();
-// };
-
-
