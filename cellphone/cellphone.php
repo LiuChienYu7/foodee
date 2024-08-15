@@ -1,7 +1,6 @@
 <?php
 ob_start(); // Start output buffering
-?>
-<?php
+
 $host = 'localhost';
 $dbuser = 'root';
 $dbpassword = '';
@@ -15,7 +14,7 @@ $current_restaurant_index = 0;
 if ($link) {
     mysqli_query($link, 'SET NAMES utf8');
 
-    // Get restaurant IDs from GET parameters
+    // 獲取GET參數中的餐廳ID
     $r_ids = [];
     for ($i = 1; $i <= 3; $i++) {
         if (isset($_GET["r_id$i"])) {
@@ -23,12 +22,16 @@ if ($link) {
         }
     }
 
-    // Fetch images, names, vibes, dishes, prices, and ratings for each restaurant
+    // 根據餐廳ID獲取圖片、名稱、vibe、菜餚、價格和評分
     foreach ($r_ids as $r_id) {
-        $query = "SELECT r_name, r_vibe, r_food_dishes, r_price_low, r_price_high, r_photo_env1, r_photo_env2, r_photo_env3, r_photo_food1, r_photo_food2, r_photo_food3, r_photo_food4, r_photo_food5, r_photo_door, r_photo_menu1, r_photo_menu2, r_photo_menu3,
-                         r_rating, special_comment_sum, notice_comment_sum
-                  FROM compare
-                  WHERE r_id = $r_id";
+        $query = "
+            SELECT r_name, r_vibe, r_food_dishes, r_price_low, r_price_high, 
+                   r_photo_env1, r_photo_env2, r_photo_env3, 
+                   r_photo_food1, r_photo_food2, r_photo_food3, r_photo_food4, r_photo_food5, 
+                   r_photo_door, r_photo_menu1, r_photo_menu2, r_photo_menu3,
+                   r_rating, special_comment_sum, notice_comment_sum
+            FROM compare
+            WHERE r_id = $r_id";
         $result = mysqli_query($link, $query);
 
         if ($result) {
@@ -50,6 +53,7 @@ if ($link) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
+        /* 基本樣式設置 */
         .restaurant-section {
             display: none;
         }
@@ -69,7 +73,7 @@ if ($link) {
             background-color: #45a049;
         }
 
-        /* CSS for image slider */
+        /* 圖片輪播的樣式 */
         .slideshow-container {
             position: relative;
             max-width: 100%;
@@ -77,9 +81,9 @@ if ($link) {
         }
 
         .mySlides img {
-            width: 100%; /* 設定圖片寬度為100% */
-            height: 200px; /* 固定圖片高度 */
-            object-fit: cover; /* 圖片的大小會根據容器大小進行調整，保持內容不被拉伸 */
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
         }
 
         .prev, .next {
@@ -113,18 +117,18 @@ if ($link) {
         .restaurant-name {
             font-size: 24px;
             font-weight: bold;
-            margin:10px 0px;
+            margin: 10px 0px;
         }
 
         .star-rating img {
-            height: 20px; /* 設定統一的高度 */
-            vertical-align: middle; /* 對齊方式 */
+            height: 20px;
+            vertical-align: middle;
         }
 
         .vibe-tags, .food-tags {
             display: flex;
             flex-wrap: wrap;
-            gap: 5px; /* 控制標籤間距 */
+            gap: 5px;
             margin: 5px 0;
             font-size: 15px;
             font-weight: normal;
@@ -156,27 +160,30 @@ if ($link) {
                 $activeClass = $index === 0 ? 'active-restaurant' : '';
                 echo "<div class='restaurant-section $activeClass' id='restaurant-$index'>";
 
-                // Image slider container
+                // 圖片輪播容器
                 echo "<div class='slideshow-container'>";
 
-                // Environment images
-                $env_images = ['r_photo_food1', 'r_photo_food2', 'r_photo_food3', 'r_photo_food4', 'r_photo_food5', 'r_photo_menu1', 'r_photo_menu2', 'r_photo_menu3','r_photo_env1', 'r_photo_env2', 'r_photo_env3', 'r_photo_door'];
+                // 環境圖片
+                $env_images = [
+                    'r_photo_food1', 'r_photo_food2', 'r_photo_food3', 'r_photo_food4', 'r_photo_food5', 
+                    'r_photo_menu1', 'r_photo_menu2', 'r_photo_menu3', 
+                    'r_photo_env1', 'r_photo_env2', 'r_photo_env3', 'r_photo_door'
+                ];
                 foreach ($env_images as $field_index => $field) {
                     if (!empty($restaurant_data[$field])) {
                         echo "<div class='mySlides environment-{$r_id}'>";
-                        echo "<img src='{$restaurant_data[$field]}' alt='Restaurant Image'>";
+                        echo "<img src='" . htmlspecialchars($restaurant_data[$field]) . "' alt='Restaurant Image'>";
                         echo "</div>";
                     }
                 }
 
-                // 包裝餐廳名字、星級評分和價格標籤
+                // 餐廳名稱、評分和價格標籤
                 echo "<div class='info'>";
                 
-                // Restaurant name and rating
-                echo "<div class='restaurant-name'>";
-                echo "<div>" . htmlspecialchars($restaurant_data['r_name']) . "</div>";
+                // 餐廳名稱
+                echo "<div class='restaurant-name'>" . htmlspecialchars($restaurant_data['r_name']) . "</div>";
                 
-                // Render star rating
+                // 顯示星級評分
                 if (isset($restaurant_data['r_rating'])) {
                     $rating = floatval($restaurant_data['r_rating']);
                     $fullStars = floor($rating);
@@ -187,12 +194,14 @@ if ($link) {
                             echo "<img src='full_star.png' alt='Full Star'>";
                         } elseif ($i == $fullStars && $halfStar) {
                             echo "<img src='half_star.png' alt='Half Star'>";
+                        } else {
+                            echo "<img src='empty_star.png' alt='Empty Star'>";
                         }
                     }
                     echo "</div>";
                 }
 
-                // Display vibe tags
+                // 顯示vibe標籤
                 echo "<div class='vibe-tags'>";
                 if (!empty($restaurant_data['r_vibe'])) {
                     $vibes = explode('，', $restaurant_data['r_vibe']);
@@ -201,32 +210,37 @@ if ($link) {
                     }
                 }
                 echo "</div>";
-                echo "<div class='vibe-tags'>";
+
+                // 顯示菜餚標籤
+                echo "<div class='food-tags'>";
                 if (!empty($restaurant_data['r_food_dishes'])) {
-                    $vibes = explode('、', $restaurant_data['r_food_dishes']);
-                    foreach ($vibes as $vibe) {
-                        echo "<div class='restaurant-tag'>" . htmlspecialchars(trim($vibe)) . "</div>";
+                    $dishes = explode('、', $restaurant_data['r_food_dishes']);
+                    foreach ($dishes as $dish) {
+                        echo "<div class='restaurant-tag'>" . htmlspecialchars(trim($dish)) . "</div>";
                     }
                 }
                 echo "</div>";
 
-                // Display price range
-                echo "<div class='vibe-tags'>";
+                // 顯示價格範圍
+                echo "<div class='price-tag'>";
                 if (!empty($restaurant_data['r_price_low']) && !empty($restaurant_data['r_price_high'])) {
-                    echo "<div class='price-tag'> $" . htmlspecialchars($restaurant_data['r_price_low']) . " ~ $" . htmlspecialchars($restaurant_data['r_price_high']) . "</div>";
+                    echo "$" . htmlspecialchars($restaurant_data['r_price_low']) . " ~ $" . htmlspecialchars($restaurant_data['r_price_high']);
                 }
                 echo "</div>";
 
                 echo "</div>"; // 結束 info
                 
+                // 在此處引入 openTime.php
+                echo "<div class='graph'>";
+                include '../openTime/openTime.php';
                 echo "</div>";
-                
-                // Navigation arrows
-                echo "<a class='prev' onclick='cellphonePlusSlides(-1, \"environment-{$r_id}\")'>&#10094;</a>";
-                echo "<a class='next' onclick='cellphonePlusSlides(1, \"environment-{$r_id}\")'>&#10095;</a>";
 
-                echo "</div>";
-                echo "</div>";
+                // 圖片導航箭頭
+                echo "<a class='prev' onclick='plusSlides(-1, \"environment-{$r_id}\")'>&#10094;</a>";
+                echo "<a class='next' onclick='plusSlides(1, \"environment-{$r_id}\")'>&#10095;</a>";
+
+                echo "</div>"; // 結束 slideshow-container
+                echo "</div>"; // 結束 restaurant-section
             }
 
             if ($all_restaurant_data) {
@@ -245,7 +259,7 @@ if ($link) {
             ?>
             <div class="navigation-buttons">
                 <?php if (count($all_restaurant_data) > 1): ?>
-                    <button class="nav-button" onclick="cellphoneChangeRestaurant(1)">Next Restaurant</button>
+                    <button class="nav-button" onclick="changeRestaurant(1)">Next Restaurant</button>
                 <?php endif; ?>
             </div>
         </div>
@@ -257,11 +271,11 @@ if ($link) {
 
         let slideIndex = {};
 
-        function cellphonePlusSlides(n, category) {
-            cellphoneShowSlides(slideIndex[category] += n, category);
+        function plusSlides(n, category) {
+            showSlides(slideIndex[category] += n, category);
         }
 
-        function cellphoneShowSlides(n, category) {
+        function showSlides(n, category) {
             let slides = document.getElementsByClassName(`mySlides ${category}`);
             if (!slideIndex[category]) {
                 slideIndex[category] = 1;
@@ -271,13 +285,13 @@ if ($link) {
             if (n < 1) { slideIndex[category] = slides.length }
 
             for (let i = 0; i < slides.length; i++) {
-                slides[i].style.display = "none";  
+                slides[i].style.display = "none";
             }
 
-            slides[slideIndex[category] - 1].style.display = "block";  
+            slides[slideIndex[category] - 1].style.display = "block";
         }
 
-        function cellphoneChangeRestaurant(direction) {
+        function changeRestaurant(direction) {
             document.getElementById(`restaurant-${currentRestaurantIndex}`).classList.remove('active-restaurant');
             currentRestaurantIndex = (currentRestaurantIndex + direction + totalRestaurants) % totalRestaurants;
             document.getElementById(`restaurant-${currentRestaurantIndex}`).classList.add('active-restaurant');
@@ -285,26 +299,23 @@ if ($link) {
             // 重置每個餐廳的slideIndex，顯示第一張圖片
             let categories = document.querySelectorAll(`#restaurant-${currentRestaurantIndex} .mySlides`);
             categories.forEach((slide) => {
-                let category = slide.classList[1];  // Assumes the second class is the category
+                let category = slide.classList[1];
                 slideIndex[category] = 1;
-                cellphoneShowSlides(slideIndex[category], category);
+                showSlides(slideIndex[category], category);
             });
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             let categories = document.querySelectorAll('.mySlides');
             categories.forEach((slide) => {
-                let category = slide.classList[1];  // Assumes the second class is the category
+                let category = slide.classList[1];
                 if (!slideIndex[category]) {
                     slideIndex[category] = 1;
                 }
-                cellphoneShowSlides(slideIndex[category], category);
+                showSlides(slideIndex[category], category);
             });
         });
     </script>
-
-    <?php include '../openTime/openTime.php'; ?>
-
 </body>
 </html>
 <?php
