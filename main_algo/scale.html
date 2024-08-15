@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        .border {
+            stroke: black;
+            stroke-width: 1px;
+            fill: none;
+        }
+        .hidden {
+            display: none;
+        }
+        .x-axis-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+        }
+        .control-buttons {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+        }
+        #sort-button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            background-color: #f0f0f0;
+            border: 1px solid #000;
+            border-radius: 5px;
+        }
+        .arrow {
+            cursor: pointer;
+            font-size: 24px;
+            font-weight: bold;
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .arrow-left {
+            left: 20px;
+        }
+        .arrow-right {
+            right: 20px;
+        }
+
+        .jump-button {
+            margin: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            border: 1px solid #000;
+            border-radius: 5px;
+            background-color: #f0f0f0;
+            font-size: 14px;
+        }
+        .jump-buttons {
+            position: fixed;
+            top: 150px;
+            right: 80px;
+        }
+
+        .minimap-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 200px;
+            height: 100px;
+            border: 1px solid #000;
+            background-color: #f9f9f9;
+        }
+        #tooltip {
+            width: 200px;
+            font-family: Arial, sans-serif;
+        }
+
+        #tooltip-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        #tooltip-title {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        #tooltip-rating {
+            margin-top: 10px;
+            color: gold;
+        }
+
+        #tooltip-food-dishes {
+            margin-top: 10px;
+        }
+
+        #tooltip-ratings div {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+}
+
+
+    </style>
+</head>
+<body>
+    <div id="chart"></div>
+        <div id="tooltip" style="display:none; position:absolute; border:1px solid #ccc; background-color:#fff; padding:10px; border-radius:8px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);">
+            <div id="carousel" style="position: relative; width: 200px; height: 150px; overflow: hidden; border-radius: 8px; margin-bottom: 10px;">
+                <div id="carousel-images" style="display: flex; transition: transform 0.5s ease;">
+                    <!-- 图片将会被 JavaScript 动态插入 -->
+                </div>
+            </div>
+            <div id="tooltip-title"></div>
+            <div id="tooltip-rating"></div>
+            <div id="tooltip-food-dishes"></div>
+            <div id="tooltip-ratings"></div>
+        </div>
+    </div>
+    <div class="x-axis-container">
+        <svg id="x-axis-svg" width="1200" height="50"></svg>
+    </div>
+    <div class="jump-buttons">
+        <div class="jump-button" onclick="jumpToDiningTime(60)">60 分鐘</div>
+        <div class="jump-button" onclick="jumpToDiningTime(90)">90 分鐘</div>
+        <div class="jump-button" onclick="jumpToDiningTime(100)">100 分鐘</div>
+        <div class="jump-button" onclick="jumpToDiningTime(120)">120 分鐘</div>
+        <div class="jump-button" onclick="jumpToDiningTime(150)">150 分鐘</div>
+        <div class="jump-button" onclick="jumpToDiningTime(N)">所有時間</div>
+    </div>
+    <div class="control-buttons">
+        <button id="sort-button">按評分排序</button>
+    </div>    
+    <div class="minimap-container">
+        <svg id="minimap" width="200" height="100"></svg>
+    </div>
+    <script>
+        let loaded = []; // 全局變量
+        let positions = [];
+        let totalHeight =[];
+
+        function jumpToDiningTime(diningTime) {
+            if (!loaded.length) {
+                console.error('Data is not loaded yet.');
+                return;
+            }
+
+            const matchingData = loaded.find(d => Number(d.r_time_low) === diningTime);
+            console.log('Matching data:', matchingData);
+
+            if (matchingData) {
+                // 使用 D3.js 選擇所有的 text 元素
+                const texts = d3.selectAll('text');
+                let foundText = null;
+
+                texts.each(function() {
+                    const text = d3.select(this);
+                    const textContent = text.text();
+                    if (textContent.includes(`用餐時間: ${diningTime}`)) {
+                        foundText = text.node();
+                    }
+                });
+
+                if (foundText) {
+                    // 滾動到這個 text 的位置
+                    foundText.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    console.warn(`未找到匹配的文本`);
+                }
+            } else {
+                console.error(`未找到用餐時間 ${diningTime} 的數據`);
+            }
+        }
+
+        
+
+        d3.json('http://localhost/%e6%9c%9f%e6%9c%ab%e4%b8%81%e4%b8%81/foodee-main/connect_sql/index.php').then(function (data) {
+            console.log('Loaded data:', data);  // 查看加载的数据
+            loaded = data;
+
+            const width = 1200;
+            const height = 800;
+            const margin = { top: 20, right: 50, bottom: 50, left: 40 };
+            const innerRadius = 45;
+            const rectWidth = 120;
+            const rectHeight = 60;
+            const rectSpacing = 20;
+            const rowHeight = rectHeight + rectSpacing;
+            const groupSpacing = 40;
+            const circleRadius = 60;
+            const intervalWidths = {};
+
+            const intervals = ["區間0","區間200", "區間400", "區間600", "區間800", "區間1000"];
+            let currentIntervals = ["區間200", "區間400", "區間600"];
+            const intervalTotals = getCurrentIntervalTotals(currentIntervals);
+            const total = d3.sum(Object.values(intervalTotals));
+
+            if (isNaN(total) || total === 0) {
+                console.warn("Total 餐厅数为 NaN 或 0，跳过更新。");
+                return;
+            }
+
+            currentIntervals.forEach(interval => {
+                intervalWidths[interval] = (intervalTotals[interval] / total) * (width - margin.left - margin.right);
+            });
+
+            if (isNaN(total) || total === 0) {
+                console.warn("Total 餐厅数为 NaN 或 0，跳过更新。");
+                return;
+            }
+
+            currentIntervals.forEach(interval => {
+                const intervalTotal = intervalTotals[interval];
+                if (intervalTotal && total) {
+                    intervalWidths[interval] = (intervalTotal / total) * (width - margin.left - margin.right);
+                } else {
+                    intervalWidths[interval] = circleRadius * 2; // 確保每個區間至少有一個圓圈的寬度
+                }
+            });
+
+            const intervalPositions = {};
+            let currentPosition = margin.left;
+            currentIntervals.forEach(interval => {
+                intervalPositions[interval] = currentPosition;
+                currentPosition += intervalWidths[interval];
+            });
+
+            const sortedTimes = ['60', '90', '100', '120', '150', ''];
+            const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+            const x = d3.scaleBand()
+                .domain(intervals)
+                .range([margin.left, width - margin.right])
+                .padding(0.1);
+
+            const y = d3.scaleBand()
+                .domain(sortedTimes)
+                .range([margin.top, height - margin.bottom])
+                .padding(0.1);
+
+            function categorizePrice(price) {
+                if (price < 200) return "區間0";
+                if (price < 400) return "區間200";
+                if (price < 600) return "區間400";
+                if (price < 800) return "區間600";
+                if (price < 1000) return "區間800";
+                return "區間1000";
+            }
+
+            document.getElementById('sort-button').addEventListener('click', function() {
+                // 首先对所有数据按照评分进行排
+
+                console.log("Data sorted by rating:", data);
+
+                // 然后更新区间状态，确保宽度和位置正确
+                updateIntervals();
+
+                console.log("Intervals updated, starting to filter and display current interval circles...");
+
+                // 清空当前的显示内容
+                d3.select("#chart").selectAll("*").remove();
+
+                // 获取当前可视区间的数据并计算位置
+                const newPositions = calculateSortedPositions(data, intervalWidths, rowHeight, rectSpacing, margin, intervalPositions);
+
+                console.log("Sorted positions for the current interval:", newPositions);
+
+
+                // 重新绘制矩形和圆圈等元素
+                const totalHeightValue = calculateTotalHeight(data, intervalWidths, rowHeight, groupSpacing, margin);
+                if (isNaN(totalHeightValue) || totalHeightValue <= 0 || !isFinite(totalHeightValue)) {
+                    console.error("Total height 计算失败，跳过绘图。");
+                    return;
+                }
+
+                drawChart(intervalWidths, intervalPositions, total, totalHeightValue, newPositions);
+
+                console.log("Chart updated successfully after sorting by rating.");
+            });
+
+
+            function getCurrentIntervalTotals(intervals) {
+                const intervalTotals = {};
+                const minWidth = circleRadius * 2; // 最小宽度为一个圆圈的直径
+
+                intervals.forEach(interval => {
+                    intervalTotals[interval] = d3.sum(data, d => categorizePrice(d.r_price_low) === interval);
+                    console.log(`Interval: ${interval}, Total: ${intervalTotals[interval]}`);  // 调试信息
+                });
+
+                const total = d3.sum(Object.values(intervalTotals));
+                const availableWidth = width - margin.left - margin.right;
+
+                // 确保每个区间的宽度至少为minWidth
+                intervals.forEach(interval => {
+                    let calculatedWidth = (intervalTotals[interval] / total) * availableWidth;
+                    intervalWidths[interval] = Math.max(minWidth, calculatedWidth);
+                });
+
+                return intervalTotals;
+            }
+
+            function updateIntervals() {
+
+                const minIntervalWidth = 65; 
+                // 清除旧的区间，确保没有重复
+                currentIntervals = Array.from(new Set(currentIntervals));
+
+                console.log("Current intervals after deduplication:", currentIntervals);
+                
+                if (!currentIntervals || currentIntervals.length === 0) {
+                    console.warn("currentIntervals 为空或未定义，跳过更新。");
+                    return;
+                }
+
+                const intervalTotals = getCurrentIntervalTotals(currentIntervals);
+                const total = d3.sum(Object.values(intervalTotals));
+
+                if (isNaN(total) || total === 0) {
+                    console.warn("Total 餐厅数为 NaN 或 0，跳过更新。");
+                    return;
+                }
+
+                let totalUsedWidth = 0;
+
+                // 计算每个区间的宽度
+                currentIntervals.forEach(interval => {
+                    intervalWidths[interval] = Math.max((intervalTotals[interval] / total) * (width - margin.left - margin.right), minIntervalWidth);
+                    if (isNaN(intervalWidths[interval])) {
+                        console.error(`Invalid interval width for interval: ${interval}`);
+                    }
+                    totalUsedWidth += intervalWidths[interval];
+                });
+
+                // 如果总使用宽度超过了画布宽度，进行缩放
+                if (totalUsedWidth > (width - margin.left - margin.right)) {
+                    const scaleFactor = (width - margin.left - margin.right) / totalUsedWidth;
+                    currentIntervals.forEach(interval => {
+                        intervalWidths[interval] *= scaleFactor;
+                        if (isNaN(intervalWidths[interval])) {
+                            console.error(`Invalid scaled interval width for interval: ${interval}`);
+                        }
+                    });
+                }
+
+                // 计算每个区间的位置
+                let currentPosition = margin.left;
+                currentIntervals.forEach(interval => {
+                    intervalPositions[interval] = currentPosition;
+                    if (isNaN(intervalPositions[interval])) {
+                        console.error(`Invalid interval position for interval: ${interval}`);
+                    }
+                    currentPosition += intervalWidths[interval];
+                });
+
+
+                console.log("Interval widths after update:", intervalWidths);  // 调试信息
+                console.log("Interval positions after update:", intervalPositions);  // 调试信息
+
+                d3.select("#chart").selectAll("*").remove();
+                d3.select("#x-axis-svg").selectAll("*").remove();
+
+                const totalHeightValue = calculateTotalHeight(data, intervalWidths, rowHeight, groupSpacing, margin);
+                if (isNaN(totalHeightValue) || totalHeightValue <= 0 || !isFinite(totalHeightValue)) {
+                    console.error("Total height 计算失败，跳过绘图。");
+                    return;
+                }
+
+                drawChart(intervalWidths, intervalPositions, total, totalHeightValue);
+                drawMinimap(intervalPositions, totalHeightValue, intervalWidths);
+            }
+
+            function drawChart(intervalWidths, intervalPositions, total, totalHeight, positions = null) {
+
+                    if (isNaN(totalHeight) || totalHeight <= 0 || !isFinite(totalHeight)) {
+                        console.error("Invalid total height:", totalHeight);
+                        return;
+                    }
+
+                    const svg = d3.select("#chart")
+                        .append("svg")
+                        .attr("width", width)
+                        .attr("height", totalHeight);
+
+                    // 清除旧的 pattern 定义
+                    svg.select('defs').selectAll('pattern').remove();
+
+                    if (!positions) {
+                        positions = calculatePositions(data, intervalWidths, rowHeight, rectSpacing, margin, intervalPositions);
+                    }
+
+                    svg.append('defs');
+                    function createPattern(svg, id, url) {
+                    return svg.select('defs').append('pattern')
+                        .attr('id', id)
+                        .attr('patternUnits', 'objectBoundingBox')
+                        .attr('width', 1)
+                        .attr('height', 1)
+                        .append('image')
+                        .attr('xlink:href', url)
+                        .attr('width', 2 * innerRadius)
+                        .attr('height', 2 * innerRadius)
+                        .attr('preserveAspectRatio', 'xMidYMid slice')
+                        .attr('x', 0)
+                        .attr('y', 0)
+                        .on("error", function() {
+                            console.error("Image load error: " + url); // 检查图像是否加载成功
+                        });
+                     }
+
+
+                    positions.forEach((d, i) => {
+                        const patternId = `pattern-${i}`;
+                        createPattern(svg, patternId, d.r_photo_env1);
+                    });
+
+                    const tooltip = d3.select("#tooltip");
+
+                    const circles = svg.append('g')
+                        .selectAll("g")
+                        .data(positions)
+                        .enter()
+                        .append("g")
+                        .attr("transform", d => `translate(${d.x + circleRadius}, ${d.y + circleRadius})`);
+
+                    let intervalId;  // 定义在外部以便在 `mouseout` 时清除
+
+                    circles.on("mouseover", function(event, d) {
+                    // 顯示 tooltip
+                    tooltip.style("display", "block");
+
+                    // 更新 tooltip 內容
+                    tooltip.select("#tooltip-title").text(d.r_name || "餐廳名稱未知");
+                    tooltip.select("#tooltip-food-dishes").html(`
+                        <div style="display: flex; flex-wrap: wrap; margin-bottom: 5px;">
+                            ${d.r_food_dishes.split('、').map(dish => `
+                                <div style="background-color: #FFD700; padding: 3px 5px; margin-right: 5px; margin-bottom: 5px; border-radius: 5px; white-space: nowrap;">
+                                    ${dish}
+                                </div>
+                            `).join('')}
+                        </div>
+                    `);
+
+                    tooltip.select("#tooltip-rating").text(`總評分: ${d.r_rating} 星`);
+                    tooltip.select("#tooltip-ratings").html(`
+                        <div style="display: flex; align-items: center; margin-bottom: 2px; font-size: 12px; max-width: 200px;">
+                            <span style="width: 40px;">服務:</span>
+                            <div style="background-color: #ccc; width: 100px; height: 8px; border-radius: 5px; overflow: hidden; position: relative;">
+                                <div style="background-color: gold; width: ${d.r_rate_service * 20}px; height: 8px;"></div>
+                            </div>
+                            <span style="margin-left: 5px; white-space: nowrap;">${d.r_rate_service} 星</span>
+                        </div>
+                        <div style="display: flex; align-items: center; margin-bottom: 2px; font-size: 12px; max-width: 200px;">
+                            <span style="width: 40px;">食物:</span>
+                            <div style="background-color: #ccc; width: 100px; height: 8px; border-radius: 5px; overflow: hidden; position: relative;">
+                                <div style="background-color: gold; width: ${d.r_rating_food * 20}px; height: 8px;"></div>
+                            </div>
+                            <span style="margin-left: 5px; white-space: nowrap;">${d.r_rating_food} 星</span>
+                        </div>
+                        <div style="display: flex; align-items: center; margin-bottom: 2px; font-size: 12px; max-width: 200px;">
+                            <span style="width: 40px;">環境:</span>
+                            <div style="background-color: #ccc; width: 100px; height: 8px; border-radius: 5px; overflow: hidden; position: relative;">
+                                <div style="background-color: gold; width: ${d.r_rate_atmosphere * 20}px; height: 8px;"></div>
+                            </div>
+                            <span style="margin-left: 5px; white-space: nowrap;">${d.r_rate_atmosphere} 星</span>
+                        </div>
+                        <div style="display: flex; align-items: center; font-size: 12px; max-width: 200px;">
+                            <span style="width: 40px;">衛生:</span>
+                            <div style="background-color: #ccc; width: 100px; height: 8px; border-radius: 5px; overflow: hidden; position: relative;">
+                                <div style="background-color: gold; width: ${d.r_rate_clean * 20}px; height: 8px;"></div>
+                            </div>
+                            <span style="margin-left: 5px; white-space: nowrap;">${d.r_rate_clean} 星</span>
+                        </div>
+                    `);
+
+                    const images = [d.r_photo_env1, d.r_photo_env2, d.r_photo_env3];
+                    let currentImageIndex = 0;
+                    const carouselImages = tooltip.select("#carousel-images");
+
+                    // 清空舊的圖片
+                    carouselImages.html("");
+
+                    // 添加新的圖片到輪播
+                    images.forEach(imgUrl => {
+                        carouselImages.append("img")
+                            .attr("src", imgUrl)
+                            .attr("style", "width: 100%; height: auto; object-fit: cover;"); // 使圖片寬度與 Tooltip 相同
+                    });
+
+                    // 啟動輪播
+                    const intervalId = setInterval(() => {
+                        currentImageIndex = (currentImageIndex + 1) % images.length;
+                        carouselImages.style("transform", `translateX(-${currentImageIndex * 100}%)`);
+                    }, 3000); // 每3秒切換一次圖片
+
+                    d3.select(this).on("mouseout", function() {
+                        // 隱藏 tooltip 並停止輪播
+                        clearInterval(intervalId);
+                        tooltip.style("display", "none");
+                    });
+                })
+                .on("mousemove", function(event) {
+                    // 更新 tooltip 位置
+                    const tooltipHeight = tooltip.node().offsetHeight;
+                    const totalHeight = calculateTotalHeight(data, intervalWidths, rowHeight, groupSpacing, margin);
+
+                    let topPosition = event.pageY + 10;
+
+                    // 如果 tooltip 会超出画布底部，则显示在鼠标上方
+                    if (event.pageY + tooltipHeight + 10 > totalHeight) {
+                        topPosition = event.pageY - tooltipHeight - 10;
+                    }
+
+                    tooltip
+                        .style("left", (event.pageX + 10) + "px")
+                        .style("top", `${topPosition}px`);
+                });
+
+                // 繪製圓圈並填充初始圖片
+                circles.append("circle")
+                    .attr("r", innerRadius)
+                    .style("fill", function(d, i) {
+                        const patternId = `pattern-${i}`;
+                        return `url(#${patternId})`;
+                    });
+
+                                    
+                const radius = 60;
+                const leftData = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+                const rightData = [1, 1, 1, 1, 1, 1, 1];
+                const color = d3.scaleOrdinal(d3.schemeSet3);
+                const dayColor = d3.scaleOrdinal()
+                    .range(["lightgrey", "#FFF0AC", "#FFD400", "#FFF0AC", "#FFF0AC", "#FFD400", "#FFD400", "#FFF0AC"]);
+
+                const leftPie = d3.pie()
+                    .startAngle(-Math.PI)
+                    .endAngle(0)
+                    .value(d => d);
+                const leftDataReady = leftPie(leftData);
+                const rightPie = d3.pie()
+                    .startAngle(0)
+                    .endAngle(Math.PI)
+                    .value(d => d);
+                const rightDataReady = rightPie(rightData);
+
+                const arc = d3.arc()
+                    .innerRadius(innerRadius)
+                    .outerRadius(radius)
+                    .cornerRadius(2);
+
+                circles.selectAll('path.left')
+                    .data(leftDataReady)
+                    .enter()
+                    .append('path')
+                    .attr('class', 'left')
+                    .attr('d', d3.arc()
+                        .innerRadius(innerRadius)
+                        .outerRadius(radius)
+                        .cornerRadius(2)
+                    )
+                    .attr('fill', (d, i) => color(i))
+                    .attr("stroke", "white")
+                    .style("stroke-width", "1px");
+
+                circles.selectAll('path.right')
+                    .data(rightDataReady)
+                    .enter()
+                    .append('path')
+                    .attr('class', 'right')
+                    .attr('d', d3.arc()
+                        .innerRadius(innerRadius)
+                        .outerRadius(radius)
+                        .cornerRadius(2)
+                    )
+                    .attr('fill', (d, i) => dayColor(i))
+                    .attr("stroke", "white")
+                    .style("stroke-width", "1px");
+
+                const days = ["M", "T", "W", "T", "F", "S", "S"];
+                circles.selectAll('text.days')
+                    .data(rightDataReady)
+                    .enter()
+                    .append('text')
+                    .attr('class', 'days')
+                    .attr('transform', d => {
+                        const pos = d3.arc().innerRadius((radius + innerRadius) / 2).outerRadius((radius + innerRadius) / 2).centroid(d);
+                        return `translate(${pos[0]},${pos[1]})`;
+                    })
+                    .attr('text-anchor', 'middle')
+                    .attr('dy', '0.35em')
+                    .attr('font-size', '10px')
+                    .attr('font-weight', 'bold')
+                    .text((d, i) => days[i]);
+
+                const smallCircleRadius = 10;
+                const iconOffset = radius + smallCircleRadius + 2;
+                // Add star icon
+
+                circles.append('circle')
+                    .attr('cx', d => Math.cos(-Math.PI / 5) * iconOffset)
+                    .attr('cy', d => Math.sin(-Math.PI / 5) * iconOffset)
+                    .attr('r', smallCircleRadius)
+                    .attr('fill', 'white')
+                    .attr('stroke', 'black')
+                    .attr('stroke-width', '1px');
+
+                circles.append("text")
+                    .attr("x", Math.cos(-Math.PI / 5) * iconOffset)
+                    .attr("y", Math.sin(-Math.PI / 5) * iconOffset)
+                    .attr("text-anchor", "middle")
+                    .attr("alignment-baseline", "middle")
+                    .attr("font-size", "15px")
+                    .attr("class", "fas fa-star")
+                    .attr("fill", "#FFD400")
+                    //.attr("opacity", 0.5)
+                    .text('\uf005'); // Font Awesome - star (Unicode)
+
+                // 添加星星评分
+                circles.append("text")
+                    .attr("x", Math.cos(-Math.PI / 5) * iconOffset) // 调整位置
+                    .attr("y", Math.sin(-Math.PI / 5) * iconOffset)
+                    .attr("text-anchor", "middle")
+                    .attr("alignment-baseline", "middle")
+                    .attr("font-size", "7px")
+                    .attr("font-weight", "bold")
+                    .text(function(d) {
+                        console.log('Rating:', d.r_rating);  // 检查评分数据
+                        return d.r_rating !== undefined ? d.r_rating : 'N/A'; // 如果未定义，返回占位符
+                    });
+
+                // 添加停车图标
+                circles.append('circle')
+                    .attr('cx', Math.cos(-Math.PI / 4 + 0.5) * iconOffset)
+                    .attr('cy', Math.sin(-Math.PI / 4 + 0.5) * iconOffset)
+                    .attr('r', smallCircleRadius)
+                    .attr('fill', 'white')
+                    .attr('stroke', 'black')
+                    .attr('stroke-width', '1px');
+
+                    circles.append("text")
+                    .attr("x", Math.cos(-Math.PI / 4 + 0.5) * iconOffset)
+                    .attr("y", Math.sin(-Math.PI / 4 + 0.51) * iconOffset)
+                    .attr("text-anchor", "middle")
+                    .attr("alignment-baseline", "middle")
+                    .attr("font-size", "15px")
+                    .attr("class", "fas fa-parking")
+                    .attr('fill', d => {
+                    if (d.r_has_parking == 1) {
+                            return 'blue'; // If there is parking, set color to blue
+                        } else {
+                            return 'lightgrey'; // If there is no parking, set color to light grey
+                        }
+                    })
+                    .text('\uf540'); // Font Awesome - parking (Unicode)
+                    
+                // 绘制边框矩形
+                svg.append("g")
+                    .selectAll("rect")
+                    .data(positions.filter(d => d.border))
+                    .enter()
+                    .append("rect")
+                    .attr("x", d => d.x)
+                    .attr("y", d => d.y)
+                    .attr("width", d => Object.values(intervalWidths).reduce((a, b) => a + b, 0))
+                    .attr("height", d => d.height)
+                    .attr("class", "border");
+
+                svg.append("g")
+                    .selectAll(".interval-separator")
+                    .data(currentIntervals)
+                    .enter()
+                    .append("line")
+                    .attr("class", "interval-separator")
+                    .attr("x1", d => intervalPositions[d] + intervalWidths[d])
+                    .attr("y1", margin.top)
+                    .attr("x2", d => intervalPositions[d] + intervalWidths[d])
+                    .attr("y2", totalHeight - margin.bottom)
+                    .attr("stroke", "black")
+                    .attr("stroke-width", 1);
+
+
+
+                svg.append("g")
+                    .selectAll("text")
+                    .data(positions.filter(d => d.label))
+                    .enter()
+                    .append("text")
+                    .attr("x", d => d.x + 100) // 調整 x 坐標
+                    .attr("y", d => d.y - 10) // 調整 y 坐標
+                    .attr("dy", "0.35em")
+                    .attr("text-anchor", "start")
+                    .attr("font-size", "12px")
+                    .attr("font-weight", "bold")
+                    .attr("fill", "black") // 添加顏色以確保文本可見
+                    .text(d => `用餐時間: ${d.r_time_low}`);
+                    console.log('Positions with labels:', positions.filter(d => d.label));
+
+                const xAxisSvg = d3.select("#x-axis-svg");
+
+                const xScale = d3.scaleLinear()
+                    .domain([0, total])
+                    .range([margin.left, width - margin.right]);
+
+                xAxisSvg.append("g")
+                    .attr("transform", `translate(0, 0)`)
+                    .call(d3.axisBottom(xScale)
+                        .tickValues(Object.values(intervalPositions).map(d => xScale.invert(d)))
+                        .tickFormat((d, i) => currentIntervals[i]));
+
+                // 向右移動的箭頭
+
+                d3.select("body").append("div")
+                    .attr("class", "arrow arrow-right")
+                    .text("▶")
+                    .on("click", () => {
+                        const nextIndex = intervals.indexOf(currentIntervals[currentIntervals.length - 1]) + 1;
+                        if (nextIndex < intervals.length) {
+                            currentIntervals = intervals.slice(nextIndex - 2, nextIndex + 1);
+                            updateIntervals();
+                        }
+                    });
+
+                // 向左移動的箭頭
+                d3.select("body").append("div")
+                    .attr("class", "arrow arrow-left")
+                    .text("◀")
+                    .on("click", () => {
+                        const prevIndex = intervals.indexOf(currentIntervals[0]) - 1;
+                        if (prevIndex >= 0) {
+                            currentIntervals = intervals.slice(prevIndex, prevIndex + 3);
+                            updateIntervals();
+                        }        
+                    });
+            }
+
+            function calculatePositions(data, intervalWidths, rowHeight, rectSpacing, margin, intervalPositions) {
+                const positions = [];
+                let groupYOffset = margin.top;
+
+                // 確保每個間隔的最小寬度能放置一個圓圈
+                Object.keys(intervalWidths).forEach(key => {
+                    if (intervalWidths[key] < circleRadius * 2) {
+                        intervalWidths[key] = circleRadius * 2 + rectSpacing;
+                    }
+                });
+
+                sortedTimes.forEach(time => {
+                    const groupData = currentIntervals.map(interval => ({
+                        key: interval,
+                        value: data.filter(d => d.r_time_low == time && categorizePrice(d.r_price_low) === interval).length
+                    }));
+
+                    // 檢查該時間段是否有任何餐廳
+                    const hasData = groupData.some(d => d.value > 0);
+                    if (!hasData) {
+                        // 如果沒有任何餐廳，跳過這個時間段
+                        return;
+                    }
+
+                    const maxRows = Math.max(...groupData.map(d => {
+                        const value = d.value || 0;
+                        const width = intervalWidths[d.key] || 0;
+                        const maxItemsPerRow = width > 0 ? Math.max(1, Math.floor(width / (circleRadius * 2 + rectSpacing))) : 1;
+                        return Math.ceil(value / maxItemsPerRow);
+                    }));
+
+                    const groupHeight = maxRows > 0 ? maxRows * (circleRadius * 2 + rectSpacing) : 10;  // 如果沒有數據，默認高度為10
+                    positions.push({
+                        x: margin.left,
+                        y: groupYOffset,
+                        width: Math.max(...Object.values(intervalWidths)) - margin.left - margin.right,
+                        height: groupHeight + 40, // 增加高度
+                        key: '',
+                        time: time,
+                        border: true,
+                        label: true, // 設置 label 屬性
+                        r_time_low: time // 包含需要顯示的用餐時間
+                    });
+
+                    const placedPositions = {};
+
+                    groupData.forEach(group => {
+                        let xOffset = 0;
+                        let yOffset = groupYOffset;
+                        const maxItemsPerRow = Math.floor(intervalWidths[group.key] / (circleRadius * 2 + rectSpacing));
+
+                        // 过滤出属于当前group.key和time的餐厅
+                        const restaurantsInGroup = data.filter(d => d.r_time_low == time && categorizePrice(d.r_price_low) === group.key);
+
+                        restaurantsInGroup.forEach((restaurant, i) => {
+                            if (i > 0 && i % maxItemsPerRow === 0) {
+                                xOffset = 0;
+                                yOffset += (circleRadius * 2 + rectSpacing);
+                            }
+
+                            let currentX = intervalPositions[group.key] + xOffset;
+                            let posKey = `${currentX}-${yOffset}`;
+
+                            // 检查是否有相同的 X 位置，若有则加上 radius 的宽度
+                            while (placedPositions[posKey]) {
+                                currentX += circleRadius * 2;
+                                posKey = `${currentX}-${yOffset}`;
+                            }
+
+                            if (currentX + circleRadius * 2 > intervalPositions[group.key] + intervalWidths[group.key]) {
+                                xOffset = 0;
+                                yOffset += (circleRadius * 2 + rectSpacing);
+                                currentX = intervalPositions[group.key] + xOffset;
+                            }
+
+                            positions.push({
+                                x: currentX,
+                                y: yOffset,
+                                key: group.key,
+                                time: time,
+                                label: false,
+                                r_name: restaurant.r_name,
+                                r_photo_env1: restaurant.r_photo_env1,
+                                r_photo_env2: restaurant.r_photo_env2,  // 添加第二张照片的URL
+                                r_photo_env3: restaurant.r_photo_env3,  // 添加第三张照片的URL
+                                r_rating: restaurant.r_rating,
+                                r_has_parking: restaurant.r_has_parking,
+                                r_food_dishes: restaurant.r_food_dishes,  // 添加菜餚信息
+                                r_rate_clean: restaurant.r_rate_clean,    // 添加清潔度评分
+                                r_rate_atmosphere: restaurant.r_rate_atmosphere,  // 添加氛圍评分
+                                r_rate_service: restaurant.r_rate_service,  // 添加服务评分
+                                r_rating_food: restaurant.r_rating_food  // 添加食物评分
+                            });
+
+
+                            placedPositions[posKey] = true;
+                            xOffset += circleRadius * 2 + rectSpacing;
+                        });
+                    });
+
+                    groupYOffset += groupHeight + groupSpacing + 40; // 增加垂直间距
+
+                });
+
+                return positions;
+            }
+
+            function calculateSortedPositions(data, intervalWidths, rowHeight, rectSpacing, margin, intervalPositions) {
+                    const positions = [];
+                    let groupYOffset = margin.top;
+
+                    // 确保每个间隔的最小宽度能放置一个圆圈
+                    Object.keys(intervalWidths).forEach(key => {
+                        if (intervalWidths[key] < circleRadius * 2) {
+                            intervalWidths[key] = circleRadius * 2 + rectSpacing;
+                        }
+                    });
+
+                    sortedTimes.forEach(time => {
+                        // 按 `r_rating` 对数据排序，并过滤属于当前区间的餐厅
+                        const groupData = currentIntervals.map(interval => ({
+                    key: interval,
+                    items: data
+                        .filter(d => d.r_time_low == time && (categorizePrice(d.r_price_low) === interval || !categorizePrice(d.r_price_low)))
+                        .sort((a, b) => b.r_rating - a.r_rating)
+
+                        }));
+
+                        // 检查该时间段是否有任何餐厅
+                        const hasData = groupData.some(group => group.items.length > 0);
+                        if (!hasData) {
+                            return;
+                        }
+
+                        const maxRows = Math.max(...groupData.map(group => {
+                            const value = group.items.length;
+                            const width = intervalWidths[group.key] || 0;
+                            const maxItemsPerRow = width > 0 ? Math.max(1, Math.floor(width / (circleRadius * 2 + rectSpacing))) : 1;
+                            return Math.ceil(value / maxItemsPerRow);
+                        }));
+
+                        const groupHeight = maxRows > 0 ? maxRows * (circleRadius * 2 + rectSpacing) : 10;
+
+                        // 如果需要在区间中显示标签（如"用餐时间"），可以将其添加到positions数组中
+                        positions.push({
+                            x: margin.left,
+                            y: groupYOffset,
+                            width: Math.max(...Object.values(intervalWidths)) - margin.left - margin.right,
+                            height: groupHeight + 40, // 调整高度以避免重叠
+                            key: '',
+                            time: time,
+                            border: true,
+                            label: true,
+                            r_time_low: time
+                        });
+
+                        const placedPositions = {};
+
+                        groupData.forEach(group => {
+                            let xOffset = 0;
+                            let yOffset = groupYOffset;
+                            const maxItemsPerRow = Math.floor(intervalWidths[group.key] / (circleRadius * 2 + rectSpacing));
+
+                        group.items.forEach((restaurant, i) => {
+                            if (i > 0 && i % maxItemsPerRow === 0) {
+                                xOffset = 0;
+                                yOffset += (circleRadius * 2 + rectSpacing);
+                            }
+
+                            let currentX = intervalPositions[group.key] + xOffset;
+                            let posKey = `${currentX}-${yOffset}`;
+
+                            while (placedPositions[posKey]) {
+                                currentX += circleRadius * 2;
+                                posKey = `${currentX}-${yOffset}`;
+                            }
+
+                            if (currentX + circleRadius * 2 > intervalPositions[group.key] + intervalWidths[group.key]) {
+                                xOffset = 0;
+                                yOffset += (circleRadius * 2 + rectSpacing);
+                                currentX = intervalPositions[group.key] + xOffset;
+                            }
+
+                            positions.push({
+                                x: currentX,
+                                y: yOffset,
+                                key: group.key,
+                                time: time,
+                                label: false,
+                                r_name: restaurant.r_name,
+                                r_photo_env1: restaurant.r_photo_env1,
+                                r_photo_env2: restaurant.r_photo_env2,  // 添加第二张照片的URL
+                                r_photo_env3: restaurant.r_photo_env3,  // 添加第三张照片的URL
+                                r_rating: restaurant.r_rating,
+                                r_has_parking: restaurant.r_has_parking,
+                                r_food_dishes: restaurant.r_food_dishes,  // 添加菜餚信息
+                                r_rate_clean: restaurant.r_rate_clean,    // 添加清潔度评分
+                                r_rate_atmosphere: restaurant.r_rate_atmosphere,  // 添加氛圍评分
+                                r_rate_service: restaurant.r_rate_service,  // 添加服务评分
+                                r_rating_food: restaurant.r_rating_food  // 添加食物评分
+                            });
+
+
+                            placedPositions[posKey] = true;
+                            xOffset += circleRadius * 2 + rectSpacing;
+                        });
+                    });
+
+                    groupYOffset += groupHeight + groupSpacing + 40; // 调整垂直间距以避免重叠
+                });
+
+                return positions;
+            }
+
+
+
+            function calculateTotalHeight(data, intervalWidths, rowHeight, groupSpacing, margin) {
+                let totalHeight = margin.top;
+
+                sortedTimes.forEach(time => {
+                    const groupData = currentIntervals.map(interval => ({
+                        key: interval,
+                        value: data.filter(d => d.r_time_low == time && categorizePrice(d.r_price_low) === interval).length
+                    }));
+
+                    // 檢查該時間段是否有任何餐廳
+                    const hasData = groupData.some(d => d.value > 0);
+                    if (!hasData) {
+                        // 如果沒有任何餐廳，跳過這個時間段
+                        return;
+                    }
+
+                    const maxRows = Math.max(...groupData.map(d => {
+                        const value = d.value || 0;
+                        const width = intervalWidths[d.key] || 0;
+                        if (width === 0) return 0;
+                        const maxItemsPerRow = Math.max(1, Math.floor(width / (circleRadius * 2 + rectSpacing)));
+                        return Math.ceil(value / maxItemsPerRow);
+                    }));
+
+                    const groupHeight = maxRows > 0 ? maxRows * (circleRadius * 2 + rectSpacing) : 10;  // 如果没有数据，默认高度为10
+                    console.log(`Group height for time ${time}:`, groupHeight);  // 查看组高度
+
+                    if (isNaN(groupHeight) || groupHeight < 0) {
+                        console.error("Invalid groupHeight:", groupHeight);
+                        return;
+                    }
+
+                    totalHeight += groupHeight + groupSpacing + 40; // 增加间距
+                });
+
+                totalHeight += margin.bottom;
+
+                if (isNaN(totalHeight) || totalHeight <= 0 || !isFinite(totalHeight)) {
+                    console.error("Invalid total height calculated:", totalHeight);
+                    return 0;
+                }
+
+                return totalHeight;
+            }
+
+            function drawMinimap(intervalPositions, totalHeight, intervalWidths) {
+                const minimapWidth = 200;
+                const minimapHeight = 100;
+
+                const scaleX = d3.scaleBand()
+                    .domain(intervals)
+                    .range([0, minimapWidth])
+                    .padding(0.1);
+
+                // 保持 sortedTimes 的正確順序
+                const reversedTimes = sortedTimes.slice().reverse();
+
+                const intervalData = intervals.map(interval => {
+                    const timeData = {};
+                    reversedTimes.forEach(time => {
+                        timeData[time] = data.filter(d => d.r_time_low === time && categorizePrice(d.r_price_low) === interval).length;
+                    });
+                    return {
+                        interval: interval,
+                        ...timeData
+                    };
+                });
+
+                const maxYValue = d3.max(intervalData, d => d3.sum(reversedTimes.map(time => d[time])));
+
+                // 調整 scaleY 的範圍，使其從最大值到 0 映射
+                const scaleY = d3.scaleLinear()
+                    .domain([maxYValue, 0])
+                    .range([0, minimapHeight]);
+
+                d3.select("#minimap").selectAll("*").remove();
+
+                d3.select("#minimap")
+                    .append("rect")
+                    .attr("width", minimapWidth)
+                    .attr("height", minimapHeight)
+                    .attr("fill", "#ddd");
+
+                const stack = d3.stack()
+                    .keys(reversedTimes);
+
+                const stackedData = stack(intervalData);
+
+                const colors = d3.scaleOrdinal(d3.schemeCategory10);
+
+                stackedData.forEach((layer, layerIndex) => {
+                    d3.select("#minimap").selectAll(`.bar-${layer.key}`)
+                        .data(layer)
+                        .enter()
+                        .append("rect")
+                        .attr("class", `bar-${layer.key}`)
+                        .attr("x", d => scaleX(d.data.interval))
+                        .attr("y", d => scaleY(d[1]))
+                        .attr("width", scaleX.bandwidth())
+                        .attr("height", d => scaleY(d[0]) - scaleY(d[1]))
+                        .attr("fill", colors(layerIndex))
+                        .attr("stroke", "black");
+                });
+
+                const currentStart = currentIntervals[0];
+                const currentEnd = currentIntervals[currentIntervals.length - 1];
+                const xPositionStart = scaleX(currentStart);
+                const xPositionEnd = scaleX(currentEnd) + scaleX.bandwidth();
+
+                d3.select("#minimap").append("rect")
+                    .attr("x", xPositionStart)
+                    .attr("y", 0)
+                    .attr("width", xPositionEnd - xPositionStart)
+                    .attr("height", minimapHeight)
+                    .attr("stroke", "red")
+                    .attr("stroke-width", 2)
+                    .attr("fill", "none");
+
+                intervals.forEach(interval => {
+                    if (!currentIntervals.includes(interval)) {
+                        d3.select("#minimap").append("rect")
+                            .attr("x", scaleX(interval))
+                            .attr("y", 0)
+                            .attr("width", scaleX.bandwidth())
+                            .attr("height", minimapHeight)
+                            .attr("fill", "white")
+                            .attr("fill-opacity", 0.5);
+                    }
+                });
+            }
+
+            updateIntervals();
+        });
+    </script>
+</body>
+</html>
+```
