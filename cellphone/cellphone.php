@@ -48,10 +48,105 @@ if ($link) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="0807.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <link rel="stylesheet" href="cellphone.css">
+    <style>
+        .restaurant-section {
+            display: none;
+        }
+        .active-restaurant {
+            display: block;
+        }
+        .nav-button {
+            margin: 10px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .nav-button:hover {
+            background-color: #45a049;
+        }
 
+        /* CSS for image slider */
+        .slideshow-container {
+            position: relative;
+            max-width: 100%;
+            margin: auto;
+        }
+
+        .mySlides img {
+            width: 100%; /* 設定圖片寬度為100% */
+            height: 200px; /* 固定圖片高度 */
+            object-fit: cover; /* 圖片的大小會根據容器大小進行調整，保持內容不被拉伸 */
+        }
+
+        .prev, .next {
+            cursor: pointer;
+            position: absolute;
+            top: 20%;
+            width: auto;
+            margin-top: -22px;
+            padding: 16px;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            transition: 0.6s ease;
+            border-radius: 0 3px 3px 0;
+            user-select: none;
+        }
+
+        .next {
+            right: 0;
+            border-radius: 3px 0 0 3px;
+        }
+
+        .prev:hover, .next:hover {
+            background-color: rgba(0,0,0,0.8);
+        }
+
+        .info {
+            margin: 0 auto;
+        }
+
+        .restaurant-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin:10px 0px;
+        }
+
+        .star-rating img {
+            height: 20px; /* 設定統一的高度 */
+            vertical-align: middle; /* 對齊方式 */
+        }
+
+        .vibe-tags, .food-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px; /* 控制標籤間距 */
+            margin: 5px 0;
+            font-size: 15px;
+            font-weight: normal;
+        }
+
+        .vibe-tags .restaurant-tag {
+            display: inline-block;
+            background-color: #f1f1f1;
+            padding: 5px;
+            margin-right: 5px;
+            border-radius: 5px;
+        }
+
+        .price-tag {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .gallery-container {
+            margin: 20px 0;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -105,6 +200,8 @@ if ($link) {
                         echo "<div class='restaurant-tag'>" . htmlspecialchars(trim($vibe)) . "</div>";
                     }
                 }
+                echo "</div>";
+                echo "<div class='vibe-tags'>";
                 if (!empty($restaurant_data['r_food_dishes'])) {
                     $vibes = explode('、', $restaurant_data['r_food_dishes']);
                     foreach ($vibes as $vibe) {
@@ -120,17 +217,13 @@ if ($link) {
                 }
                 echo "</div>";
 
-                echo "</div>"; // 結束 info?>
-
-                <div class="middle-section2" style="flex: auto;">
-                    <?php include '../openTime/openTime.php'; ?>
-                </div>
-                <?php
+                echo "</div>"; // 結束 info
+                
                 echo "</div>";
                 
                 // Navigation arrows
-                echo "<a class='prev' onclick='plusSlides(-1, \"environment-{$r_id}\")'>&#10094;</a>";
-                echo "<a class='next' onclick='plusSlides(1, \"environment-{$r_id}\")'>&#10095;</a>";
+                echo "<a class='prev' onclick='cellphonePlusSlides(-1, \"environment-{$r_id}\")'>&#10094;</a>";
+                echo "<a class='next' onclick='cellphonePlusSlides(1, \"environment-{$r_id}\")'>&#10095;</a>";
 
                 echo "</div>";
                 echo "</div>";
@@ -152,8 +245,7 @@ if ($link) {
             ?>
             <div class="navigation-buttons">
                 <?php if (count($all_restaurant_data) > 1): ?>
-                    <button class="nav-button" onclick="changeRestaurant(-1)">Previous Restaurant</button>
-                    <button class="nav-button" onclick="changeRestaurant(1)">Next Restaurant</button>
+                    <button class="nav-button" onclick="cellphoneChangeRestaurant(1)">Next Restaurant</button>
                 <?php endif; ?>
             </div>
         </div>
@@ -165,11 +257,11 @@ if ($link) {
 
         let slideIndex = {};
 
-        function plusSlides(n, category) {
-            showSlides(slideIndex[category] += n, category);
+        function cellphonePlusSlides(n, category) {
+            cellphoneShowSlides(slideIndex[category] += n, category);
         }
 
-        function showSlides(n, category) {
+        function cellphoneShowSlides(n, category) {
             let slides = document.getElementsByClassName(`mySlides ${category}`);
             if (!slideIndex[category]) {
                 slideIndex[category] = 1;
@@ -185,7 +277,7 @@ if ($link) {
             slides[slideIndex[category] - 1].style.display = "block";  
         }
 
-        function changeRestaurant(direction) {
+        function cellphoneChangeRestaurant(direction) {
             document.getElementById(`restaurant-${currentRestaurantIndex}`).classList.remove('active-restaurant');
             currentRestaurantIndex = (currentRestaurantIndex + direction + totalRestaurants) % totalRestaurants;
             document.getElementById(`restaurant-${currentRestaurantIndex}`).classList.add('active-restaurant');
@@ -195,7 +287,7 @@ if ($link) {
             categories.forEach((slide) => {
                 let category = slide.classList[1];  // Assumes the second class is the category
                 slideIndex[category] = 1;
-                showSlides(slideIndex[category], category);
+                cellphoneShowSlides(slideIndex[category], category);
             });
         }
 
@@ -206,10 +298,13 @@ if ($link) {
                 if (!slideIndex[category]) {
                     slideIndex[category] = 1;
                 }
-                showSlides(slideIndex[category], category);
+                cellphoneShowSlides(slideIndex[category], category);
             });
         });
     </script>
+
+    <?php include '../openTime/openTime.php'; ?>
+
 </body>
 </html>
 <?php

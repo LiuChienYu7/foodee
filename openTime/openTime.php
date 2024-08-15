@@ -1,4 +1,5 @@
 <?php
+ob_start(); // 開啟緩衝區
 header('Content-Type: text/html; charset=UTF-8');
 
 // 資料庫連線設置
@@ -59,7 +60,7 @@ mysqli_close($link);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restaurant Hours</title>
+    <title>Restaurant Info</title>
     <link rel="stylesheet" href="./openTime.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
@@ -93,6 +94,37 @@ mysqli_close($link);
         .dim {
             opacity: 0.2;
         }
+        .slideshow-container {
+            position: relative;
+            max-width: 100%;
+            margin: auto;
+        }
+        .mySlides img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .prev, .next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            width: auto;
+            margin-top: -22px;
+            padding: 16px;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            transition: 0.6s ease;
+            border-radius: 0 3px 3px 0;
+            user-select: none;
+        }
+        .next {
+            right: 0;
+            border-radius: 3px 0 0 3px;
+        }
+        .prev:hover, .next:hover {
+            background-color: rgba(0,0,0,0.8);
+        }
     </style>
 </head>
 <body>
@@ -113,6 +145,25 @@ mysqli_close($link);
 
     <div id="chart" class="chart-container"></div>
 
+    <div class="slideshow-container">
+        <div class="mySlides">
+            <img src="image1.jpg" style="width:100%">
+        </div>
+
+        <div class="mySlides">
+            <img src="image2.jpg" style="width:100%">
+        </div>
+
+        <div class="mySlides">
+            <img src="image3.jpg" style="width:100%">
+        </div>
+
+        <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+        <a class="next" onclick="plusSlides(1)">&#10095;</a>
+    </div>
+
+    <?php include '../openTime/openTime.php'; ?>
+
     <script>
         const parseTime = d3.timeParse("%H%M");
         const formatTime = d3.timeFormat("%H:%M");
@@ -120,7 +171,7 @@ mysqli_close($link);
 
         const data = <?php echo json_encode($all_restaurant_data); ?>;
         const restaurantNames = <?php echo json_encode($restaurant_names); ?>;
-        const colors = ['#d62828', '#00a896', '#5fa8d3'];  // 為三家餐廳指定紅色、綠色和藍色
+        const colors = ['#d62828', '#00a896', '#5fa8d3'];
 
         function updateChart(restaurantsData) {
             const svgContainer = d3.select("#chart");
@@ -139,7 +190,6 @@ mysqli_close($link);
 
             restaurantsData.forEach((hoursPeriods, index) => {
                 const extendedData = [];
-
                 const allHoursPeriods = JSON.parse(hoursPeriods.replace(/'/g, '"'));
 
                 allHoursPeriods.forEach(period => {
@@ -176,12 +226,12 @@ mysqli_close($link);
                     .enter().append("rect")
                     .attr("class", "open-bar open-bar-" + index)
                     .attr("x", d => xScale(days[d.day - 1]))
-                    .attr("y", yScale(parseTime("2400")))  // 初始設置於底部
+                    .attr("y", yScale(parseTime("2400")))
                     .attr("width", xScale.bandwidth())
-                    .attr("height", 0)  // 初始高度為0
-                    .attr("fill", colors[index])  // 使用指定的顏色
+                    .attr("height", 0)
+                    .attr("fill", colors[index])
                     .attr("opacity", 0.7)
-                    .transition()  // 加入動畫效果
+                    .transition()
                     .duration(750)
                     .attr("y", d => yScale(d.start))
                     .attr("height", d => yScale(d.end) - yScale(d.start));
@@ -203,7 +253,6 @@ mysqli_close($link);
             d3.selectAll('.open-bar').classed('dim', true);
             d3.selectAll('.open-bar-' + index).classed('highlight', true).classed('dim', false);
             
-            // 將按鈕顏色與圖表顏色對應
             d3.select(`#button-${restaurantIds[index]}`)
                 .style("background-color", colors[index])
                 .style("color", "#fff");
@@ -212,7 +261,6 @@ mysqli_close($link);
         function resetHighlight() {
             d3.selectAll('.open-bar').classed('dim', false).classed('highlight', false);
 
-            // 恢復按鈕原色
             d3.selectAll('.button-container button')
                 .style("background-color", "#f0f0f0")
                 .style("color", "#000");
@@ -222,7 +270,6 @@ mysqli_close($link);
             const hoursPeriods = data[restaurantId];
             updateChart([hoursPeriods]);
 
-            // Highlight the selected button
             document.querySelectorAll('.button-container button').forEach(button => {
                 button.classList.remove('selected');
             });
@@ -230,10 +277,40 @@ mysqli_close($link);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            updateChart(Object.values(data));  // 顯示所有餐廳的詳細營業時間
+            updateChart(Object.values(data));
+
+            // 初始化圖片切換功能
+            let slideIndex = 1;
+            showSlides(slideIndex);
+
+            document.querySelectorAll('.prev').forEach(element => {
+                element.addEventListener('click', () => plusSlides(-1));
+            });
+
+            document.querySelectorAll('.next').forEach(element => {
+                element.addEventListener('click', () => plusSlides(1));
+            });
         });
+
+        function plusSlides(n) {
+            showSlides(slideIndex += n);
+        }
+
+        function showSlides(n) {
+            let i;
+            let slides = document.getElementsByClassName("mySlides");
+            if (n > slides.length) { slideIndex = 1; }
+            if (n < 1) { slideIndex = slides.length; }
+            for (i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";  
+            }
+            slides[slideIndex-1].style.display = "block";  
+        }
 
         const restaurantIds = <?php echo json_encode($restaurant_ids); ?>;
     </script>
 </body>
 </html>
+<?php
+ob_end_flush();
+?>
