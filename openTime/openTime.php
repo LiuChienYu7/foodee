@@ -11,48 +11,49 @@ $dbname = 'foodee';
 // 建立資料庫連線
 $link = mysqli_connect($host, $dbuser, $dbpassword, $dbname);
 
+if (!$link) {
+    die("Failed to connect to the database: " . mysqli_connect_error());
+}
+
+mysqli_query($link, 'SET NAMES utf8');
+
 // 初始化變數
 $all_restaurant_data = [];
 $restaurant_ids = [];
 $restaurant_names = [];
 
-if ($link) {
-    mysqli_query($link, 'SET NAMES utf8');
+// 從 URL 查詢參數獲取餐廳 ID
+for ($i = 1; $i <= 3; $i++) {
+    if (isset($_GET["r_id$i"])) {
+        $r_id = intval($_GET["r_id$i"]);
+        $restaurant_ids[] = $r_id;
+        
+        // 查詢每個餐廳的名稱
+        $query_name = "SELECT r_name FROM detail WHERE r_id = $r_id";
+        $result_name = mysqli_query($link, $query_name);
 
-    // 從 URL 查詢參數獲取餐廳 ID
-    for ($i = 1; $i <= 3; $i++) {
-        if (isset($_GET["r_id$i"])) {
-            $r_id = intval($_GET["r_id$i"]);
-            $restaurant_ids[] = $r_id;
-            
-            // 查詢每個餐廳的名稱
-            $query_name = "SELECT r_name FROM detail WHERE r_id = $r_id";
-            $result_name = mysqli_query($link, $query_name);
+        if ($result_name && mysqli_num_rows($result_name) > 0) {
+            $row_name = mysqli_fetch_assoc($result_name);
+            $restaurant_names[$r_id] = $row_name['r_name'];
+        } else {
+            echo "Error in query: " . mysqli_error($link);
+            $restaurant_names[$r_id] = 'Unknown';
+        }
 
-            if ($result_name) {
-                $row_name = mysqli_fetch_assoc($result_name);
-                $restaurant_names[$r_id] = $row_name['r_name'];
-            } else {
-                echo "Error in query: " . mysqli_error($link);
-                $restaurant_names[$r_id] = 'Unknown';
-            }
+        // 查詢每個餐廳的營業時間
+        $query_hours = "SELECT r_hours_periods FROM detail WHERE r_id = $r_id";
+        $result_hours = mysqli_query($link, $query_hours);
 
-            // 查詢每個餐廳的營業時間
-            $query_hours = "SELECT r_hours_periods FROM detail WHERE r_id = $r_id";
-            $result_hours = mysqli_query($link, $query_hours);
-
-            if ($result_hours) {
-                $row_hours = mysqli_fetch_assoc($result_hours);
-                $all_restaurant_data[$r_id] = $row_hours['r_hours_periods'];
-            } else {
-                echo "Error in query: " . mysqli_error($link);
-                $all_restaurant_data[$r_id] = null;
-            }
+        if ($result_hours && mysqli_num_rows($result_hours) > 0) {
+            $row_hours = mysqli_fetch_assoc($result_hours);
+            $all_restaurant_data[$r_id] = $row_hours['r_hours_periods'];
+        } else {
+            echo "Error in query: " . mysqli_error($link);
+            $all_restaurant_data[$r_id] = null;
         }
     }
-} else {
-    echo "Failed to connect to the database: " . mysqli_connect_error();
 }
+
 mysqli_close($link);
 ?>
 <!DOCTYPE html>
@@ -64,67 +65,7 @@ mysqli_close($link);
     <link rel="stylesheet" href="./openTime.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
-        .button-container {
-            display: flex;
-            flex-wrap: wrap;
-        }
-        .button-container button {
-            margin: 5px;
-            padding: 10px;
-            position: relative;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            max-width: 150px;
-            cursor: pointer;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        .button-container button:hover {
-            color: #fff;
-        }
-        .chart-container {
-            width: auto;
-        }
-        .highlight {
-            opacity: 1 !important;
-        }
-        .dim {
-            opacity: 0.2;
-        }
-        .slideshow-container {
-            position: relative;
-            max-width: 100%;
-            margin: auto;
-        }
-        .mySlides img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-        .prev, .next {
-            cursor: pointer;
-            position: absolute;
-            top: 50%;
-            width: auto;
-            margin-top: -22px;
-            padding: 16px;
-            color: white;
-            font-weight: bold;
-            font-size: 18px;
-            transition: 0.6s ease;
-            border-radius: 0 3px 3px 0;
-            user-select: none;
-        }
-        .next {
-            right: 0;
-            border-radius: 3px 0 0 3px;
-        }
-        .prev:hover, .next:hover {
-            background-color: rgba(0,0,0,0.8);
-        }
+        
     </style>
 </head>
 <body>
@@ -171,6 +112,7 @@ mysqli_close($link);
 
         const data = <?php echo json_encode($all_restaurant_data); ?>;
         const restaurantNames = <?php echo json_encode($restaurant_names); ?>;
+        const restaurantIds = <?php echo json_encode($restaurant_ids); ?>;
         const colors = ['#d62828', '#00a896', '#5fa8d3'];
 
         function updateChart(restaurantsData) {
@@ -306,8 +248,6 @@ mysqli_close($link);
             }
             slides[slideIndex-1].style.display = "block";  
         }
-
-        const restaurantIds = <?php echo json_encode($restaurant_ids); ?>;
     </script>
 </body>
 </html>

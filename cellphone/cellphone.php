@@ -29,7 +29,7 @@ if ($link) {
                    r_photo_env1, r_photo_env2, r_photo_env3, 
                    r_photo_food1, r_photo_food2, r_photo_food3, r_photo_food4, r_photo_food5, 
                    r_photo_door, r_photo_menu1, r_photo_menu2, r_photo_menu3,
-                   r_rating, special_comment_sum, notice_comment_sum
+                   r_rating, special_comment_sum, notice_comment_sum, r_has_parking
             FROM compare
             WHERE r_id = $r_id";
         $result = mysqli_query($link, $query);
@@ -196,8 +196,10 @@ if ($link) {
                             echo "<img src='half_star.png' alt='Half Star'>";
                         }
                     }
+                    
                     echo "</div>";
                 }
+                
 
                 // 顯示vibe標籤
                 echo "<div class='vibe-tags'>";
@@ -210,7 +212,7 @@ if ($link) {
                 echo "</div>";
 
                 // 顯示菜餚標籤
-                echo "<div class='food-tags'>";
+                echo "<div class='vibe-tags'>";
                 if (!empty($restaurant_data['r_food_dishes'])) {
                     $dishes = explode('、', $restaurant_data['r_food_dishes']);
                     foreach ($dishes as $dish) {
@@ -221,10 +223,17 @@ if ($link) {
 
                 // 顯示價格範圍
                 echo "<div class='price-tag'>";
+                // 顯示停車資訊
+                if (isset($restaurant_data['r_has_parking'])) {
+                    $parkingImage = $restaurant_data['r_has_parking'] == 1 ? 'parking.png' : 'no_parking.png';
+                    echo "<div><img src='$parkingImage' alt='Parking Info' width='20px'></div>";
+                }
                 if (!empty($restaurant_data['r_price_low']) && !empty($restaurant_data['r_price_high'])) {
                     echo "$" . htmlspecialchars($restaurant_data['r_price_low']) . " ~ $" . htmlspecialchars($restaurant_data['r_price_high']);
                 }
                 echo "</div>";
+
+                
 
                 echo "</div>"; // 結束 info
                 
