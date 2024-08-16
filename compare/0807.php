@@ -44,6 +44,7 @@ if ($link) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -64,19 +65,21 @@ if ($link) {
     <!-- openTime -->
     <link rel="stylesheet" href="../openTime/openTime.css" />
 </head>
+
 <body>
     <div class="container">
         <div class="gallery-container">
             <?php
             // Helper function to render image gallery for each restaurant
-            function renderGallerySection($r_id, $restaurant_data) {
+            function renderGallerySection($r_id, $restaurant_data)
+            {
                 echo "<div class='gallery-section'>";
                 echo "<div class='restaurant-name'>";
                 echo "<div>" . htmlspecialchars($restaurant_data['r_name']) . "</div>";
                 echo "</div>";
 
                 // Display environment images
-                echo "<h3>Environment</h3>";                
+                echo "<h3>Environment</h3>";
                 echo "<div class='vibe-tags'>";
                 if (!empty($restaurant_data['r_vibe'])) {
                     $vibes = explode('，', $restaurant_data['r_vibe']);
@@ -172,9 +175,40 @@ if ($link) {
             }
             ?>
         </div>
+        <!-- 評論使用的資料庫 -->
+        <?php
+        // 获取餐厅ID
+        $r_id1 = $_GET['r_id1'];
+        $r_id2 = $_GET['r_id2'];
+        $r_id3 = $_GET['r_id3'];
+
+        // 连接数据库并查询数据
+        $conn = new mysqli('localhost', 'root', '', 'foodee');
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+
+        $sql = "SELECT * FROM additional WHERE r_id IN ('$r_id1', '$r_id2', '$r_id3')";
+        $result = $conn->query($sql);
+
+        $data = array();
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $data[] = $row;
+            }
+        }
+
+        // 将数据转换为 JSON 格式
+        $json_data = json_encode($data);
+        // 关闭数据库连接
+        $conn->close();
+        ?>
+        <!-- 評論使用資料庫 結束 -->
+
         <div class="info-container">
             <div class="upper-section">
-                <svg class="word_tree" width="300" height="200"></svg>
+                <div class="comment_comment">評論</div>
+                <!-- <svg class="word_tree" width="300" height="200"></svg> -->
             </div>
 
             <!-- <div class="resizer-horizontal-1"></div> 新增的水平分隔條 -->
@@ -185,7 +219,7 @@ if ($link) {
             </div>
 
             <div class="middle-section2" style="flex: auto;">
-                    <?php include '../openTime/openTime.php'; ?>
+                <?php include '../openTime/openTime.php'; ?>
             </div>
             <!-- <div class="resizer-horizontal-2"></div> 新增的水平分隔條 -->
 
@@ -199,10 +233,15 @@ if ($link) {
                 <button id="shareButton">分享</button>
             </div>
 
+            <script type="text/javascript">
+                // 在PHP中将JSON数据传递给JS
+                const reviewData = <?php echo $json_data; ?>;
+            </script>
             <script type="module">
-                import '../word_tree/word_tree_modify.js';
+                // import '../word_tree/word_tree_modify.js';
                 import '../spider/spider.js';
                 import '../map/compare_map.js'
+                import '../comment_new/comment2.0.js'
             </script>
         </div>
     </div>
@@ -314,6 +353,7 @@ if ($link) {
         });
     </script>
 </body>
+
 </html>
 <?php
 ob_end_flush();
