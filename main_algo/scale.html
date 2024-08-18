@@ -343,7 +343,8 @@
                     intervalTotals[interval] = d3.sum(data, d => categorizePrice(d.r_price_low) === interval);
                     console.log(`Interval: ${interval}, Total: ${intervalTotals[interval]}`);  // 调试信息
                 });
-
+                
+                const total = d3.sum(Object.values(intervalTotals));
                 const availableWidth = width - margin.left - margin.right;
 
                 // 計算寬度
