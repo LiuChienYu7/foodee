@@ -59,7 +59,6 @@ mysqli_close($link);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restaurant Hours</title>
     <link rel="stylesheet" href="./openTime.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
