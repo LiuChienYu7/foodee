@@ -23,7 +23,7 @@ if ($link) {
         if (isset($_GET["r_id$i"])) {
             $r_id = intval($_GET["r_id$i"]);
             $restaurant_ids[] = $r_id;
-            
+
             // 查詢每個餐廳的名稱
             $query_name = "SELECT r_name FROM detail WHERE r_id = $r_id";
             $result_name = mysqli_query($link, $query_name);
@@ -42,7 +42,14 @@ if ($link) {
 
             if ($result_hours) {
                 $row_hours = mysqli_fetch_assoc($result_hours);
-                $all_restaurant_data[$r_id] = $row_hours['r_hours_periods'];
+                // 檢查 r_hours_periods 是否是合法的 JSON 格式
+                $r_hours_periods = str_replace("'", '"', $row_hours['r_hours_periods']);
+                if (json_decode($r_hours_periods) !== null) {
+                    $all_restaurant_data[$r_id] = $r_hours_periods;
+                } else {
+                    echo "Invalid JSON format for r_hours_periods in restaurant ID: $r_id";
+                    $all_restaurant_data[$r_id] = null;
+                }
             } else {
                 echo "Error in query: " . mysqli_error($link);
                 $all_restaurant_data[$r_id] = null;
@@ -59,6 +66,7 @@ mysqli_close($link);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Hours</title>
     <link rel="stylesheet" href="./openTime.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
@@ -100,8 +108,8 @@ mysqli_close($link);
             <?php foreach ($restaurant_ids as $index => $r_id): ?>
                 <button id="button-<?php echo $r_id; ?>" 
                         onmouseover="highlightRestaurant(<?php echo $index; ?>)" 
-                        onmouseout="resetHighlight()"
-                        onclick="showRestaurantData(<?php echo $r_id; ?>)">
+                        onmouseout="resetHighlight()">
+                        <!--onclick="showRestaurantData(<//?php echo $r_id; ?>)"-->
                     <?php echo htmlspecialchars($restaurant_names[$r_id]); ?>
                 </button>
             <?php endforeach; ?>
@@ -139,7 +147,7 @@ mysqli_close($link);
             restaurantsData.forEach((hoursPeriods, index) => {
                 const extendedData = [];
 
-                const allHoursPeriods = JSON.parse(hoursPeriods.replace(/'/g, '"'));
+                const allHoursPeriods = JSON.parse(hoursPeriods);
 
                 allHoursPeriods.forEach(period => {
                     let start = parseTime(period.startTime);

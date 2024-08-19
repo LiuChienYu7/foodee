@@ -1,237 +1,272 @@
 <?php
-ob_start(); // Start output buffering
+ob_start(); // 开启输出缓冲
+header('Content-Type: text/html; charset=UTF-8');
 
+// 数据库连接设置
 $host = 'localhost';
 $dbuser = 'root';
 $dbpassword = '';
 $dbname = 'foodee';
+
+// 建立数据库连接
 $link = mysqli_connect($host, $dbuser, $dbpassword, $dbname);
 
-// 初始化變數
+// 初始化变量
 $all_restaurant_data = [];
-$current_restaurant_index = 0;
+$restaurant_ids = [];
+$restaurant_names = [];
 
 if ($link) {
     mysqli_query($link, 'SET NAMES utf8');
 
-    // 獲取GET參數中的餐廳ID
-    $r_ids = [];
+    // 从 URL 查询参数获取餐厅 ID
     for ($i = 1; $i <= 3; $i++) {
         if (isset($_GET["r_id$i"])) {
-            $r_ids[] = intval($_GET["r_id$i"]);
-        }
-    }
+            $r_id = intval($_GET["r_id$i"]);
+            $restaurant_ids[] = $r_id;
 
-    // 根據餐廳ID獲取圖片、名稱、vibe、菜餚、價格和評分
-    foreach ($r_ids as $r_id) {
-        $query = "
-            SELECT r_name, r_vibe, r_food_dishes, r_price_low, r_price_high, 
-                   r_photo_env1, r_photo_env2, r_photo_env3, 
-                   r_photo_food1, r_photo_food2, r_photo_food3, r_photo_food4, r_photo_food5, 
-                   r_photo_door, r_photo_menu1, r_photo_menu2, r_photo_menu3,
-                   r_rating, special_comment_sum, notice_comment_sum, r_has_parking
-            FROM compare
-            WHERE r_id = $r_id";
-        $result = mysqli_query($link, $query);
+            // 查询每个餐厅的名称
+            $query_name = "SELECT r_name FROM detail WHERE r_id = $r_id";
+            $result_name = mysqli_query($link, $query_name);
 
-        if ($result) {
-            $restaurant_data = mysqli_fetch_assoc($result);
-            $all_restaurant_data[$r_id] = $restaurant_data;
-        } else {
-            echo "Error in query: " . mysqli_error($link);
-            $all_restaurant_data[$r_id] = null;
+            if ($result_name) {
+                $row_name = mysqli_fetch_assoc($result_name);
+                $restaurant_names[$r_id] = $row_name['r_name'];
+            } else {
+                echo "Error in query: " . mysqli_error($link);
+                $restaurant_names[$r_id] = 'Unknown';
+            }
+
+            // 查询每个餐厅的详细信息
+            $query = "
+                SELECT r_name, r_vibe, r_food_dishes, r_price_low, r_price_high, 
+                    r_photo_env1, r_photo_env2, r_photo_env3, r_photo_food1, 
+                    r_photo_food2, r_photo_food3, r_photo_food4, r_photo_food5, 
+                    r_photo_door, r_photo_menu1, r_photo_menu2, r_photo_menu3, 
+                    r_has_parking, r_rating
+                FROM compare 
+                WHERE r_id = $r_id";
+            $result = mysqli_query($link, $query);
+
+            if ($result) {
+                $restaurant_data = mysqli_fetch_assoc($result);
+                $all_restaurant_data[$r_id] = $restaurant_data;
+            } else {
+                echo "查询出错: " . mysqli_error($link);
+                $all_restaurant_data[$r_id] = null;
+            }
         }
     }
 } else {
-    echo "Failed to connect to the database: " . mysqli_connect_error();
+    echo "数据库连接失败: " . mysqli_connect_error();
 }
+mysqli_close($link);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://d3js.org/d3.v7.min.js"></script>
     <link rel="stylesheet" href="./cellphone.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <!-- Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="../map/leaflet_edgeMarker.js"></script>
+
+    <!-- openTime -->
+    <link rel="stylesheet" href="../openTime/openTime.css" />
     <style>
-        /* 可根據需要添加 CSS 樣式 */
-        .slideshow-container {
-            position: relative;
-            max-width: 100%;
-            margin: auto;
-        }
-        .mySlides {
+        .gallery-img {
+            width: 100%;
+            height: auto;
+            max-height: 100%;
             display: none;
+            object-fit: cover;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .gallery-img.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .image-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .restaurant-section {
+            display: none;
+        }
+        .restaurant-section.active {
+            display: block;
+        }
+
+        .nav-button {
+            margin: 10px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
         }
-        .active {
-            display: block;
+        .nav-button:hover {
+            background-color: #45a049;
+        }
+
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .button-container button {
+            margin: 5px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .button-container button:hover {
+            background-color: #4CAF50;
+            color: white;
         }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <div class="gallery-container">
-            <?php
-            function renderGallerySection($r_id, $restaurant_data, $index) {
-                $activeClass = $index === 0 ? 'active-restaurant' : '';
-                echo "<div class='restaurant-section $activeClass' id='restaurant-$index'>";
 
-                // 圖片輪播容器
-                echo "<div class='slideshow-container'>";
-
-                // 環境圖片
-                $env_images = [
-                    'r_photo_food1', 'r_photo_food2', 'r_photo_food3', 'r_photo_food4', 'r_photo_food5', 
-                    'r_photo_menu1', 'r_photo_menu2', 'r_photo_menu3', 
-                    'r_photo_env1', 'r_photo_env2', 'r_photo_env3', 'r_photo_door'
-                ];
-                foreach ($env_images as $field_index => $field) {
-                    if (!empty($restaurant_data[$field])) {
-                        echo "<div class='mySlides environment-{$r_id}' onclick='plusSlides(1, \"environment-{$r_id}\")'>";
-                        echo "<img src='" . htmlspecialchars($restaurant_data[$field]) . "' alt='Restaurant Image'>";
-                        echo "</div>";
+    <div class="gallery-container">
+        <?php
+        $index = 0;
+        function renderGallerySection($r_id, $restaurant_data, $index) {
+            $activeClass = $index === 0 ? 'active' : '';
+            echo "<div class='restaurant-section $activeClass' id='restaurant-$r_id'>";
+            echo "<div class='image-container'>";
+            $image_fields = [
+                'r_photo_env1', 'r_photo_env2', 'r_photo_env3', 
+                'r_photo_food1', 'r_photo_food2', 'r_photo_food3', 
+                'r_photo_food4', 'r_photo_food5', 'r_photo_door', 
+                'r_photo_menu1', 'r_photo_menu2', 'r_photo_menu3'
+            ];
+            foreach ($image_fields as $index => $field) {
+                if (!empty($restaurant_data[$field])) {
+                    $activeClass = $index === 0 ? 'active' : '';
+                    echo "<img src='" . htmlspecialchars($restaurant_data[$field]) . "' class='gallery-img $activeClass' data-category='environment-{$r_id}' data-index='$index' onclick='nextImage(this)' />";
+                }
+            }
+            echo "</div>";
+            echo "<div class='restaurant-name'>";
+            echo "<div>" . htmlspecialchars($restaurant_data['r_name']) . "</div>";
+            echo "</div>";
+            // 顯示星級評分
+            if (isset($restaurant_data['r_rating'])) {
+                $rating = floatval($restaurant_data['r_rating']);
+                $fullStars = floor($rating);
+                $halfStar = ($rating - $fullStars) >= 0.5;
+                echo "<div class='star-rating'>";
+                for ($i = 0; $i < 5; $i++) {
+                    if ($i < $fullStars) {
+                        echo "<img src='full_star.png' alt='Full Star'>";
+                    } elseif ($i == $fullStars && $halfStar) {
+                        echo "<img src='half_star.png' alt='Half Star'>";
                     }
                 }
-
-                // 餐廳名稱、評分和價格標籤
-                echo "<div class='info'>";
                 
-                // 餐廳名稱
-                echo "<div class='restaurant-name'>" . htmlspecialchars($restaurant_data['r_name']) . "</div>";
-                
-                // 顯示星級評分
-                if (isset($restaurant_data['r_rating'])) {
-                    $rating = floatval($restaurant_data['r_rating']);
-                    $fullStars = floor($rating);
-                    $halfStar = ($rating - $fullStars) >= 0.5;
-                    echo "<div class='star-rating'>";
-                    for ($i = 0; $i < 5; $i++) {
-                        if ($i < $fullStars) {
-                            echo "<img src='full_star.png' alt='Full Star'>";
-                        } elseif ($i == $fullStars && $halfStar) {
-                            echo "<img src='half_star.png' alt='Half Star'>";
-                        }
-                    }
-                    
-                    echo "</div>";
-                }
-                
-                // 顯示價格範圍和停車資訊在同一行
-                echo "<div class='info-row'>";
-                if (isset($restaurant_data['r_has_parking'])) {
-                    $parkingImage = $restaurant_data['r_has_parking'] == 1 ? 'parking.png' : 'no_parking.png';
-                    echo "<div style='display: inline-block;'><img src='$parkingImage' alt='Parking Info' width='20px'></div>";
-                }
-                if (!empty($restaurant_data['r_price_low']) && !empty($restaurant_data['r_price_high'])) {
-                    echo "<div class='price-tag' style='display: inline-block; margin-left: 10px;'>$" . htmlspecialchars($restaurant_data['r_price_low']) . " ~ $" . htmlspecialchars($restaurant_data['r_price_high']) . "</div>";
-                }
                 echo "</div>";
-                echo "<div class='vibe-tags'>";
-                if (!empty($restaurant_data['r_vibe'])) {
-                    $vibes = explode('，', $restaurant_data['r_vibe']);
-                    foreach ($vibes as $vibe) {
-                        echo "<div class='restaurant-tag'>" . htmlspecialchars(trim($vibe)) . "</div>";
-                    }
-                }
-                echo "</div>";
-                echo "<div class='vibe-tags'>";
-                if (!empty($restaurant_data['r_food_dishes'])) {
-                    $vibes = explode('、', $restaurant_data['r_food_dishes']);
-                    foreach ($vibes as $vibe) {
-                        echo "<div class='restaurant-tag'>" . htmlspecialchars(trim($vibe)) . "</div>";
-                    }
-                }
-                echo "</div>";
-                echo "</div>"; // 結束 info
-                ?>
-    
-                <div class="graph" style="width: -webkit-fill-available;">
-                    <?php include '../openTime/openTime.php'; ?>
-                </div>
-                <div class="graph" style="width: -webkit-fill-available;">
-                    <?php include '../map/compare_map.php'; ?>
-                </div>
-                
-                <?php
-                echo "</div>"; // 結束 slideshow-container
-                echo "</div>"; // 結束 restaurant-section
             }
 
-            if ($all_restaurant_data) {
-                $index = 0;
-                foreach ($all_restaurant_data as $r_id => $restaurant_data) {
-                    if ($restaurant_data) {
-                        renderGallerySection($r_id, $restaurant_data, $index);
-                        $index++;
-                    } else {
-                        echo "<p>No data available for restaurant ID: $r_id.</p>";
-                    }
-                }
-            } else {
-                echo "<p>No data available for the given restaurant IDs.</p>";
+            // 顯示價格範圍和停車資訊在同一行
+            echo "<div class='info-row'>";
+            if (isset($restaurant_data['r_has_parking'])) {
+                $parkingImage = $restaurant_data['r_has_parking'] == 1 ? 'parking.png' : 'no_parking.png';
+                echo "<div style='display: inline-block;'><img src='$parkingImage' alt='Parking Info' width='20px'></div>";
             }
-            ?>
-            <div class="navigation-buttons">
-                <?php if (count($all_restaurant_data) > 1): ?>
-                    <button class="nav-button" onclick="changeRestaurant(1)">Next Restaurant</button>
-                <?php endif; ?>
-            </div>
+            if (!empty($restaurant_data['r_price_low']) && !empty($restaurant_data['r_price_high'])) {
+                echo "<div class='price-tag' style='display: inline-block; margin-left: 10px;'>$" . htmlspecialchars($restaurant_data['r_price_low']) . " ~ $" . htmlspecialchars($restaurant_data['r_price_high']) . "</div>";
+            }
+            echo "</div>";
+
+            echo "<div class='vibe-tags'>";
+            if (!empty($restaurant_data['r_vibe'])) {
+                $vibes = explode('，', $restaurant_data['r_vibe']);
+                foreach ($vibes as $vibe) {
+                    echo "<div class='restaurant-tag'>" . htmlspecialchars(trim($vibe)) . "</div>";
+                }
+            }
+            echo "</div>";
+
+            echo "<div class='vibe-tags'>";
+            if (!empty($restaurant_data['r_food_dishes'])) {
+                $dishes = explode('、', $restaurant_data['r_food_dishes']);
+                foreach ($dishes as $dish) {
+                    echo "<div class='restaurant-tag'>" . htmlspecialchars(trim($dish)) . "</div>";
+                }
+            }
+            echo "</div>";
+
+            echo "</div>";
+        }
+
+        if ($all_restaurant_data) {
+            foreach ($all_restaurant_data as $r_id => $restaurant_data) {
+                renderGallerySection($r_id, $restaurant_data, $index);
+                $index++;
+            }
+        } else {
+            echo "<p>No data available for the given restaurant IDs.</p>";
+        }
+        ?>
+    </div>
+
+    <div class="button-container">
+        <?php foreach ($restaurant_names as $r_id => $r_name): ?>
+            <button onclick="changeRestaurant(<?php echo $r_id; ?>)">
+                <?php echo htmlspecialchars($r_name); ?>
+            </button>
+        <?php endforeach; ?>
+    </div>
+
+    <div class="middle-section">
+        <?php include '../spider/spider_my_data.php'; ?>
+    </div>
+
+    <div class="middle-section2" style="flex: auto;">
+        <?php include '../openTime/openTime.php'; ?>
+    </div>
+
+    <div class="lower-section">
+        <div id="map" width="300" height="250">
+        <?php include '../map/compare_map.php'; ?>
         </div>
     </div>
 
+
     <script>
-        let currentRestaurantIndex = 0;
-        const totalRestaurants = <?php echo count($all_restaurant_data); ?>;
-
-        let slideIndex = {};
-
-        function plusSlides(n, category) {
-            showSlides(slideIndex[category] += n, category);
+        let currentRestaurantId = <?php echo reset($restaurant_ids); ?>; // 默认显示第一个餐厅
+        function changeRestaurant(r_id) {
+            document.getElementById(`restaurant-${currentRestaurantId}`).classList.remove('active');
+            document.getElementById(`restaurant-${r_id}`).classList.add('active');
+            currentRestaurantId = r_id;
         }
 
-        function showSlides(n, category) {
-            let slides = document.getElementsByClassName(`mySlides ${category}`);
-            if (!slideIndex[category]) {
-                slideIndex[category] = 1;
-            }
-
-            if (n > slides.length) { slideIndex[category] = 1 }
-            if (n < 1) { slideIndex[category] = slides.length }
-
-            for (let i = 0; i < slides.length; i++) {
-                slides[i].style.display = "none";
-            }
-
-            slides[slideIndex[category] - 1].style.display = "block";
+        function nextImage(element) {
+            const images = element.parentElement.querySelectorAll('.gallery-img');
+            let currentIndex = Array.from(images).findIndex(img => img.classList.contains('active'));
+            images[currentIndex].classList.remove('active');
+            currentIndex = (currentIndex + 1) % images.length;
+            images[currentIndex].classList.add('active');
         }
-
-        function changeRestaurant(direction) {
-            document.getElementById(`restaurant-${currentRestaurantIndex}`).classList.remove('active-restaurant');
-            currentRestaurantIndex = (currentRestaurantIndex + direction + totalRestaurants) % totalRestaurants;
-            document.getElementById(`restaurant-${currentRestaurantIndex}`).classList.add('active-restaurant');
-
-            // 重置每個餐廳的slideIndex，顯示第一張圖片
-            let categories = document.querySelectorAll(`#restaurant-${currentRestaurantIndex} .mySlides`);
-            categories.forEach((slide) => {
-                let category = slide.classList[1];
-                slideIndex[category] = 1;
-                showSlides(slideIndex[category], category);
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            let categories = document.querySelectorAll('.mySlides');
-            categories.forEach((slide) => {
-                let category = slide.classList[1];
-                if (!slideIndex[category]) {
-                    slideIndex[category] = 1;
-                }
-                showSlides(slideIndex[category], category);
-            });
-        });
     </script>
 </body>
+
 </html>
 <?php
 ob_end_flush();
