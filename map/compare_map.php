@@ -11,7 +11,7 @@
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <!-- edgeMarker -->
     <script src="leaflet_edgeMarker.js"></script>
-    <title>caompare_map</title>
+    <title>compare_map</title>
 </head>
 
 <body>

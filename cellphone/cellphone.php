@@ -52,115 +52,20 @@ if ($link) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="./cellphone.css">
     <style>
-        /* 基本樣式設置 */
-        .restaurant-section {
-            display: none;
-        }
-        .active-restaurant {
-            display: block;
-        }
-        .nav-button {
-            margin: 10px;
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .nav-button:hover {
-            background-color: #45a049;
-        }
-
-        /* 圖片輪播的樣式 */
+        /* 可根據需要添加 CSS 樣式 */
         .slideshow-container {
             position: relative;
             max-width: 100%;
             margin: auto;
         }
-
-        .mySlides img {
-            width: -webkit-fill-available;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .prev, .next {
+        .mySlides {
+            display: none;
             cursor: pointer;
-            position: absolute;
-            top: 10%;
-            width: auto;
-            /*margin-top: -22px;*/
-            padding: 16px;
-            color: white;
-            font-weight: bold;
-            font-size: 18px;
-            transition: 0.6s ease;
-            border-radius: 0 3px 3px 0;
-            user-select: none;
         }
-
-        .next {
-            right: 0;
-            border-radius: 3px 0 0 3px;
-        }
-
-        .prev:hover, .next:hover {
-            background-color: rgba(0,0,0,0.8);
-        }
-
-        .info {
-            margin: 5px;
-        }
-
-        .restaurant-name {
-            font-size: 24px;
-            font-weight: bold;
-            margin: 10px 0px;
-        }
-
-        .star-rating img {
-            height: 20px;
-            vertical-align: middle;
-        }
-
-        .vibe-tags, .food-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            margin: 5px 0;
-            font-size: 15px;
-            font-weight: normal;
-        }
-
-        .vibe-tags .restaurant-tag {
-            display: inline-block;
-            background-color: #f1f1f1;
-            padding: 5px;
-            margin-right: 5px;
-            border-radius: 5px;
-        }
-
-        .price-tag {
-            font-weight: bold;
-            color: #555;
-            margin-left: 10px;
-        }
-
-        .gallery-container {
-            margin: 20px 0;
-        }
-
-        .info-row {
-            display: flex;
-            align-items: center;
-            margin-top: 10px;
-        }
-
-        #map {
-            width: -webkit-fill-available;
-            height: 150px;
+        .active {
+            display: block;
         }
     </style>
 </head>
@@ -183,7 +88,7 @@ if ($link) {
                 ];
                 foreach ($env_images as $field_index => $field) {
                     if (!empty($restaurant_data[$field])) {
-                        echo "<div class='mySlides environment-{$r_id}'>";
+                        echo "<div class='mySlides environment-{$r_id}' onclick='plusSlides(1, \"environment-{$r_id}\")'>";
                         echo "<img src='" . htmlspecialchars($restaurant_data[$field]) . "' alt='Restaurant Image'>";
                         echo "</div>";
                     }
@@ -222,7 +127,22 @@ if ($link) {
                     echo "<div class='price-tag' style='display: inline-block; margin-left: 10px;'>$" . htmlspecialchars($restaurant_data['r_price_low']) . " ~ $" . htmlspecialchars($restaurant_data['r_price_high']) . "</div>";
                 }
                 echo "</div>";
-
+                echo "<div class='vibe-tags'>";
+                if (!empty($restaurant_data['r_vibe'])) {
+                    $vibes = explode('，', $restaurant_data['r_vibe']);
+                    foreach ($vibes as $vibe) {
+                        echo "<div class='restaurant-tag'>" . htmlspecialchars(trim($vibe)) . "</div>";
+                    }
+                }
+                echo "</div>";
+                echo "<div class='vibe-tags'>";
+                if (!empty($restaurant_data['r_food_dishes'])) {
+                    $vibes = explode('、', $restaurant_data['r_food_dishes']);
+                    foreach ($vibes as $vibe) {
+                        echo "<div class='restaurant-tag'>" . htmlspecialchars(trim($vibe)) . "</div>";
+                    }
+                }
+                echo "</div>";
                 echo "</div>"; // 結束 info
                 ?>
     
@@ -234,10 +154,6 @@ if ($link) {
                 </div>
                 
                 <?php
-                // 圖片導航箭頭
-                echo "<a class='prev' onclick='plusSlides(-1, \"environment-{$r_id}\")'>&#10094;</a>";
-                echo "<a class='next' onclick='plusSlides(1, \"environment-{$r_id}\")'>&#10095;</a>";
-
                 echo "</div>"; // 結束 slideshow-container
                 echo "</div>"; // 結束 restaurant-section
             }
