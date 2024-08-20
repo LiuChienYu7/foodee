@@ -247,6 +247,11 @@ mysqli_close($link);
         <?php include '../map/compare_map.php'; ?>
         </div>
     </div>
+    <div class="chat">
+        <div id="chat">
+        <?php include '../chat/chat.php'; ?>
+        </div>
+    </div>
 
 
     <script>
