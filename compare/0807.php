@@ -26,7 +26,7 @@ if ($link) {
     foreach ($r_ids as $r_id) {
         $query = "SELECT r_name, r_vibe, r_food_dishes, r_price_low, r_price_high, r_photo_env1, r_photo_env2, r_photo_env3, r_photo_food1, r_photo_food2, r_photo_food3, r_photo_food4, r_photo_food5, r_photo_door, r_photo_menu1, r_photo_menu2, r_photo_menu3,
                          special_comment_sum, notice_comment_sum
-                  FROM compare
+                  FROM additional
                   WHERE r_id = $r_id";
         $result = mysqli_query($link, $query);
 
@@ -192,10 +192,14 @@ if ($link) {
         $result = $conn->query($sql);
 
         $data = array();
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $data[] = $row;
+        if ($result) {
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $data[] = $row;
+                }
             }
+        } else {
+            echo "Error in query: " . $conn->error;
         }
 
         // 将数据转换为 JSON 格式

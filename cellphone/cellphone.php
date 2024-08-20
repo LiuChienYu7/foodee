@@ -44,7 +44,7 @@ if ($link) {
                     r_photo_food2, r_photo_food3, r_photo_food4, r_photo_food5, 
                     r_photo_door, r_photo_menu1, r_photo_menu2, r_photo_menu3, 
                     r_has_parking, r_rating
-                FROM compare 
+                FROM additional
                 WHERE r_id = $r_id";
             $result = mysqli_query($link, $query);
 
