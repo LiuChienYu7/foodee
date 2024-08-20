@@ -91,7 +91,7 @@ if ($link) {
     <style>
         /* 新增的 CSS */
         .comment-section {
-            max-height: 200px; /* 根據需要調整高度 */
+            max-height: 100px; /* 根據需要調整高度 */
             overflow-y: auto; /* 啟用垂直滾動條 */
             border: 1px solid #ddd; /* 可選: 添加邊框 */
             padding: 10px; /* 可選: 添加內邊距 */
@@ -121,7 +121,6 @@ if ($link) {
 <body>
 
     <div class="comment-section">
-        <h2>Comments</h2>
         <?php if ($all_comments): ?>
             <?php foreach ($all_comments as $comment): ?>
                 <div class="comment">
