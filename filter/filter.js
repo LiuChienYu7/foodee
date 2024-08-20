@@ -151,6 +151,7 @@ function setMaxTimeInput() {
 }
 
 let restaurantIds = []; 
+let usedRestaurantIds = [];
 
 document.addEventListener('DOMContentLoaded', function () {
     const maxSelection = 5;
@@ -235,7 +236,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 d3.select("#results").html("無法取得數據，請稍後再試。");
             });
     }
-
     // 更新篩選條件
     function applyFilters() {
 
@@ -254,9 +254,11 @@ document.addEventListener('DOMContentLoaded', function () {
         button.classList.add("selected");
         const selectedDays = Array.from(document.querySelectorAll('.day-label.active'))
             .map(label => label.getAttribute('data-day'));
+        usedRestaurantIds = [];
 
         // 基于 restaurantIds 进行初步筛选
         let filteredIds = restaurantIds; // 默认使用全局的 restaurantIds
+        
 
 
         let url = 'http://localhost/food_project/filter/data.php?';
@@ -318,10 +320,23 @@ document.addEventListener('DOMContentLoaded', function () {
                     .attr("x", () => 50)
                     .attr("y", (d, i) => 30 + i * 20)
                     .text(d => d.r_name);
+
+                // 將每個返回的 r_id 添加到 usedRestaurantIds 數組中
+                data.forEach(item => {
+                    usedRestaurantIds.push(item.r_id);
+                });
+
+                console.log('Used Restaurant IDs:', usedRestaurantIds); // 打印已使用的 r_id
+                // 發送 usedRestaurantIds 到 scale.html 的 iframe
+                const iframe = document.getElementById('scale-iframe');
+                if (iframe && iframe.contentWindow) {
+                    iframe.contentWindow.postMessage(usedRestaurantIds, '*');
+                }
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
             });
+           
     }
 
     // 通过 JavaScript 绑定事件，而不是在 HTML 中使用 onclick

@@ -140,6 +140,7 @@ usort($filtered_restaurants, function($a, $b) use ($cuisine) {
 // 返回結果
 echo json_encode(array_map(function($restaurant) {
     $result = [
+        'r_id' => $restaurant['r_id'],
         'r_name' => $restaurant['r_name']
     ];
     if (isset($restaurant['distance'])) {

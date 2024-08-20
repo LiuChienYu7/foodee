@@ -82,11 +82,11 @@ body{
 .right-panel {
     flex-grow: 1;
     transition: width 0.3s ease, margin-left 0.3s ease;
-    background-color: #626b7a;
+    /* background-color: #626b7a; */
     overflow: auto;
-    padding-left: 1rem;
+    /* padding-left: 1rem; */
     width: 100%;
-    border: 10px solid #ddd; /* 可視化邊界 */
+    /* border: 10px solid #ddd; 可視化邊界 */
 }
 
 .right-panel.expanded {
