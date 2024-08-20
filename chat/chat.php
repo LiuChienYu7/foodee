@@ -61,7 +61,7 @@ if ($link) {
     // 檢索與當前餐廳相關的評論
     if ($restaurant_ids) {
         $ids = implode(",", $restaurant_ids);
-        $query = "SELECT * FROM comment WHERE r_id IN ($ids) ";
+        $query = "SELECT * FROM comment WHERE r_id IN ($ids)";
         $result = mysqli_query($link, $query);
 
         if ($result) {
@@ -88,7 +88,34 @@ if ($link) {
     <link rel="stylesheet" href="./cellphone.css">
     <link rel="stylesheet" href="../chat/chat.css">
     <title>Chatroom</title>
+    <style>
+        /* 新增的 CSS */
+        .comment-section {
+            max-height: 200px; /* 根據需要調整高度 */
+            overflow-y: auto; /* 啟用垂直滾動條 */
+            border: 1px solid #ddd; /* 可選: 添加邊框 */
+            padding: 10px; /* 可選: 添加內邊距 */
+            margin-bottom: 20px; /* 可選: 添加底部間距 */
+        }
 
+        .comment {
+            margin-bottom: 15px; /* 使評論之間有間隔 */
+        }
+
+        /* 評論標題的樣式 */
+        .comment h4 {
+            margin: 0;
+            font-size: 1em; /* 根據需要調整字體大小 */
+            color: #333; /* 可選: 調整顏色 */
+        }
+
+        /* 評論文本的樣式 */
+        .comment p {
+            margin: 0;
+            font-size: 0.9em; /* 根據需要調整字體大小 */
+            color: #555; /* 可選: 調整顏色 */
+        }
+    </style>
 </head>
 
 <body>
@@ -98,7 +125,7 @@ if ($link) {
         <?php if ($all_comments): ?>
             <?php foreach ($all_comments as $comment): ?>
                 <div class="comment">
-                    <h4><?php echo htmlspecialchars($comment['user']); ?> (Restaurant: <?php echo htmlspecialchars($comment['r_name']); ?>)</h4>
+                    <h4><?php echo htmlspecialchars($comment['user']); ?> (<?php echo htmlspecialchars($comment['r_name']); ?>)</h4>
                     <p><?php echo nl2br(htmlspecialchars($comment['comment'])); ?></p>
                 </div>
             <?php endforeach; ?>

@@ -123,7 +123,8 @@ mysqli_close($link);
         .button-container {
             display: flex;
             flex-wrap: wrap;
-            margin-bottom: 20px;
+            margin: 5px 0;
+            justify-content: center;
         }
         .button-container button {
             margin: 5px;
@@ -142,7 +143,7 @@ mysqli_close($link);
         .toggle-container {
             display: flex;
             justify-content: center;
-            margin: 20px 0;
+            margin: 10px 0;
         }
 
         .toggle-button {
@@ -173,33 +174,43 @@ mysqli_close($link);
 <body>
 
     <div class="toggle-container">
-        <button class="toggle-button" onclick="toggleView()">切换查看餐聽信息/聊天室</button>
+        <button class="toggle-button" onclick="toggleView()">切換</button>
     </div>
 
-    <div id="restaurant-info" class="toggle-content active">
-        <div class="gallery-container">
-            <?php
-            $index = 0;
-            function renderGallerySection($r_id, $restaurant_data, $index) {
-                $activeClass = $index === 0 ? 'active' : '';
-                echo "<div class='restaurant-section $activeClass' id='restaurant-$r_id'>";
-                echo "<div class='image-container'>";
-                $image_fields = [
-                    'r_photo_env1', 'r_photo_env2', 'r_photo_env3', 
-                    'r_photo_food1', 'r_photo_food2', 'r_photo_food3', 
-                    'r_photo_food4', 'r_photo_food5', 'r_photo_door', 
-                    'r_photo_menu1', 'r_photo_menu2', 'r_photo_menu3'
-                ];
-                foreach ($image_fields as $index => $field) {
-                    if (!empty($restaurant_data[$field])) {
-                        $activeClass = $index === 0 ? 'active' : '';
-                        echo "<img src='" . htmlspecialchars($restaurant_data[$field]) . "' class='gallery-img $activeClass' data-category='environment-{$r_id}' data-index='$index' onclick='nextImage(this)' />";
-                    }
+    <div class="gallery-container">
+        <?php
+        $index = 0;
+        function renderGallerySection($r_id, $restaurant_data, $index) {
+            $activeClass = $index === 0 ? 'active' : '';
+            echo "<div class='restaurant-section $activeClass' id='restaurant-$r_id'>";
+            echo "<div class='image-container'>";
+            $image_fields = [
+                'r_photo_env1', 'r_photo_env2', 'r_photo_env3', 
+                'r_photo_food1', 'r_photo_food2', 'r_photo_food3', 
+                'r_photo_food4', 'r_photo_food5', 'r_photo_door', 
+                'r_photo_menu1', 'r_photo_menu2', 'r_photo_menu3'
+            ];
+            foreach ($image_fields as $index => $field) {
+                if (!empty($restaurant_data[$field])) {
+                    $activeClass = $index === 0 ? 'active' : '';
+                    echo "<img src='" . htmlspecialchars($restaurant_data[$field]) . "' class='gallery-img $activeClass' data-category='environment-{$r_id}' data-index='$index' onclick='nextImage(this)' />";
                 }
-                echo "</div>";
+            }
+            echo "</div>";
+
+            // 将按钮放置在图片下方
+            echo "<div class='button-container'>";
+            foreach ($GLOBALS['restaurant_names'] as $r_id => $r_name) {
+                echo "<button onclick='changeRestaurant($r_id)'>" . htmlspecialchars($r_name) . "</button>";
+            }
+            echo "</div>";
+        ?>
+            <div id="restaurant-info" class="toggle-content active">
+                <?php
                 echo "<div class='restaurant-name'>";
                 echo "<div>" . htmlspecialchars($restaurant_data['r_name']) . "</div>";
                 echo "</div>";
+
                 // 顯示星級評分
                 if (isset($restaurant_data['r_rating'])) {
                     $rating = floatval($restaurant_data['r_rating']);
@@ -213,7 +224,6 @@ mysqli_close($link);
                             echo "<img src='half_star.png' alt='Half Star'>";
                         }
                     }
-                    
                     echo "</div>";
                 }
 
@@ -245,28 +255,21 @@ mysqli_close($link);
                     }
                 }
                 echo "</div>";
+                ?>
+            </div>
+            <?php
+            echo "</div>";
+        }
 
-                echo "</div>";
+        if ($all_restaurant_data) {
+            foreach ($all_restaurant_data as $r_id => $restaurant_data) {
+                renderGallerySection($r_id, $restaurant_data, $index);
+                $index++;
             }
-
-            if ($all_restaurant_data) {
-                foreach ($all_restaurant_data as $r_id => $restaurant_data) {
-                    renderGallerySection($r_id, $restaurant_data, $index);
-                    $index++;
-                }
-            } else {
-                echo "<p>No data available for the given restaurant IDs.</p>";
-            }
-            ?>
-        </div>
-
-        <div class="button-container">
-            <?php foreach ($restaurant_names as $r_id => $r_name): ?>
-                <button onclick="changeRestaurant(<?php echo $r_id; ?>)">
-                    <?php echo htmlspecialchars($r_name); ?>
-                </button>
-            <?php endforeach; ?>
-        </div>
+        } else {
+            echo "<p>No data available for the given restaurant IDs.</p>";
+        }
+        ?>
     </div>
 
     <div id="chat-section" class="toggle-content">
