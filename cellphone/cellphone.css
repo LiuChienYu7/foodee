@@ -1,3 +1,4 @@
+/* 基本樣式設置 */
 .restaurant-section {
     display: none;
 }
@@ -17,7 +18,7 @@
     background-color: #45a049;
 }
 
-/* CSS for image slider */
+/* 圖片輪播的樣式 */
 .slideshow-container {
     position: relative;
     max-width: 100%;
@@ -25,17 +26,17 @@
 }
 
 .mySlides img {
-    width: 100%; /* 設定圖片寬度為100% */
-    height: 200px; /* 固定圖片高度 */
-    object-fit: cover; /* 圖片的大小會根據容器大小進行調整，保持內容不被拉伸 */
+    width: -webkit-fill-available;
+    height: 200px;
+    object-fit: cover;
 }
 
 .prev, .next {
     cursor: pointer;
     position: absolute;
-    top: 25%;
+    top: 10%;
     width: auto;
-    margin-top: -22px;
+    /*margin-top: -22px;*/
     padding: 16px;
     color: white;
     font-weight: bold;
@@ -55,29 +56,25 @@
 }
 
 .info {
-    margin: 0 auto;
+    margin: 5px;
 }
 
 .restaurant-name {
     font-size: 24px;
     font-weight: bold;
-    margin:10px 0px;
-}
-
-.star-rating {
-    margin-top: 5px;
+    margin: 10px 0px;
 }
 
 .star-rating img {
-    height: 20px; /* 設定統一的高度 */
-    vertical-align: middle; /* 對齊方式 */
+    height: 20px;
+    vertical-align: middle;
 }
 
 .vibe-tags, .food-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 5px; /* 控制標籤間距 */
-    margin: 10px 0;
+    gap: 5px;
+    margin: 5px 0;
     font-size: 15px;
     font-weight: normal;
 }
@@ -93,8 +90,26 @@
 .price-tag {
     font-weight: bold;
     color: #555;
+    margin-left: 10px;
 }
 
 .gallery-container {
     margin: 20px 0;
+}
+
+.info-row {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+#map {
+    width: -webkit-fill-available;
+    height: 150px;
+}
+svg{
+    width:-webkit-fill-available;
+}
+#chat{
+    width:-webkit-fill-available;
 }

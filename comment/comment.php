@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>總評視覺化</title>
-    <link rel="stylesheet" href="./comment.css">
+    <link rel="stylesheet" href="../comment/comment.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 
