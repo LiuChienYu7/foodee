@@ -107,37 +107,35 @@ mysqli_close($link);
             display: block;
         }
 
-        .nav-button {
-            margin: 10px;
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .nav-button:hover {
-            background-color: #45a049;
-        }
-
         .button-container {
             display: flex;
             flex-wrap: wrap;
             margin: 5px 0;
             justify-content: center;
+            position: relative;
         }
+
         .button-container button {
-            margin: 5px;
-            padding: 10px;
+            width: 20px; /* 默认宽度 */
+            padding: 5px;
             background-color: #f0f0f0;
             border: 1px solid #ccc;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s, color 0.3s;
+            transition: width 0.3s, background-color 0.3s, color 0.3s; /* 增加宽度的平滑过渡 */
+            text-align: center;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            position: relative;
         }
+
         .button-container button:hover {
+            width: auto; /* 悬停时自动调整宽度 */
             background-color: #4CAF50;
             color: white;
+            max-width: none; /* 防止宽度被限制 */
+            z-index: 1; /* 确保悬停时按钮在其他元素上方 */
         }
 
         .toggle-container {
@@ -207,6 +205,7 @@ mysqli_close($link);
         ?>
             <div id="restaurant-info" class="toggle-content active">
                 <?php
+                // 顯示餐廳名稱
                 echo "<div class='restaurant-name'>";
                 echo "<div>" . htmlspecialchars($restaurant_data['r_name']) . "</div>";
                 echo "</div>";
@@ -222,6 +221,8 @@ mysqli_close($link);
                             echo "<img src='full_star.png' alt='Full Star'>";
                         } elseif ($i == $fullStars && $halfStar) {
                             echo "<img src='half_star.png' alt='Half Star'>";
+                        } else {
+                            echo "<img src='empty_star.png' alt='Empty Star'>";
                         }
                     }
                     echo "</div>";
@@ -238,6 +239,7 @@ mysqli_close($link);
                 }
                 echo "</div>";
 
+                // 顯示氣氛標籤
                 echo "<div class='vibe-tags'>";
                 if (!empty($restaurant_data['r_vibe'])) {
                     $vibes = explode('，', $restaurant_data['r_vibe']);
@@ -247,6 +249,7 @@ mysqli_close($link);
                 }
                 echo "</div>";
 
+                // 顯示菜餚標籤
                 echo "<div class='vibe-tags'>";
                 if (!empty($restaurant_data['r_food_dishes'])) {
                     $dishes = explode('、', $restaurant_data['r_food_dishes']);
