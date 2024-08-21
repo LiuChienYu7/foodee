@@ -334,36 +334,43 @@
 
                 console.log("Chart updated successfully after sorting by rating.");
             });
-            
-            // 監聽來自 filter.html 的消息
+
+            let filteredPositions2 = [];
+
+            // 监听来自 filter.html 的消息
             window.addEventListener('message', function(event) {
                 if (Array.isArray(event.data)) {
-                const receivedRestaurantIds = event.data.map(id => Number(id)); // 確保 ID 為數字
-                console.log('Received Restaurant IDs:', receivedRestaurantIds);
+                    const receivedRestaurantIds = event.data.map(id => Number(id)); // 确保 ID 为数字
+                    console.log('Received Restaurant IDs:', receivedRestaurantIds);
 
-                // 清空當前顯示
-                d3.select("#chart").selectAll("*").remove();                
-                updateIntervals();
+                    // 过滤 positions，仅保留 ID 在 receivedRestaurantIds 中的项目
+                    filteredPositions2 = data.filter(d => {
+                        console.log('Checking position r_id:', d.r_id);
+                        return receivedRestaurantIds.includes(Number(d.r_id)); // 强制将 r_id 转为数字比较
+                    });
 
-                // 確保 positions 被正確賦值
-                console.log('Positions before filtering:', positions);
+                    data.forEach(d => {
+                        const existsInIds = receivedRestaurantIds.includes(Number(d.r_id));
+                        console.log(`r_id: ${d.r_id}, Exists in receivedRestaurantIds: ${existsInIds}`);
+                    });
 
-                // 過濾 positions，僅保留 ID 在 receivedRestaurantIds 中的項目
-                const filteredPositions = positions.filter(d => {
-                    console.log('Checking position r_id:', d.r_id);
-                    return receivedRestaurantIds.includes(d.r_id);
-                });
-                console.log("Filtered positions:", filteredPositions);
+                    console.log("Filtered positions2:", filteredPositions2);
 
-                // 計算 svg 總高度
-                const totalHeightValue = calculateTotalHeight(filteredPositions, intervalWidths, rowHeight, groupSpacing, margin);
-                    // setTimeout(() => {
-                    //     window.location.reload();
-                    // }, 2000);
+                    // 更新时间间隔
+                    updateIntervals();
+                    // 清空当前显示
+                    d3.select("#chart").selectAll("*").remove();
+
+                    // 计算 svg 总高度
+                    const totalHeightValue = calculateTotalHeight(filteredPositions2, intervalWidths, rowHeight, groupSpacing, margin);
+
+                    // 根据过滤后的 positions 计算新的位置数据
+                    const newPositions2 = calculateSortedPositions(filteredPositions2, intervalWidths, rowHeight, rectSpacing, margin, intervalPositions);
+                    drawChart(intervalWidths, intervalPositions, total, totalHeightValue, newPositions2);
                 }
             }, false);
 
-
+            
             //依照餐廳數計算區間寬度
             function getCurrentIntervalTotals(intervals) {
                 const intervalTotals = {};
