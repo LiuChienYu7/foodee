@@ -116,7 +116,7 @@ mysqli_close($link);
         }
 
         .button-container button {
-            width: 20px; /* 默认宽度 */
+            width: 50px; /* 默认宽度 */
             padding: 5px;
             background-color: #f0f0f0;
             border: 1px solid #ccc;
@@ -171,10 +171,6 @@ mysqli_close($link);
 
 <body>
 
-    <div class="toggle-container">
-        <button class="toggle-button" onclick="toggleView()">切換</button>
-    </div>
-
     <div class="gallery-container">
         <?php
         $index = 0;
@@ -221,8 +217,6 @@ mysqli_close($link);
                             echo "<img src='full_star.png' alt='Full Star'>";
                         } elseif ($i == $fullStars && $halfStar) {
                             echo "<img src='half_star.png' alt='Half Star'>";
-                        } else {
-                            echo "<img src='empty_star.png' alt='Empty Star'>";
                         }
                     }
                     echo "</div>";
@@ -259,6 +253,14 @@ mysqli_close($link);
                 }
                 echo "</div>";
                 ?>
+                <!-- 聊天室放在此處 -->
+                <div id="chat-section">
+                    <div class="chat">
+                        <div id="chat">
+                        <?php include '../chat/chat.php'; ?>
+                        </div>
+                    </div>
+                </div>
             </div>
             <?php
             echo "</div>";
@@ -273,14 +275,6 @@ mysqli_close($link);
             echo "<p>No data available for the given restaurant IDs.</p>";
         }
         ?>
-    </div>
-
-    <div id="chat-section" class="toggle-content">
-        <div class="chat">
-            <div id="chat">
-            <?php include '../chat/chat.php'; ?>
-            </div>
-        </div>
     </div>
 
     <div class="middle-section">
@@ -312,19 +306,6 @@ mysqli_close($link);
             images[currentIndex].classList.remove('active');
             currentIndex = (currentIndex + 1) % images.length;
             images[currentIndex].classList.add('active');
-        }
-
-        function toggleView() {
-            const restaurantInfo = document.getElementById('restaurant-info');
-            const chatSection = document.getElementById('chat-section');
-
-            if (restaurantInfo.classList.contains('active')) {
-                restaurantInfo.classList.remove('active');
-                chatSection.classList.add('active');
-            } else {
-                chatSection.classList.remove('active');
-                restaurantInfo.classList.add('active');
-            }
         }
     </script>
 </body>
