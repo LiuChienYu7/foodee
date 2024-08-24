@@ -1,7 +1,7 @@
 const NUM_OF_SIDES = 4;
 const NUM_OF_LEVEL = 5;
-const margin = 10; // 增加邊距
-const spider_width = 300; // 設置固定寬度
+const margin = 0; // 增加邊距
+const spider_width = 270; // 設置固定寬度
 const spider_height = 250; // 設置固定高度
 const size = Math.min(spider_width, spider_height) - margin * 2; // 使用固定的寬度和高度
 const offset = Math.PI;
@@ -65,7 +65,7 @@ const svg_spider = d3
 
 const g = svg_spider
   .append("g")
-  .attr("transform", `translate(${margin + 50},${margin + 70})`);
+  .attr("transform", `translate(${margin + 80},${margin + 65})`);
 
 //畫出spider chart 表格
 const generateAndDrawLevels = (levelsCount, sideCount) => {

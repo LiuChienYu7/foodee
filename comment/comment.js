@@ -58,7 +58,24 @@ function initializeReviews(reviewData) {
         d.atmosphere_review3,
       ]),
     },
-
+    {
+      id: 5,
+      text: "朋友評論",
+      reviews: reviewData.map((d) => {
+        if (d.friend_reviews.length > 0) {
+          return d.friend_reviews.map((f) => f.user).join(", ");
+        } else {
+          return "尚無朋友評論";
+        }
+      }),
+      details: reviewData.map((d) => {
+        if (d.friend_reviews.length > 0) {
+          return d.friend_reviews.map((f) => f.comment);
+        } else {
+          return ["尚無朋友評論"];
+        }
+      }),
+    },
   ];
   // 在初始化時调取函数
   //   initializeReviews(data);
@@ -74,8 +91,8 @@ function initializeReviews(reviewData) {
   const svg = d3
     .select(".upper-section")
     .append("svg")
-    .attr("width", 700)
-    .attr("height", 200);
+    .attr("width", 600)
+    .attr("height", 220);
 
   let Fixed = false;
   const groups = svg
@@ -84,7 +101,7 @@ function initializeReviews(reviewData) {
     .enter()
     .append("g")
     .attr("class", "block-group")
-    .attr("transform", (d, i) => `translate(0, ${10 + i * 50})`)
+    .attr("transform", (d, i) => `translate(0, ${i * 45})`)
     .on("mouseover", function (event, d) {
       if (!Fixed) {
         //標籤變化 - 背景

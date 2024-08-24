@@ -8,11 +8,11 @@ body, html {
     display: flex;
     height: 100vh;
     max-width: 1368px;
-    margin: auto;
-    padding: 20px;
+    margin-left: 10px;
+    padding-top: 20px;
 }
 .gallery-container {
-    width: 75%;
+    width: 55%;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -246,12 +246,23 @@ h3 {
     width: 100%;
     z-index: 4;
 }
-/* .shareButton{
-    fill: lightgray;
+/* 雷達圖跟營業時間位置 */
+.middle-section {
+    display: flex;
+    justify-content: center; /* 水平居中 */
+    height: 35%; /* 使父容器占據整個可用高度 */
 }
-.shareButton:hover{
-    fill:#F4DEB3;
-} */
+
+.middle-section1, .middle-section2 {
+    flex: 0 1 auto; /* 根據內容自適應寬度 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+.middle-section1{
+    margin-left: 70px;
+}
 
 /*share panel */
 #sharePanel {
@@ -474,19 +485,21 @@ button {
     height: 100px;
     margin: 0 auto;
     position: relative;
+    overflow: hidden; /* 确保图片不会超出容器 */
+}
+
+.displayed-img {
+    width: 100%;
+    height: auto;
+    max-height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
 }
 
 .image-container-share {
     position: relative;
     width: 100%;
     height: 100%;
-}
-
-.displayed-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 10px;
 }
 
 .nav-arrow {

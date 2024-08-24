@@ -217,6 +217,7 @@ if ($link) {
             ?>
         </div>
         <!-- 評論使用的資料庫 -->
+        <!-- 朋友評論資料連結 -->
         <?php
         // 获取餐厅ID
         $r_id1 = $_GET['r_id1'];
@@ -229,6 +230,7 @@ if ($link) {
             die("Connection failed: " . $conn->connect_error);
         }
 
+        // 查询餐厅的评论
         $sql = "SELECT * FROM additional WHERE r_id IN ('$r_id1', '$r_id2', '$r_id3')";
         $result = $conn->query($sql);
 
@@ -237,6 +239,25 @@ if ($link) {
             while ($row = $result->fetch_assoc()) {
                 $data[] = $row;
             }
+        }
+
+        // 查询朋友的评论
+        $sql_friends = "SELECT * FROM comment WHERE r_id IN ('$r_id1', '$r_id2', '$r_id3')";
+        $result_friends = $conn->query($sql_friends);
+
+        $friend_comments = array();
+        if ($result_friends->num_rows > 0) {
+            while ($row = $result_friends->fetch_assoc()) {
+                $friend_comments[] = $row;
+            }
+        }
+
+        // 將朋友評論合併到原本的數據中
+        foreach ($data as &$restaurant) {
+            $restaurant_id = $restaurant['r_id'];
+            $restaurant['friend_reviews'] = array_filter($friend_comments, function ($comment) use ($restaurant_id) {
+                return $comment['r_id'] == $restaurant_id;
+            });
         }
 
         // 将数据转换为 JSON 格式
@@ -259,7 +280,7 @@ if ($link) {
             die("Connection failed: " . $conn->connect_error);
         }
 
-        $sql = "SELECT * FROM detail WHERE r_id IN ('$r_id1', '$r_id2', '$r_id3')";
+        $sql = "SELECT * FROM detail2 WHERE r_id IN ('$r_id1', '$r_id2', '$r_id3')";
         $result = $conn->query($sql);
 
         $data = array();
@@ -283,18 +304,20 @@ if ($link) {
 
             <div class="resizer-horizontal-1"></div> <!-- 新增的水平分隔條 -->
 
-            <div class="middle-section1">
-                <script type="text/javascript">
-                    const restaurant_data = <?php echo $detail_data; ?>;
-                </script>
-                <svg class="spider" width="300" height="200"></svg>
-                <script type="text/javascript">
-                    const restaurant_time = <?php echo $detail_data; ?>;
-                </script>
-                <svg class="openTime" width="300" height="200"></svg>
-
+            <div class="middle-section">
+                <div class="middle-section1">
+                    <script type="text/javascript">
+                        const restaurant_data = <?php echo $detail_data; ?>;
+                    </script>
+                    <svg class="spider" width="300" height="200"></svg>
+                </div>
+                <div class="middle-section2">
+                    <script type="text/javascript">
+                        const restaurant_time = <?php echo $detail_data; ?>;
+                    </script>
+                    <svg class="openTime" width="300" height="250"></svg>
+                </div>
             </div>
-
             <div class="resizer-horizontal-2"></div> <!-- 新增的水平分隔條 -->
 
             <div class="lower-section">
@@ -319,7 +342,7 @@ if ($link) {
             <!-- <script src="https://d3js.org/d3.v7.min.js"></script> -->
             <script type="module">
                 // import '../word_tree/word_tree_modify.js';
-                import '../comment/comment.js'
+                import '../comment/comment2.0.js'
                 import '../spider/spider.js';
                 import '../openTime/openTime.js'
                 import '../map/compare_map.js'
@@ -508,13 +531,12 @@ if ($link) {
         }
 
         const selectedItems = {
-            parking: {},
+            vibe: {},
+            food: {},
             price: {},
             diningTime: {},
-            vibe: {},
-            food: {}
+            parking: {}
         };
-
 
         const all_restaurant_data = <?php echo json_encode($all_restaurant_data); ?>;
         const restaurantColorIndices = <?php echo json_encode($restaurantColorIndices); ?>;
@@ -610,36 +632,29 @@ if ($link) {
 
                     // 处理停车场按钮的点击事件
                     parkingButton.addEventListener('click', function() {
-                        // 初始化该餐厅的停车场状态
-                        if (!selectedItems.parking[restaurantData.r_id]) {
-                            selectedItems.parking[restaurantData.r_id] = false;
-                        }
-                        
-                        // 切换停车场选中状态
-                        selectedItems.parking[restaurantData.r_id] = !selectedItems.parking[restaurantData.r_id];
-                        parkingButton.style.backgroundColor = selectedItems.parking[restaurantData.r_id] ? '#F4DEB3' : '';
+                        selectedItems.parking = !selectedItems.parking;
+                        parkingButton.style.backgroundColor = selectedItems.parking ? '#F4DEB3' : '';
                     });
+
+
+                    // 创建价钱按钮
+                    const priceButton = document.createElement('button');
+                    priceButton.className = 'price-button';
+                    priceButton.innerHTML = `
+                <svg height="20px" width="20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 235.517 235.517" fill="#f9f053">
+                    <path d="M118.1,235.517c7.898,0,14.31-6.032,14.31-13.483c0-7.441,0-13.473,0-13.473 c39.069-3.579,64.932-24.215,64.932-57.785v-0.549c0-34.119-22.012-49.8-65.758-59.977V58.334c6.298,1.539,12.82,3.72,19.194,6.549 c10.258,4.547,22.724,1.697,28.952-8.485c6.233-10.176,2.866-24.47-8.681-29.654c-11.498-5.156-24.117-8.708-38.095-10.236V8.251 c0-4.552-6.402-8.251-14.305-8.251c-7.903,0-14.31,3.514-14.31,7.832c0,4.335,0,7.843,0,7.843 c-42.104,3.03-65.764,25.591-65.764,58.057v0.555c0,34.114,22.561,49.256,66.862,59.427v33.021 c-10.628-1.713-21.033-5.243-31.623-10.65c-11.281-5.755-25.101-3.72-31.938,6.385c-6.842,10.1-4.079,24.449,7.294,30.029 c16.709,8.208,35.593,13.57,54.614,15.518v13.755C103.79,229.36,110.197,235.517,118.1,235.517z M131.301,138.12 c14.316,4.123,18.438,8.257,18.438,15.681v0.555c0,7.979-5.776,12.651-18.438,14.033V138.12z M86.999,70.153v-0.549 c0-7.152,5.232-12.657,18.71-13.755v29.719C90.856,81.439,86.999,77.305,86.999,70.153z"/>
+                </svg> 
+                ${restaurantData.r_price_low} ~ ${restaurantData.r_price_high}`;
 
                     // 处理价钱按钮的点击事件
                     priceButton.addEventListener('click', function() {
-                        if (!selectedItems.price[restaurantData.r_id]) {
-                            selectedItems.price[restaurantData.r_id] = false;
-                        }
-                        
-                        selectedItems.price[restaurantData.r_id] = !selectedItems.price[restaurantData.r_id];
-                        priceButton.style.backgroundColor = selectedItems.price[restaurantData.r_id] ? '#F4DEB3' : '';
+                        selectedItems.price[id] = !selectedItems.price[id];
+                        priceButton.style.backgroundColor = selectedItems.price[id] ? '#F4DEB3' : '';
                     });
 
-                    // 处理用餐时间按钮的点击事件
-                    diningTimeButton.addEventListener('click', function() {
-                        if (!selectedItems.diningTime[restaurantData.r_id]) {
-                            selectedItems.diningTime[restaurantData.r_id] = false;
-                        }
-
-                        selectedItems.diningTime[restaurantData.r_id] = !selectedItems.diningTime[restaurantData.r_id];
-                        diningTimeButton.style.backgroundColor = selectedItems.diningTime[restaurantData.r_id] ? '#F4DEB3' : '';
-                    });
-
+                    // 创建用餐时间按钮
+                    const diningTimeButton = document.createElement('button');
+                    diningTimeButton.className = 'dining-time-button';
 
                     // 检查用餐时间是否为空
                     const diningTime = restaurantData.r_time_low ? `${restaurantData.r_time_low} min` : "未限時";
@@ -763,7 +778,7 @@ if ($link) {
                     const imageContainer = document.createElement('div');
                     imageContainer.className = 'image-container-share';
                     imageContainer.innerHTML = `<span class="nav-arrow prev" onclick="changeImage(this, -1, ${index})">‹</span>
-                                        <img src="${restaurantData.r_photo_env1}" class="displayed-img displayed-img-${index}">
+                                        <img src="default.jpg" class="displayed-img displayed-img-${index}">
                                         <span class="nav-arrow next" onclick="changeImage(this, 1, ${index})">›</span>`;
                     rightColumn.appendChild(imageDisplayContainer);
                     imageDisplayContainer.appendChild(imageContainer);
@@ -846,7 +861,7 @@ if ($link) {
             const displayedImg = document.querySelector(`.displayed-img-${index}`);
 
             if (displayedImg) { // 检查元素是否存在
-                displayedImg.src = images[0];// || 'default.jpg';
+                displayedImg.src = images[0] || 'default.jpg';
                 displayedImg.dataset.images = JSON.stringify(images);
                 displayedImg.dataset.index = 0;
             }
@@ -859,7 +874,7 @@ if ($link) {
                 let images = JSON.parse(displayedImg.dataset.images || '[]');
                 let currentIndex = parseInt(displayedImg.dataset.index, 10);
                 currentIndex = (currentIndex + direction + images.length) % images.length;
-                displayedImg.src = images[currentIndex];// || 'default.jpg';
+                displayedImg.src = images[currentIndex] || 'default.jpg';
                 displayedImg.dataset.index = currentIndex;
             }
         }
