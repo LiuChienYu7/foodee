@@ -45,7 +45,7 @@ if ($link) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="0807.css">
+    <link rel="stylesheet" href="0822.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <!-- <link rel="stylesheet" href="../word_tree/word_tree.css"> -->
 
