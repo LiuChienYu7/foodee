@@ -70,7 +70,7 @@ function initializeReviews(reviewData) {
       }),
       details: reviewData.map((d) => {
         if (d.friend_reviews.length > 0) {
-          return d.friend_reviews.map((f) => f.comment);
+          return d.friend_reviews.map((f) => f.user + ": " + f.comment);
         } else {
           return ["尚無朋友評論"];
         }
