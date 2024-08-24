@@ -23,7 +23,7 @@ if ($link) {
     foreach ($r_ids as $r_id) {
         $query = "SELECT r_name, r_vibe, r_food_dishes, r_price_low, r_price_high, r_photo_env1, r_photo_env2, r_photo_env3, r_photo_food1, r_photo_food2, r_photo_food3, r_photo_food4, r_photo_food5, r_photo_door, r_photo_menu1, r_photo_menu2, r_photo_menu3,
                          special_comment_sum, notice_comment_sum
-                  FROM additional_ 
+                  FROM additional
                   WHERE r_id = $r_id";
         $result = mysqli_query($link, $query);
 
@@ -280,14 +280,20 @@ if ($link) {
             die("Connection failed: " . $conn->connect_error);
         }
 
-        $sql = "SELECT * FROM detail2 WHERE r_id IN ('$r_id1', '$r_id2', '$r_id3')";
+        $sql = "SELECT * FROM detail WHERE r_id IN ('$r_id1', '$r_id2', '$r_id3')";
         $result = $conn->query($sql);
 
         $data = array();
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $data[] = $row;
+        if ($result) {
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $data[] = $row;
+                }
+            } else {
+                echo "No records found.";
             }
+        } else {
+            echo "Error in query: " . $conn->error;
         }
 
         // 将数据转换为 JSON 格式
@@ -342,7 +348,7 @@ if ($link) {
             <!-- <script src="https://d3js.org/d3.v7.min.js"></script> -->
             <script type="module">
                 // import '../word_tree/word_tree_modify.js';
-                import '../comment/comment2.0.js'
+                import '../comment/comment.js'
                 import '../spider/spider.js';
                 import '../openTime/openTime.js'
                 import '../map/compare_map.js'
@@ -778,7 +784,7 @@ if ($link) {
                     const imageContainer = document.createElement('div');
                     imageContainer.className = 'image-container-share';
                     imageContainer.innerHTML = `<span class="nav-arrow prev" onclick="changeImage(this, -1, ${index})">‹</span>
-                                        <img src="default.jpg" class="displayed-img displayed-img-${index}">
+                                        <img src="${restaurantData.r_photo_env1}" class="displayed-img displayed-img-${index}">
                                         <span class="nav-arrow next" onclick="changeImage(this, 1, ${index})">›</span>`;
                     rightColumn.appendChild(imageDisplayContainer);
                     imageDisplayContainer.appendChild(imageContainer);
@@ -861,7 +867,7 @@ if ($link) {
             const displayedImg = document.querySelector(`.displayed-img-${index}`);
 
             if (displayedImg) { // 检查元素是否存在
-                displayedImg.src = images[0] || 'default.jpg';
+                displayedImg.src = images[0];// || 'default.jpg';
                 displayedImg.dataset.images = JSON.stringify(images);
                 displayedImg.dataset.index = 0;
             }
@@ -874,7 +880,7 @@ if ($link) {
                 let images = JSON.parse(displayedImg.dataset.images || '[]');
                 let currentIndex = parseInt(displayedImg.dataset.index, 10);
                 currentIndex = (currentIndex + direction + images.length) % images.length;
-                displayedImg.src = images[currentIndex] || 'default.jpg';
+                displayedImg.src = images[currentIndex];// || 'default.jpg';
                 displayedImg.dataset.index = currentIndex;
             }
         }
