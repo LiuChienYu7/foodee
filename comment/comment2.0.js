@@ -58,6 +58,7 @@ function initializeReviews(reviewData) {
         d.atmosphere_review3,
       ]),
     },
+
   ];
   // 在初始化時调取函数
   //   initializeReviews(data);
