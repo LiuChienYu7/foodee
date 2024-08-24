@@ -243,13 +243,9 @@ if ($link) {
             </script>
             <script type="module">
                 // import '../word_tree/word_tree_modify.js';
-<<<<<<< HEAD
                 import '../comment/comment.js'
-=======
->>>>>>> 7dc7bf3f09547a25cfda8cafb5ead3a6b4cec13c
                 import '../spider/spider.js';
                 import '../map/compare_map.js'
-                import '../comment_new/comment2.0.js'
             </script>
         </div>
     </div>

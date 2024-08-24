@@ -23,7 +23,7 @@ if ($link) {
     foreach ($r_ids as $r_id) {
         $query = "SELECT r_name, r_vibe, r_food_dishes, r_price_low, r_price_high, r_photo_env1, r_photo_env2, r_photo_env3, r_photo_food1, r_photo_food2, r_photo_food3, r_photo_food4, r_photo_food5, r_photo_door, r_photo_menu1, r_photo_menu2, r_photo_menu3,
                          special_comment_sum, notice_comment_sum
-                  FROM additional
+                  FROM additional_ 
                   WHERE r_id = $r_id";
         $result = mysqli_query($link, $query);
 
@@ -45,9 +45,9 @@ if ($link) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../compare/0822.css">
+    <link rel="stylesheet" href="0807.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <link rel="stylesheet" href="../word_tree/word_tree.css">
+    <!-- <link rel="stylesheet" href="../word_tree/word_tree.css"> -->
 
     <!-- map -->
     <meta charset="UTF-8">
@@ -62,8 +62,7 @@ if ($link) {
     <script src="../map/leaflet_edgeMarker.js"></script>
 
     <!-- openTime -->
-    <!-- <link rel="stylesheet" href="../openTime/openDay.css" />
-    <link rel="stylesheet" href="../openTime/openTime.css" /> -->
+    <link rel="stylesheet" href="../openTime/openTime.css">
 
     <!-- comment -->
     <link rel="stylesheet" href="../comment/comment.css" />
@@ -260,7 +259,7 @@ if ($link) {
             die("Connection failed: " . $conn->connect_error);
         }
 
-        $sql = "SELECT * FROM detail WHERE r_id IN ('$r_id1', '$r_id2', '$r_id3')";
+        $sql = "SELECT * FROM detail2 WHERE r_id IN ('$r_id1', '$r_id2', '$r_id3')";
         $result = $conn->query($sql);
 
         $data = array();
@@ -284,19 +283,19 @@ if ($link) {
 
             <div class="resizer-horizontal-1"></div> <!-- 新增的水平分隔條 -->
 
-            <div class="middle-section">
+            <div class="middle-section1">
                 <script type="text/javascript">
-                    const restaurant_data = <?php echo $json_data; ?>;
+                    const restaurant_data = <?php echo $detail_data; ?>;
                 </script>
                 <svg class="spider" width="300" height="200"></svg>
-                <?php include '../openTime/openTime.php'; ?>
+
             </div>
-            <!--
             <div class="middle-section2" style="flex: auto;">
-                <p>營業時間</p>
-                <svg class = "openDay_Time" width="300" height="300"></svg>
+                <script type="text/javascript">
+                    const restaurant_time = <?php echo $detail_data; ?>;
+                </script>
+                <svg class="openTime" width="300" height="200"></svg>
             </div>
-            -->
             <div class="resizer-horizontal-2"></div> <!-- 新增的水平分隔條 -->
 
             <div class="lower-section">
@@ -304,8 +303,8 @@ if ($link) {
                     const restaurant_data_detail = <?php echo $detail_data; ?>;
                 </script>
 
-                <div id="map" width="300" height="200">
-                    <svg class="map" width="280" height="280"></svg>
+                <div id="map" width="250" height="200">
+                    <svg class="map" width="250" height="200"></svg>
                 </div>
             </div>
 
@@ -321,8 +320,9 @@ if ($link) {
             <!-- <script src="https://d3js.org/d3.v7.min.js"></script> -->
             <script type="module">
                 // import '../word_tree/word_tree_modify.js';
-                import '../comment/comment.js'
+                import '../comment/comment2.0.js'
                 import '../spider/spider.js';
+                import '../openTime/openTime.js'
                 import '../map/compare_map.js'
             </script>
         </div>
@@ -512,12 +512,13 @@ if ($link) {
             vibe: {},
             food: {},
             price: {},
-            diningTime: {}
+            diningTime: {},
+            parking: {}
         };
 
         const all_restaurant_data = <?php echo json_encode($all_restaurant_data); ?>;
         const restaurantColorIndices = <?php echo json_encode($restaurantColorIndices); ?>;
-
+        console.log('all_restaurant_data', all_restaurant_data);
         //分享版面樣示
         document.getElementById("shareButton").addEventListener("click", function() {
 
