@@ -253,8 +253,10 @@ const addButtons = (restaurantNames) => {
       .attr("transform", `translate(${xPosition},${yPosition})`)
       .style("cursor", "default")
       .on("mouseover", function (event, d) {
-        if (!isLocked){
-          console.log('isLocked:',!isLocked);
+        if (!isLocked) {
+          if (typeof globalData.highlightOpenTime === "function") {
+            globalData.highlightOpenTime(i);
+          }
           // 變深色並擴展寬度
           d3.select(this)
             .select("rect")
@@ -321,7 +323,10 @@ const addButtons = (restaurantNames) => {
         }
       })
       .on("mouseleave", function (event, d) {
-        if (!isLocked){
+        if (!isLocked) {
+          if (typeof globalData.resetHighlightOpenTime === 'function') {
+            globalData.resetHighlightOpenTime();
+          }
           // 恢復樣式
           d3.select(this)
             .select("rect")
@@ -360,6 +365,9 @@ const addButtons = (restaurantNames) => {
       })
       .on("click", function (event, d) {
         if (!isLocked) {
+          if (typeof globalData.resetHighlightOpenTime === "function") {
+            globalData.resetHighlightOpenTime();
+          }
           // 變深色並擴展寬度
           d3.select(this)
             .select("rect")
@@ -424,8 +432,7 @@ const addButtons = (restaurantNames) => {
           // 確保刻度層仍然在最上層
           d3.select(".axis-ticks").raise();
           isLocked = true;
-          console.log('isLocked:',!isLocked);
-
+          console.log("isLocked:", !isLocked);
         } else {
           // 解鎖狀態，恢復所有按鈕的 hover 事件
           // 恢復樣式
