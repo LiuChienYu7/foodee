@@ -216,13 +216,16 @@ if ($link) {
             }
             ?>
         </div>
+
         <!-- 評論使用的資料庫 -->
-        <!-- 朋友評論資料連結 -->
         <?php
         // 获取餐厅ID
-        $r_id1 = $_GET['r_id1'];
-        $r_id2 = $_GET['r_id2'];
-        $r_id3 = $_GET['r_id3'];
+        $r_ids = [];
+        for ($i = 1; $i <= 3; $i++) {
+            if (isset($_GET["r_id$i"])) {
+                $r_ids[] = intval($_GET["r_id$i"]);
+            }
+        }
 
         // 连接数据库并查询数据
         $conn = new mysqli('localhost', 'root', '', 'foodee');
@@ -230,49 +233,72 @@ if ($link) {
             die("Connection failed: " . $conn->connect_error);
         }
 
-        // 查询餐厅的评论
-        $sql = "SELECT * FROM additional WHERE r_id IN ('$r_id1', '$r_id2', '$r_id3')";
-        $result = $conn->query($sql);
+        // 构建 SQL 查询
+        if (!empty($r_ids)) {
+            $ids = implode("','", $r_ids); // 将数组中的ID转换为SQL字符串格式
 
-        $data = array();
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $data[] = $row;
+            // 查询餐厅的评论
+            $sql = "SELECT * FROM additional WHERE r_id IN ('$ids')";
+            $result = $conn->query($sql);
+
+            $data = array();
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $data[$row['r_id']] = $row; // 以r_id为键保存数据
+                }
             }
-        }
 
-        // 查询朋友的评论
-        $sql_friends = "SELECT * FROM comment WHERE r_id IN ('$r_id1', '$r_id2', '$r_id3')";
-        $result_friends = $conn->query($sql_friends);
+            // 查询朋友的评论
+            $sql_friends = "SELECT * FROM comment WHERE r_id IN ('$ids')";
+            $result_friends = $conn->query($sql_friends);
 
-        $friend_comments = array();
-        if ($result_friends->num_rows > 0) {
-            while ($row = $result_friends->fetch_assoc()) {
-                $friend_comments[] = $row;
+            $friend_comments = array();
+            if ($result_friends->num_rows > 0) {
+                while ($row = $result_friends->fetch_assoc()) {
+                    $friend_comments[] = $row;
+                }
             }
+
+            // 將朋友評論合併到原本的數據中
+            foreach ($r_ids as $restaurant_id) {
+                if (isset($data[$restaurant_id])) {
+                    $data[$restaurant_id]['friend_reviews'] = array_filter($friend_comments, function ($comment) use ($restaurant_id) {
+                        return $comment['r_id'] == $restaurant_id;
+                    });
+                }
+            }
+
+            // 按照 $r_ids 的顺序重新排序 $data
+            $ordered_data = array();
+            foreach ($r_ids as $id) {
+                if (isset($data[$id])) {
+                    $ordered_data[] = $data[$id];
+                }
+            }
+
+            // 将数据转换为 JSON 格式
+            $json_data = json_encode($ordered_data);
+        } else {
+            // 如果没有 r_id 參數，返回空数据
+            $json_data = json_encode([]);
         }
 
-        // 將朋友評論合併到原本的數據中
-        foreach ($data as &$restaurant) {
-            $restaurant_id = $restaurant['r_id'];
-            $restaurant['friend_reviews'] = array_filter($friend_comments, function ($comment) use ($restaurant_id) {
-                return $comment['r_id'] == $restaurant_id;
-            });
-        }
-
-        // 将数据转换为 JSON 格式
-        $json_data = json_encode($data);
         // 关闭数据库连接
         $conn->close();
         ?>
+
         <!-- 評論使用資料庫 結束 -->
+
 
         <!-- map使用資料庫開始 -->
         <?php
         // 获取餐厅ID
-        $r_id1 = $_GET['r_id1'];
-        $r_id2 = $_GET['r_id2'];
-        $r_id3 = $_GET['r_id3'];
+        $r_ids = [];
+        for ($i = 1; $i <= 3; $i++) {
+            if (isset($_GET["r_id$i"])) {
+                $r_ids[] = intval($_GET["r_id$i"]);
+            }
+        }
 
         // 连接数据库并查询数据
         $conn = new mysqli('localhost', 'root', '', 'foodee');
@@ -280,6 +306,7 @@ if ($link) {
             die("Connection failed: " . $conn->connect_error);
         }
 
+<<<<<<< HEAD
         $sql = "SELECT * FROM detail WHERE r_id IN ('$r_id1', '$r_id2', '$r_id3')";
         $result = $conn->query($sql);
 
@@ -294,13 +321,41 @@ if ($link) {
             }
         } else {
             echo "Error in query: " . $conn->error;
+=======
+        // 構建SQL查詢
+        if (!empty($r_ids)) {
+            $ids = implode("','", $r_ids); // 將數組中的ID轉換為SQL字符串格式
+            $sql = "SELECT * FROM detail2 WHERE r_id IN ('$ids')";
+
+            $result = $conn->query($sql);
+
+            $data = array();
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $data[$row['r_id']] = $row; // 以 r_id 為鍵保存數據
+                }
+            }
+
+            // 根據 $r_ids 的順序重新排序 $data
+            $ordered_data = array();
+            foreach ($r_ids as $id) {
+                if (isset($data[$id])) {
+                    $ordered_data[] = $data[$id];
+                }
+            }
+
+            // 将数据转换为 JSON 格式
+            $detail_data = json_encode($ordered_data);
+        } else {
+            // 處理沒有 r_id 參數的情況
+            $detail_data = json_encode([]);
+>>>>>>> 18da70efb08970604f3174e6d1e86854e5c6ce64
         }
 
-        // 将数据转换为 JSON 格式
-        $detail_data = json_encode($data);
         // 关闭数据库连接
         $conn->close();
         ?>
+
         <!-- map使用資料庫 結束 -->
 
         <div class="info-container">
