@@ -1,5 +1,4 @@
 <?php
-header('Content-Type: text/html; charset=UTF-8');
 
 // 資料庫連線設置
 $host = 'localhost';

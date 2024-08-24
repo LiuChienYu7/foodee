@@ -23,7 +23,7 @@ if ($link) {
     foreach ($r_ids as $r_id) {
         $query = "SELECT r_name, r_vibe, r_food_dishes, r_price_low, r_price_high, r_photo_env1, r_photo_env2, r_photo_env3, r_photo_food1, r_photo_food2, r_photo_food3, r_photo_food4, r_photo_food5, r_photo_door, r_photo_menu1, r_photo_menu2, r_photo_menu3,
                          special_comment_sum, notice_comment_sum
-                  FROM additional_ 
+                  FROM additional
                   WHERE r_id = $r_id";
         $result = mysqli_query($link, $query);
 
@@ -45,7 +45,7 @@ if ($link) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="0807.css">
+    <link rel="stylesheet" href="../compare/0822.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <link rel="stylesheet" href="../word_tree/word_tree.css">
 
@@ -289,7 +289,7 @@ if ($link) {
                     const restaurant_data = <?php echo $json_data; ?>;
                 </script>
                 <svg class="spider" width="300" height="200"></svg>
-                <!-- <svg class = "openDay_Time" width="300" height="300"></svg> -->
+                <?php include '../openTime/openTime.php'; ?>
             </div>
             <!--
             <div class="middle-section2" style="flex: auto;">
