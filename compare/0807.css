@@ -8,11 +8,11 @@ body, html {
     display: flex;
     height: 100vh;
     max-width: 1368px;
-    margin: auto;
-    padding: 20px;
+    margin-left: 10px;
+    padding-top: 20px;
 }
 .gallery-container {
-    width: 75%;
+    width: 55%;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -22,14 +22,18 @@ body, html {
     margin-bottom: 10px;
     position: relative;
 }
+
 .restaurant-name {
+    display:flex;
+    align-items:start;
+    width: auto; /* 確保寬度不超過名稱的範圍 */
+    padding: 10px; /* 適當增加內部間距 */
+    max-width: 100%; /* 確保名稱不超過容器寬度 */
+    margin: auto;
     text-align: center;
-    height: 50px; /* Set a fixed height for restaurant names */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden; /* Hide overflow if name is too long */
+    border-radius: 8px;
 }
+
 .vibe-tags, .food-tags {
     display: flex;
     flex-wrap: wrap;
@@ -90,6 +94,9 @@ body, html {
     width: 40%;
     padding-left: 20px;
     box-sizing: border-box;
+}
+.upper-section {
+    text-align: left; /* 確保上層容器內的內容靠左 */
 }
 /* Modal styles */
 .modal {
@@ -238,5 +245,268 @@ h3 {
     bottom: 0;
     width: 100%;
     z-index: 4;
+}
+/* .shareButton{
+    fill: lightgray;
+}
+.shareButton:hover{
+    fill:#F4DEB3;
+} */
+
+/*share panel */
+#sharePanel {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 900px;
+    background-color: white;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    z-index: 1001; /* 确保面板在模糊效果上方 */
+    padding: 20px;
+    border-radius: 10px;
+    overflow-y: hidden; /* 默认隐藏滚动条 */
+    overflow-x: hidden;
+    transition: height 0.3s ease-in-out; /* 平滑过渡效果 */
+}
+.blur-background {
+    filter: blur(5px);
+    opacity: 0.5;
+    /* transition: filter 0.3s, opacity 0.3s;  */
+}
+
+#share-content {
+    margin-bottom: 20px;
+}
+
+.restaurant-item {
+    margin-bottom: 20px;
+}
+
+.restaurant-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.1); /* 背景颜色会根据前面一页动态设置 */
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.restaurant-title input {
+    flex-grow: 1;
+    margin-left: 10px;
+}
+
+.button-group {
+    display: flex;
+    flex-direction: column;
+    margin-right: 20px; /* 确保按钮与右侧标签之间有空间 */
+    /* align-items: flex-start; */
+}
+
+.button-group button {
+    background-color: #ddd;
+    border: none;
+    padding: 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.panel-buttons {
+    position: relative;
+    left: 800px;
+    bottom: 10px;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+#sharePanel img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+
+.restaurant-tag:hover {
+    background-color: #ddd;
+}
+
+.restaurant-tag.selected {
+    background-color: #F4DEB3;
+}
+
+/* 氣氛、食物title */
+/* 2. 创建一个用于标签的容器 */
+.tags-container {
+    display: flex;
+    flex-direction: column;
+    margin-left: 20px;
+}
+
+/* 3. 气氛和食物标签组的样式 */
+.vibe-tags, .food-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 5px; /* 增加标题和标签之间的距离 */
+    margin-left:10px;
+}
+
+/* 标题样式 */
+.tag-title {
+    display: flex;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    margin-top: 5px;
+}
+
+/* 将整个内容排列为两列布局 */
+.restaurant-item {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+
+.left-column {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.middle-column {
+    display: flex;
+    flex-direction: column;
+    margin-left: 20px;
+}
+
+.right-column{
+    display: flex;
+    flex-direction: column;
+    margin-left: 50px;
+}
+
+/* 所有按鈕和tag样式 */
+button {
+    border: none;
+    background: none;
+    padding: 5px;
+    cursor: pointer;
+    display: inline-grid;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    font-weight:bold;
+}
+
+/* button svg {
+    fill: currentColor;
+} */
+
+/* 价钱按钮和用餐时间按钮特定样式 */
+.price-button, .dining-time-button {
+    background-color: lightgray;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin-bottom: 5px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.price-button:hover, .dining-time-button:hover {
+    background-color: #e0e0e0;
+}
+
+/* parking */
+/* 停车场按钮的样式 */
+.parking-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px 10px 20px;
+    background-color: #E0E0E0; /* 默认背景颜色 */
+    border-radius: 8px; /* 圆角矩形 */
+    cursor: pointer;
+    border: none; /* 去除默认边框 */
+}
+
+.parking-button svg {
+    margin-right: 5px; /* 控制 SVG 与按钮文字的距离 */
+}
+
+/* 高亮状态下的停车场按钮 */
+.parking-button.highlighted {
+    background-color: #F4DEB3; /* 高亮时的背景颜色 */
+}
+
+/* share panel 右邊內容 */
+/* 新增图片按钮和展示区的样式 */
+.image-button-group {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    /* margin-left:20px; */
+}
+/* #f7c99d */
+.image-toggle-button {
+    background-color: lightgray;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.image-toggle-button.selected {
+    background-color: #F4DEB3;
+}
+
+.image-toggle-button:hover {
+    background-color: #f9d4a3;
+}
+
+.image-display-container {
+    width: 200px;
+    height: 100px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden; /* 确保图片不会超出容器 */
+}
+
+.displayed-img {
+    width: 100%;
+    height: auto;
+    max-height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.image-container-share {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.nav-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 20px;
+    color: white;
+    text-shadow: 0px 0px 5px black;
+    z-index: 2;
+}
+
+.prev {
+    left: 5px;
+}
+
+.next {
+    right: 10px;
 }
 
