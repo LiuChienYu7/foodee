@@ -320,7 +320,7 @@ if ($link) {
             <!-- <script src="https://d3js.org/d3.v7.min.js"></script> -->
             <script type="module">
                 // import '../word_tree/word_tree_modify.js';
-                import '../comment/comment2.0.js'
+                import '../comment/comment.js'
                 import '../spider/spider.js';
                 import '../openTime/openTime.js'
                 import '../map/compare_map.js'
