@@ -259,7 +259,7 @@ if ($link) {
             die("Connection failed: " . $conn->connect_error);
         }
 
-        $sql = "SELECT * FROM detail2 WHERE r_id IN ('$r_id1', '$r_id2', '$r_id3')";
+        $sql = "SELECT * FROM detail WHERE r_id IN ('$r_id1', '$r_id2', '$r_id3')";
         $result = $conn->query($sql);
 
         $data = array();
@@ -288,14 +288,13 @@ if ($link) {
                     const restaurant_data = <?php echo $detail_data; ?>;
                 </script>
                 <svg class="spider" width="300" height="200"></svg>
-
-            </div>
-            <div class="middle-section2" style="flex: auto;">
                 <script type="text/javascript">
                     const restaurant_time = <?php echo $detail_data; ?>;
                 </script>
                 <svg class="openTime" width="300" height="200"></svg>
+
             </div>
+
             <div class="resizer-horizontal-2"></div> <!-- 新增的水平分隔條 -->
 
             <div class="lower-section">
