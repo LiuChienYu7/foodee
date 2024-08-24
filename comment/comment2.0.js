@@ -100,6 +100,7 @@ function initializeReviews(reviewData) {
     })
     .on("mouseout", function () {
       if (!Fixed) {
+        svg.selectAll(`.detail-group`).remove();
         d3.select(this).select("rect").attr("fill", "#F8EDE3"); // 恢復原背景顏色
         d3.select(this)
           .select("text")
@@ -148,6 +149,15 @@ function initializeReviews(reviewData) {
     .attr("dominant-baseline", "middle")
     .attr("fill", "black")
     .text((d) => d.text);
+
+  const colors = ["#FF70AE", "#85B4FF", "#FFCE47"]; // 定義顏色陣列
+
+  // 一開始就顯示第一個類別的總評和第一家餐廳的評論細節
+  const firstCategory = data[0];
+  console.log("spider", firstCategory);
+  showReviews(svg, firstCategory, groups.nodes()[0]); // 顯示第一個類別的總評
+  drawCommentDetails(svg, firstCategory, 0, colors, 140, 30); // 顯示第一家餐廳的三則細節評論
+  // svg, d, i, colors, endX, endY
 }
 
 function showReviews(svg, d, blockGroup) {
@@ -189,15 +199,15 @@ function showReviews(svg, d, blockGroup) {
     wrapText(tempText, 130);
 
     const bbox = tempText.node().getBBox();
-    const textHeight = bbox.height  -40 + 10; // 加上適當的 padding
+    const textHeight = bbox.height - 40 + 10; // 加上適當的 padding
     tempText.remove();
 
     let previousEndY = blockY + 35; // 初始Y位置
     // 根據文本高度調整區塊高度
     const blockHeight = Math.max(textHeight, 45); // 設置最小高度為 40，避免過小
-    const startX = translateX -50 + blockWidth;
+    const startX = translateX - 50 + blockWidth;
     const startY = translateY - 45 + blockY + 30;
-    const endX = blockX + 200;
+    const endX = blockX + 120;
     // const endY = blockY + i * 50 + 35; // 調整間距以容納評論細節
     const endY = previousEndY + i * 50; // 更新endY位置
 
@@ -237,11 +247,15 @@ function showReviews(svg, d, blockGroup) {
     const reviewGroup = svg
       .append("g")
       .attr("class", `review-group review-${i + 1}`)
-      .attr("transform", `translate(${endX + 10}, ${endY - 20 - textHeight/ ((i+1) * 2)})`) //調整區塊間距
+      .attr(
+        "transform",
+        `translate(${endX + 10}, ${endY - 20 - textHeight / ((i + 1) * 2)})`
+      ) //調整區塊間距
       .datum(d) // 使用 .datum 绑定数据对象
       .on("mouseover", function (event, d) {
         console.log("Data passed to drawCommentDetails on mouseover:", d);
         if (!isFixed) {
+          svg.selectAll(`.detail-group`).remove();
           drawCommentDetails(svg, d, i, colors, endX, endY);
           d3.select(this).style("cursor", "pointer");
           d3.select(this).select("rect").attr("fill-opacity", 0.8);
@@ -359,8 +373,20 @@ function drawCommentDetails(svg, d, i, colors, endX, endY) {
           .linkHorizontal()
           .x((d) => d[0])
           .y((d) => d[1])({
-          source: [endX + 170, endY], // 连接线起点
-          target: [detailEndX + 25, detailStartY + detailBlockHeight / 2], // 连接线终点
+          source: [endX + 170, endY], // 連接線起點
+          target: [endX + 170, endY], // 動畫起始點在源點
+        })
+      )
+      .transition() // 添加動畫過渡
+      .duration(300) // 設定持續時間
+      .attr(
+        "d",
+        d3
+          .linkHorizontal()
+          .x((d) => d[0])
+          .y((d) => d[1])({
+          source: [endX + 170, endY], // 連接線起點
+          target: [detailEndX + 25, detailStartY + detailBlockHeight / 2], // 連接線終點
         })
       );
 
@@ -374,6 +400,10 @@ function drawCommentDetails(svg, d, i, colors, endX, endY) {
       .attr("rx", 10)
       .attr("ry", 10)
       .attr("fill", colors[i]) // 使用颜色数组中的颜色作为背景
+      .attr("fill-opacity", 0) // 初始透明度為0
+      .attr("width", 0) // 初始寬度為0
+      .transition() // 動畫過渡
+      .duration(300) // 持續時間300ms
       .attr("fill-opacity", 0.5)
       .attr("width", 200); // 最终宽度为200
 
@@ -385,8 +415,12 @@ function drawCommentDetails(svg, d, i, colors, endX, endY) {
       .attr("y", detailStartY + 10)
       .attr("text-anchor", "start")
       .attr("dominant-baseline", "hanging")
+      .attr("opacity", 0) // 初始透明度為0
       .text(comment)
-      .call(wrapText, 180); // 自动换行
+      .call(wrapText, 180) // 自動換行
+      .transition() // 添加動畫過渡
+      .duration(300) // 設定持續時間
+      .attr("opacity", 1); // 最終透明度為1
   });
 }
 
