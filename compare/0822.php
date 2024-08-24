@@ -289,7 +289,7 @@ if ($link) {
                     const restaurant_data = <?php echo $json_data; ?>;
                 </script>
                 <svg class="spider" width="300" height="200"></svg>
-                <!-- <svg class = "openDay_Time" width="300" height="300"></svg> -->
+                <?php include '../openTime/openTime.php'; ?>
             </div>
             <!--
             <div class="middle-section2" style="flex: auto;">
