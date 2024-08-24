@@ -826,7 +826,7 @@ if ($link) {
                     const imageContainer = document.createElement('div');
                     imageContainer.className = 'image-container-share';
                     imageContainer.innerHTML = `<span class="nav-arrow prev" onclick="changeImage(this, -1, ${index})">‹</span>
-                                        <img src="default.jpg" class="displayed-img displayed-img-${index}">
+                                        <img src="${restaurantData.r_photo_env1}" class="displayed-img displayed-img-${index}">
                                         <span class="nav-arrow next" onclick="changeImage(this, 1, ${index})">›</span>`;
                     rightColumn.appendChild(imageDisplayContainer);
                     imageDisplayContainer.appendChild(imageContainer);
@@ -909,7 +909,7 @@ if ($link) {
             const displayedImg = document.querySelector(`.displayed-img-${index}`);
 
             if (displayedImg) { // 检查元素是否存在
-                displayedImg.src = images[0] || 'default.jpg';
+                displayedImg.src = images[0];// || 'default.jpg';
                 displayedImg.dataset.images = JSON.stringify(images);
                 displayedImg.dataset.index = 0;
             }
@@ -922,7 +922,7 @@ if ($link) {
                 let images = JSON.parse(displayedImg.dataset.images || '[]');
                 let currentIndex = parseInt(displayedImg.dataset.index, 10);
                 currentIndex = (currentIndex + direction + images.length) % images.length;
-                displayedImg.src = images[currentIndex] || 'default.jpg';
+                displayedImg.src = images[currentIndex];// || 'default.jpg';
                 displayedImg.dataset.index = currentIndex;
             }
         }
