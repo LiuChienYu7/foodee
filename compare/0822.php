@@ -216,7 +216,6 @@ if ($link) {
             }
             ?>
         </div>
-
         <!-- 評論使用的資料庫 -->
         <?php
         // 获取餐厅ID
@@ -350,6 +349,12 @@ if ($link) {
 
         <div class="info-container">
             <div class="upper-section">
+                <script type="text/javascript">
+                    // 在PHP中将JSON数据传递给JS
+                    const reviewData = <?php echo $json_data; ?>;
+                    console.log('reviewData', reviewData);
+                </script>
+                <!-- <svg class="comment" width="600" height="220"></svg> -->
                 <!-- <div class="comment_comment">評論</div> -->
             </div>
 
@@ -384,12 +389,11 @@ if ($link) {
             <div class="button_container">
                 <button id="shareButton">分享</button>
             </div>
-
+            
             <script type="text/javascript">
-                // 在PHP中将JSON数据传递给JS
-                const reviewData = <?php echo $json_data; ?>;
-                console.log('reviewData', reviewData);
+                var globalData = {}; // 用來共享狀態的全局變量
             </script>
+
             <!-- <script src="https://d3js.org/d3.v7.min.js"></script> -->
             <script type="module">
                 // import '../word_tree/word_tree_modify.js';
