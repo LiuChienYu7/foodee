@@ -22,11 +22,17 @@ function updateChart(restaurant_time) {
     .domain([parseTime("0000"), parseTime("2400")])
     .range([0, 180]);
 
-    restaurant_time.forEach((restaurant, index) => {
+  restaurant_time.forEach((restaurant, index) => {
     const extendedData = [];
 
     // 確保 r_hours_periods 是有效的 JSON 字符串
-    const allHoursPeriods = JSON.parse(restaurant.r_hours_periods);
+    let allHoursPeriods;
+    try {
+      allHoursPeriods = JSON.parse(restaurant.r_hours_periods);
+    } catch (error) {
+      console.error("Invalid JSON format for r_hours_periods:", error);
+      return; // 跳過該餐廳，繼續處理其他餐廳
+    }
 
     allHoursPeriods.forEach((period) => {
       let start = parseTime(period.startTime);
