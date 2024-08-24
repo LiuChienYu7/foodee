@@ -23,7 +23,7 @@ if ($link) {
     foreach ($r_ids as $r_id) {
         $query = "SELECT r_name, r_vibe, r_food_dishes, r_price_low, r_price_high, r_photo_env1, r_photo_env2, r_photo_env3, r_photo_food1, r_photo_food2, r_photo_food3, r_photo_food4, r_photo_food5, r_photo_door, r_photo_menu1, r_photo_menu2, r_photo_menu3,
                          special_comment_sum, notice_comment_sum
-                  FROM additional
+                  FROM additional_ 
                   WHERE r_id = $r_id";
         $result = mysqli_query($link, $query);
 
@@ -308,22 +308,15 @@ if ($link) {
         // 構建SQL查詢
         if (!empty($r_ids)) {
             $ids = implode("','", $r_ids); // 將數組中的ID轉換為SQL字符串格式
-            $sql = "SELECT * FROM detail WHERE r_id IN ('$ids')";
+            $sql = "SELECT * FROM detail2 WHERE r_id IN ('$ids')";
 
             $result = $conn->query($sql);
 
-            if ($result) {
-                if ($result->num_rows > 0) {
-                    // 查詢成功並且有結果
-                    while ($row = $result->fetch_assoc()) {
-                        // 處理結果
-                    }
-                } else {
-                    echo "No records found.";
+            $data = array();
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $data[$row['r_id']] = $row; // 以 r_id 為鍵保存數據
                 }
-            } else {
-                // 查詢失敗，顯示錯誤信息
-                echo "Error in query: " . $conn->error;
             }
 
             // 根據 $r_ids 的順序重新排序 $data
@@ -833,7 +826,7 @@ if ($link) {
                     const imageContainer = document.createElement('div');
                     imageContainer.className = 'image-container-share';
                     imageContainer.innerHTML = `<span class="nav-arrow prev" onclick="changeImage(this, -1, ${index})">‹</span>
-                                        <img src="${restaurantData.r_photo_env1}" class="displayed-img displayed-img-${index}">
+                                        <img src="default.jpg" class="displayed-img displayed-img-${index}">
                                         <span class="nav-arrow next" onclick="changeImage(this, 1, ${index})">›</span>`;
                     rightColumn.appendChild(imageDisplayContainer);
                     imageDisplayContainer.appendChild(imageContainer);
@@ -916,7 +909,7 @@ if ($link) {
             const displayedImg = document.querySelector(`.displayed-img-${index}`);
 
             if (displayedImg) { // 检查元素是否存在
-                displayedImg.src = images[0];// || 'default.jpg';
+                displayedImg.src = images[0] || 'default.jpg';
                 displayedImg.dataset.images = JSON.stringify(images);
                 displayedImg.dataset.index = 0;
             }
@@ -929,7 +922,7 @@ if ($link) {
                 let images = JSON.parse(displayedImg.dataset.images || '[]');
                 let currentIndex = parseInt(displayedImg.dataset.index, 10);
                 currentIndex = (currentIndex + direction + images.length) % images.length;
-                displayedImg.src = images[currentIndex];// || 'default.jpg';
+                displayedImg.src = images[currentIndex] || 'default.jpg';
                 displayedImg.dataset.index = currentIndex;
             }
         }
