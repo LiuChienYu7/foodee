@@ -306,34 +306,25 @@ if ($link) {
             die("Connection failed: " . $conn->connect_error);
         }
 
-<<<<<<< HEAD
-        $sql = "SELECT * FROM detail WHERE r_id IN ('$r_id1', '$r_id2', '$r_id3')";
-        $result = $conn->query($sql);
-
-        $data = array();
-        if ($result) {
-            if ($result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                    $data[] = $row;
-                }
-            } else {
-                echo "No records found.";
-            }
-        } else {
-            echo "Error in query: " . $conn->error;
-=======
         // 構建SQL查詢
         if (!empty($r_ids)) {
             $ids = implode("','", $r_ids); // 將數組中的ID轉換為SQL字符串格式
-            $sql = "SELECT * FROM detail2 WHERE r_id IN ('$ids')";
+            $sql = "SELECT * FROM detail WHERE r_id IN ('$ids')";
 
             $result = $conn->query($sql);
 
-            $data = array();
-            if ($result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                    $data[$row['r_id']] = $row; // 以 r_id 為鍵保存數據
+            if ($result) {
+                if ($result->num_rows > 0) {
+                    // 查詢成功並且有結果
+                    while ($row = $result->fetch_assoc()) {
+                        // 處理結果
+                    }
+                } else {
+                    echo "No records found.";
                 }
+            } else {
+                // 查詢失敗，顯示錯誤信息
+                echo "Error in query: " . $conn->error;
             }
 
             // 根據 $r_ids 的順序重新排序 $data
@@ -349,7 +340,6 @@ if ($link) {
         } else {
             // 處理沒有 r_id 參數的情況
             $detail_data = json_encode([]);
->>>>>>> 18da70efb08970604f3174e6d1e86854e5c6ce64
         }
 
         // 关闭数据库连接
