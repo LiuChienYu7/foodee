@@ -227,6 +227,14 @@ const addLabels = () => {
 };
 let isLocked = false; // 全局變數，用來跟踪按鈕是否被鎖定
 
+// 定义一个全局变量存储餐厅ID
+const restaurantIds = [
+  /* 餐厅 ID 列表 */
+];
+
+// 定义在 openTime.js 中导出的 highlight 和 reset 函数
+import { highlightRestaurant, resetHighlight } from "../openTime/openTime.js";
+
 //添加button到左上角 要把button跟文字包在一起 動態才會正常
 const addButtons = (restaurantNames) => {
   const buttonColors = ["#FF70AE", "#85B4FF", "#FFCE47"];
@@ -254,9 +262,6 @@ const addButtons = (restaurantNames) => {
       .style("cursor", "default")
       .on("mouseover", function (event, d) {
         if (!isLocked) {
-          if (typeof globalData.highlightOpenTime === "function") {
-            globalData.highlightOpenTime(i);
-          }
           // 變深色並擴展寬度
           d3.select(this)
             .select("rect")
@@ -320,13 +325,11 @@ const addButtons = (restaurantNames) => {
 
           // 確保刻度層仍然在最上層
           d3.select(".axis-ticks").raise();
+          highlightRestaurant(i);
         }
       })
       .on("mouseleave", function (event, d) {
         if (!isLocked) {
-          if (typeof globalData.resetHighlightOpenTime === 'function') {
-            globalData.resetHighlightOpenTime();
-          }
           // 恢復樣式
           d3.select(this)
             .select("rect")
@@ -361,13 +364,11 @@ const addButtons = (restaurantNames) => {
             .transition()
             .duration(100)
             .style("fill-opacity", 1);
+          resetHighlight();
         }
       })
       .on("click", function (event, d) {
         if (!isLocked) {
-          if (typeof globalData.resetHighlightOpenTime === "function") {
-            globalData.resetHighlightOpenTime();
-          }
           // 變深色並擴展寬度
           d3.select(this)
             .select("rect")
@@ -432,6 +433,7 @@ const addButtons = (restaurantNames) => {
           // 確保刻度層仍然在最上層
           d3.select(".axis-ticks").raise();
           isLocked = true;
+          highlightRestaurant(i);
           console.log("isLocked:", !isLocked);
         } else {
           // 解鎖狀態，恢復所有按鈕的 hover 事件
@@ -465,6 +467,7 @@ const addButtons = (restaurantNames) => {
             .duration(100)
             .style("fill-opacity", 1);
           isLocked = false;
+          resetHighlight();
         }
       });
 

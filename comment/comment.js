@@ -104,6 +104,10 @@ function initializeReviews(reviewData) {
     .attr("transform", (d, i) => `translate(0, ${i * 45})`)
     .on("mouseover", function (event, d) {
       if (!Fixed) {
+        // 清除之前的線條和區塊
+        svg
+          .selectAll(".link, .review-block, .detail-link, .detail-block")
+          .remove();
         //標籤變化 - 背景
         d3.select(this).select("rect").attr("fill", "#E0D4C2"); // 當滑鼠懸停時變深
         // - 文字
@@ -188,7 +192,7 @@ function showReviews(svg, d, blockGroup) {
   svg.selectAll(".link, .review-block, .detail-link, .detail-block").remove();
 
   const blockX = 20;
-  const blockY = 30; // 這裡可以根據需要調整Y座標
+  const blockY = 30; // 這裡可以根據需要調整Y座標 一開始高度
   const blockWidth = 150;
   const colors = ["#FF70AE", "#85B4FF", "#FFCE47"]; // 定義顏色陣列
 
@@ -200,6 +204,7 @@ function showReviews(svg, d, blockGroup) {
     .map(Number);
 
   let isFixed = false; // 初始化为未固定状态
+  let previousEndY = blockY + 20; // 初始Y位置
 
   d.reviews.forEach((review, i) => {
     // 计算文本高度
@@ -220,17 +225,18 @@ function showReviews(svg, d, blockGroup) {
     const textHeight = bbox.height - 40 + 10; // 加上適當的 padding
     tempText.remove();
 
-    let previousEndY = blockY + 35; // 初始Y位置
     // 根據文本高度調整區塊高度
-    const blockHeight = Math.max(textHeight, 45); // 設置最小高度為 40，避免過小
+    const blockHeight = Math.max(textHeight, 45); // 設置最小高度為 45，避免過小
     const startX = translateX - 50 + blockWidth;
-    const startY = translateY - 45 + blockY + 30;
+    const startY = translateY + 15; //線連在同一個點上
     const endX = blockX + 120;
+    // const endY = previousEndY; // 更新endY位置
     // const endY = blockY + i * 50 + 35; // 調整間距以容納評論細節
-    const endY = previousEndY + i * 50; // 更新endY位置
+    const endY = previousEndY + i * 3; // 更新endY位置
 
     // 更新下一個區塊的起始位置
-    previousEndY += blockHeight * 5 + 50; // 20 是區塊之間的間距
+    previousEndY += blockHeight + 5; // 20 是區塊之間的間距
+    // previousEndY += blockHeight * 5 + 50; // 20 是區塊之間的間距
 
     // 繪製非直線曲線並添加動畫效果
     svg
@@ -258,7 +264,7 @@ function showReviews(svg, d, blockGroup) {
           .x((d) => d[0])
           .y((d) => d[1])({
           source: [startX, startY],
-          target: [endX - 20, endY],
+          target: [endX - 20, endY - 10],
         })
       );
 
@@ -267,7 +273,7 @@ function showReviews(svg, d, blockGroup) {
       .attr("class", `review-group review-${i + 1}`)
       .attr(
         "transform",
-        `translate(${endX + 10}, ${endY - 20 - textHeight / ((i + 1) * 2)})`
+        `translate(${endX + 10}, ${endY - 40})` // - textHeight / ((i + 1) * 2)
       ) //調整區塊間距
       .datum(d) // 使用 .datum 绑定数据对象
       .on("mouseover", function (event, d) {
@@ -349,7 +355,7 @@ function drawCommentDetails(svg, d, i, colors, endX, endY) {
   let previousEndY = 0; // 評論細節一開始在的高度
 
   comments.forEach((comment, j) => {
-    const detailEndX = endX + 180; // 调整评论细节的X坐标以增加曲线效果
+    const detailEndX = endX + 170; // 调整评论细节的X坐标以增加曲线效果
     const detailStartY = previousEndY;
 
     // 计算文字高度，考虑换行
@@ -423,7 +429,7 @@ function drawCommentDetails(svg, d, i, colors, endX, endY) {
       .transition() // 動畫過渡
       .duration(300) // 持續時間300ms
       .attr("fill-opacity", 0.5)
-      .attr("width", 200); // 最终宽度为200
+      .attr("width", 170); // 最终宽度为200
 
     // 添加评论文本
     detailGroup
@@ -435,7 +441,7 @@ function drawCommentDetails(svg, d, i, colors, endX, endY) {
       .attr("dominant-baseline", "hanging")
       .attr("opacity", 0) // 初始透明度為0
       .text(comment)
-      .call(wrapText, 180) // 自動換行
+      .call(wrapText, 150) // 自動換行
       .transition() // 添加動畫過渡
       .duration(300) // 設定持續時間
       .attr("opacity", 1); // 最終透明度為1
