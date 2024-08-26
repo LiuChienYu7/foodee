@@ -309,7 +309,7 @@ if ($link) {
         // 構建SQL查詢
         if (!empty($r_ids)) {
             $ids = implode("','", $r_ids); // 將數組中的ID轉換為SQL字符串格式
-            $sql = "SELECT * FROM detail WHERE r_id IN ('$ids')";
+            $sql = "SELECT * FROM detail2 WHERE r_id IN ('$ids')";
 
             $result = $conn->query($sql);
 
@@ -799,7 +799,7 @@ if ($link) {
             const selectedRestaurantIds = selectedRestaurants;
 
             // 构建基础URL
-            const baseUrl = "http://localhost/test/cellphone/cellphone.php";
+            const baseUrl = "http://localhost/foodee2/cellphone/cellphone.php";
             
             // 构建 GET 参数字符串，包括餐厅ID
             let queryParams = selectedRestaurantIds.map((id, index) => `r_id${index + 1}=${encodeURIComponent(id)}`).join("&");

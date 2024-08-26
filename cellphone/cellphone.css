@@ -113,3 +113,101 @@ svg{
 #chat{
     width:-webkit-fill-available;
 }
+.gallery-img {
+    width: 100%;
+    height: auto;
+    max-height: 100%;
+    display: none;
+    object-fit: cover;
+    transition: opacity 0.5s ease-in-out;
+}
+.gallery-img.active {
+    display: block;
+    opacity: 1;
+}
+
+.image-container {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+}
+
+.restaurant-section {
+    display: none;
+}
+.restaurant-section.active {
+    display: block;
+}
+
+.button-container {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 5px 0;
+    justify-content: center;
+    position: relative;
+}
+
+.button-container button {
+    width: 50px; /* 默认宽度 */
+    padding: 5px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: width 0.3s, background-color 0.3s, color 0.3s; /* 增加宽度的平滑过渡 */
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    position: relative;
+}
+
+.button-container button:hover {
+    width: auto; /* 悬停时自动调整宽度 */
+    background-color: #4CAF50;
+    color: white;
+    max-width: none; /* 防止宽度被限制 */
+    z-index: 1; /* 确保悬停时按钮在其他元素上方 */
+}
+
+.toggle-container {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+}
+
+.toggle-button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 150px;
+    text-align: center;
+}
+
+.toggle-button:hover {
+    background-color: #45a049;
+}
+
+.toggle-content {
+    display: none;
+}
+
+.toggle-content.active {
+    display: block;
+}
+.price-tag{
+    display: inline-block;
+    margin-left: 10px;
+    padding: 0 10px;
+    background-color: gray;
+}
+.parking-tag{
+    display: inline-block;
+    margin-left: 10px;
+    padding: 0 10px;
+    background-color: gray;
+}

@@ -24,7 +24,7 @@ if ($link) {
             $restaurant_ids[] = $r_id;
 
             // 查詢每個餐廳的名稱
-            $query_name = "SELECT r_name FROM detail WHERE r_id = $r_id";
+            $query_name = "SELECT r_name FROM detail2 WHERE r_id = $r_id";
             $result_name = mysqli_query($link, $query_name);
 
             if ($result_name) {
@@ -36,7 +36,7 @@ if ($link) {
             }
 
             // 查詢每個餐廳的營業時間
-            $query_hours = "SELECT r_hours_periods FROM detail WHERE r_id = $r_id";
+            $query_hours = "SELECT r_hours_periods FROM detail2 WHERE r_id = $r_id";
             $result_hours = mysqli_query($link, $query_hours);
 
             if ($result_hours) {

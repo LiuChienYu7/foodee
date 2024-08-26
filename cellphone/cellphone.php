@@ -26,7 +26,7 @@ if ($link) {
             $restaurant_ids[] = $r_id;
 
             // 查询每个餐厅的名称
-            $query_name = "SELECT r_name FROM detail WHERE r_id = $r_id";
+            $query_name = "SELECT r_name FROM detail2 WHERE r_id = $r_id";
             $result_name = mysqli_query($link, $query_name);
 
             if ($result_name) {
@@ -61,6 +61,27 @@ if ($link) {
     echo "数据库连接失败: " . mysqli_connect_error();
 }
 mysqli_close($link);
+
+// 获取通过 GET 传递的 JSON 数据，并进行解码
+$vibe = isset($_GET['vibe']) ? json_decode(urldecode($_GET['vibe']), true) : [];
+$food = isset($_GET['food']) ? json_decode(urldecode($_GET['food']), true) : [];
+$price = isset($_GET['price']) ? json_decode(urldecode($_GET['price']), true) : [];
+$diningTime = isset($_GET['diningTime']) ? json_decode(urldecode($_GET['diningTime']), true) : [];
+$parking = isset($_GET['parking']) && $_GET['parking'] === 'true' ? true : false;
+
+// 渲染标签函数
+function renderTags($items, $selectedItems, $delimiter) {
+    if (!empty($items)) {
+        // 使用传入的分隔符拆分标签
+        $tags = explode($delimiter, $items);
+        foreach ($tags as $tag) {
+            $tag = trim($tag);
+            // 检查 selectedItems 中是否有该标签
+            $backgroundColor = array_key_exists($tag, $selectedItems) && $selectedItems[$tag] === true ? 'background-color: #fff89e;' : 'background-color: #f5f5f5;';
+            echo "<span style='padding: 5px; margin: 5px; border-radius: 5px; $backgroundColor'>" . htmlspecialchars($tag) . "</span>";
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -166,6 +187,18 @@ mysqli_close($link);
         .toggle-content.active {
             display: block;
         }
+        .price-tag{
+            display: inline-block;
+            margin-left: 10px;
+            padding: 0 10px;
+            border-radius: 5px;
+        }
+        .parking-tag{
+            display: inline-block;
+            margin-left: 10px;
+            padding: 0 10px;
+            background-color: gray;
+        }
     </style>
 </head>
 
@@ -174,7 +207,7 @@ mysqli_close($link);
     <div class="gallery-container">
         <?php
         $index = 0;
-        function renderGallerySection($r_id, $restaurant_data, $index) {
+        function renderGallerySection($r_id, $restaurant_data, $index, $price, $diningTime, $parking) {
             $activeClass = $index === 0 ? 'active' : '';
             echo "<div class='restaurant-section $activeClass' id='restaurant-$r_id'>";
             echo "<div class='image-container'>";
@@ -224,32 +257,30 @@ mysqli_close($link);
 
                 // 顯示價格範圍和停車資訊在同一行
                 echo "<div class='info-row'>";
+                // 停车场标志
+                $parkingTagClass = $parking ? 'background-color: #fff89e;' : 'background-color: #f5f5f5;';
                 if (isset($restaurant_data['r_has_parking'])) {
                     $parkingImage = $restaurant_data['r_has_parking'] == 1 ? 'parking.png' : 'no_parking.png';
-                    echo "<div style='display: inline-block;'><img src='$parkingImage' alt='Parking Info' width='20px'></div>";
+                    echo "<div  class='parking-tag' style='display: inline-block; $parkingTagClass'><img src='$parkingImage' alt='Parking Info' width='20px'></div>";
                 }
+                // 价钱标签
+                $priceTagClass = !empty($price) ? 'background-color: #fff89e;' : 'background-color: #f5f5f5;';
                 if (!empty($restaurant_data['r_price_low']) && !empty($restaurant_data['r_price_high'])) {
-                    echo "<div class='price-tag' style='display: inline-block; margin-left: 10px;'>$" . htmlspecialchars($restaurant_data['r_price_low']) . " ~ $" . htmlspecialchars($restaurant_data['r_price_high']) . "</div>";
+                    echo "<div class='price-tag' style='$priceTagClass'>$" . htmlspecialchars($restaurant_data['r_price_low']) . " ~ $" . htmlspecialchars($restaurant_data['r_price_high']) . "</div>";
                 }
                 echo "</div>";
 
                 // 顯示氣氛標籤
                 echo "<div class='vibe-tags'>";
                 if (!empty($restaurant_data['r_vibe'])) {
-                    $vibes = explode('，', $restaurant_data['r_vibe']);
-                    foreach ($vibes as $vibe) {
-                        echo "<div class='restaurant-tag'>" . htmlspecialchars(trim($vibe)) . "</div>";
-                    }
+                    renderTags($restaurant_data['r_vibe'], $GLOBALS['vibe'], '，');
                 }
                 echo "</div>";
 
                 // 顯示菜餚標籤
                 echo "<div class='vibe-tags'>";
                 if (!empty($restaurant_data['r_food_dishes'])) {
-                    $dishes = explode('、', $restaurant_data['r_food_dishes']);
-                    foreach ($dishes as $dish) {
-                        echo "<div class='restaurant-tag'>" . htmlspecialchars(trim($dish)) . "</div>";
-                    }
+                    renderTags($restaurant_data['r_food_dishes'], $GLOBALS['food'], '、');
                 }
                 echo "</div>";
                 ?>
@@ -268,7 +299,7 @@ mysqli_close($link);
 
         if ($all_restaurant_data) {
             foreach ($all_restaurant_data as $r_id => $restaurant_data) {
-                renderGallerySection($r_id, $restaurant_data, $index);
+                renderGallerySection($r_id, $restaurant_data, $index, $price, $diningTime, $parking);
                 $index++;
             }
         } else {
