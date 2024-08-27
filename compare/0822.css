@@ -301,12 +301,15 @@ h3 {
     margin-left: 70px;
 }
 
-#map{
-    border-radius: 15px;
+#map {
+    position: relative; /* 确保按钮可以相对地图定位 */
+    border-radius: 15px; /* 地图边框的圆角 */
+    height: 100%; /* 确保地图占满父容器 */
+    z-index: 0;
+    /* margin-bottom: 10px; */
 }
 
-/* CSS for the "分享" button */
-#shareButton {
+.map-button {   
     background-color: #F8EDE3;
     border-radius: 15px;
     color: #3B3B3B;
@@ -314,23 +317,30 @@ h3 {
     font-weight: 600;
     padding: 5px 15px;
     width: auto; /* 自适应宽度 */
-    margin: 5px;
+    /* margin: 5px; */
+    z-index: 1001; /* 确保按钮在地图的上方 */
+    cursor: pointer;
+    /* font-family: Roobert, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; */
+    text-align: center;
+    transition: all 300ms cubic-bezier(.23, 1, 0.32, 1);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
 }
 
-#shareButton:disabled {
-  pointer-events: none;
+#shareButton {
+    margin-right: 0px; /* 与BACK按钮之间的间距 */
 }
 
-#shareButton:hover {
-    color: #3B3B3B;
+.map-button:hover {
     background-color: #E0D4C2;
     box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
     transform: translateY(-2px);
 }
 
-#shareButton:active {
-  box-shadow: none;
-  transform: translateY(0);
+.map-button:active {
+    box-shadow: none;
+    transform: translateY(0);
 }
 
 
