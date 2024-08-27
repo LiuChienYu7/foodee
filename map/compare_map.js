@@ -9,10 +9,9 @@ const r_long = firstRestaurant.r_longitude;
 const map = L.map("map").setView([r_lat, r_long], 13);
 // const map = L.map("map").setView(id1Coordinates, 13);
 
-const tiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+const tiles = L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
   maxZoom: 19,
-  attribution:
-    '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  attribution: '&copy; <a href="https://carto.com/">CartoDB</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
 // // 只顯示頁面上的三家餐廳資訊
