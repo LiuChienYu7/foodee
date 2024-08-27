@@ -570,23 +570,6 @@ if ($link) {
             // 您可以在這裡將選擇的餐廳ID保存到後端或做其他處理
         }
 
-        // // share panel
-        // document.getElementById("shareButton").addEventListener("click", function() {
-        //     // 顯示分享面板
-        //     document.getElementById("sharePanel").style.display = "block";
-
-        //     // 將 container 內的內容模糊，排除 sharePanel
-        //     document.querySelector(".container").classList.add("blur-background");
-        //     document.getElementById("sharePanel").style.zIndex = "1001"; // 確保面板在模糊效果上方
-        // });
-
-        // document.getElementById("closePanelButton").addEventListener("click", function() {
-        //     // 隱藏分享面板
-        //     document.getElementById("sharePanel").style.display = "none";
-
-        //     // 移除 container 內的模糊效果
-        //     document.querySelector(".container").classList.remove("blur-background");
-        // });
         // 名稱背景opacity0.5 
         function hexToRgba(hex, opacity) {
             // 去掉 '#' 符号
@@ -763,6 +746,57 @@ if ($link) {
                     vibeTitle.className = 'tag-title';
                     vibeTitle.textContent = '氣氛';
 
+                    const visPicDiv = document.createElement('div');
+                    visPicDiv.className = 'vis-pic';
+
+                    // 使用 SVG 或 PNG 图像创建按钮
+                    const visualButtons = [{
+                            id: 'spider',
+                            src: 'spider.png', // 替换为SVG或PNG的实际路径
+                            label: 'Spider',
+                            width: '80px', // 设置Spider图像的宽度
+                            height: '80px' // 设置Spider图像的高度
+                        },
+                        {
+                            id: 'comment',
+                            src: 'comment.png', // 替换为SVG或PNG的实际路径
+                            label: 'Comment',
+                            width: '120px', // 设置Comment图像的宽度
+                            height: '80px' // 设置Comment图像的高度
+                        },
+                        {
+                            id: 'opentime',
+                            src: 'openTime.png', // 替换为SVG或PNG的实际路径
+                            label: 'Open Time',
+                            width: '80px', // 设置Open Time图像的宽度
+                            height: '80px' // 设置Open Time图像的高度
+                        }
+                    ];
+
+                    visualButtons.forEach(buttonInfo => {
+                        const button = document.createElement('button');
+                        button.className = 'vis-button';
+                        button.id = buttonInfo.id;
+
+                        // 创建图像元素
+                        const img = document.createElement('img');
+                        img.src = buttonInfo.src;
+                        img.alt = buttonInfo.label;
+
+                        // 根据配置设置图像大小
+                        img.style.width = buttonInfo.width; // 设置图像宽度
+                        img.style.height = buttonInfo.height; // 设置图像高度
+
+                        button.appendChild(img);
+
+                        // 处理按钮点击事件
+                        button.addEventListener('click', function() {
+                            selectedItems[buttonInfo.id] = !selectedItems[buttonInfo.id]; // 切换选择状态
+                            button.style.backgroundColor = selectedItems[buttonInfo.id] ? '#F4DEB3' : ''; // 设置背景颜色
+                        });
+
+                        visPicDiv.appendChild(button);
+                    });
                     // 创建气氛标签部分
                     const vibeTagsDiv = document.createElement('div');
                     vibeTagsDiv.className = 'vibe-tags-share';
@@ -806,14 +840,6 @@ if ($link) {
                     }
                     foodTitle.appendChild(foodTagsDiv);
 
-                    // const btnComment = document.createElement('button');
-                    // btnComment.textContent = '评论';
-
-                    // const btnCompare = document.createElement('button');
-                    // btnCompare.textContent = '评比';
-
-                    // const btnHours = document.createElement('button');
-                    // btnHours.textContent = '营业时间';
                     // 新增图片切换按钮
                     const imageButtonGroup = document.createElement('div');
                     imageButtonGroup.className = 'image-button-group';
@@ -873,6 +899,8 @@ if ($link) {
                     // middleColumn.appendChild(vibeTagsDiv);
                     middleColumn.appendChild(foodTitle);
                     // middleColumn.appendChild(foodTagsDiv);
+                    // 将 vis_pic div 添加到 middleColumn 底部
+                    middleColumn.appendChild(visPicDiv);
 
                     // 将元素加入到餐厅条目中     
                     restaurantTitle.appendChild(titleDiv);

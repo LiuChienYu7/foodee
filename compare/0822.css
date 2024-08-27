@@ -411,7 +411,8 @@ h3 {
 }
 
 .restaurant-tag:hover {
-    background-color: #ddd;
+    /* background-color: #ddd; */
+    background-color: #F4DEB3;
 }
 
 .restaurant-tag.selected {
@@ -498,8 +499,8 @@ button {
     align-items: center;
 }
 
-.price-button:hover, .dining-time-button:hover {
-    background-color: #e0e0e0;
+.price-button:hover, .dining-time-button:hover, .parking-button:hover {
+    background-color: #F4DEB3;
 }
 
 /* parking */
@@ -589,4 +590,29 @@ button {
 
 .next {
     right: 10px;
+}
+
+.vis-pic {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+
+.vis-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    margin-right: 10px;
+    border-radius: 15px;
+}
+
+.vis-button img {
+    object-fit: contain; /* 保持图片比例 */
+    border-radius: 15px;
+    transition: transform 0.2s ease; /* 加入点击动画 */
+}
+
+.vis-button:hover img {
+    transform: scale(1.1); /* 鼠标悬停时放大 */
+    background-color: #F4DEB3;
 }
