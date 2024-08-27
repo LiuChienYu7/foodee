@@ -344,6 +344,7 @@ h3 {
 }
 
 
+
 /*share panel */
 #sharePanel {
     display: none;
@@ -420,41 +421,6 @@ h3 {
     object-fit: cover;
 }
 
-.restaurant-tag:hover {
-    /* background-color: #ddd; */
-    background-color: #F4DEB3;
-}
-
-.restaurant-tag.selected {
-    background-color: #F4DEB3;
-}
-
-/* 氣氛、食物title */
-/* 2. 创建一个用于标签的容器 */
-.tags-container {
-    display: flex;
-    flex-direction: column;
-    margin-left: 20px;
-}
-
-/* 3. 气氛和食物标签组的样式 */
-.vibe-tags-share, .food-tags-share {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 5px; /* 增加标题和标签之间的距离 */
-    margin-left:10px;
-}
-
-/* 标题样式 */
-.tag-title {
-    display: flex;
-    font-size: 1.1em;
-    font-weight: bold;
-    margin-bottom: 20px;
-    margin-top: 5px;
-}
-
 /* 将整个内容排列为两列布局 */
 .restaurant-item {
     display: flex;
@@ -499,9 +465,10 @@ button {
     fill: currentColor;
 } */
 
+/* 左邊button內容 */
 /* 价钱按钮和用餐时间按钮特定样式 */
 .price-button, .dining-time-button {
-    background-color: lightgray;
+    background-color: #ddd;
     border-radius: 5px;
     padding: 5px 10px;
     margin-bottom: 5px;
@@ -514,13 +481,12 @@ button {
 }
 
 /* parking */
-/* 停车场按钮的样式 */
 .parking-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     padding: 10px 20px 10px 20px;
-    background-color: #E0E0E0; /* 默认背景颜色 */
+    background-color: #ddd; /* 默认背景颜色 */
     border-radius: 8px; /* 圆角矩形 */
     cursor: pointer;
     border: none; /* 去除默认边框 */
@@ -533,6 +499,81 @@ button {
 /* 高亮状态下的停车场按钮 */
 .parking-button.highlighted {
     background-color: #F4DEB3; /* 高亮时的背景颜色 */
+}
+
+/* share panel 中間內容 */
+.vis-pic {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+
+.vis-button {
+    background-color: #ddd;
+    border: none;
+    cursor: pointer;
+    margin-right: 10px;
+    border-radius: 15px;
+}
+
+.vis-button img {
+    object-fit: contain; /* 保持图片比例 */
+    border-radius: 15px;
+    transition: transform 0.2s ease; /* 加入点击动画 */
+}
+
+.vis-button:hover img {
+    transform: scale(1.1); /* 鼠标悬停时放大 */
+    background-color: #F4DEB3;
+}
+
+.restaurant-tag-share{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 5px;
+    background-color: #eee;
+    border-radius: 5px;
+    font-size: 0.8em;
+    color: #333;
+    white-space: nowrap; /* 防止文字換行 */
+    overflow: hidden; /* 隱藏超出部分 */
+    text-overflow: ellipsis; /* 當文字超出時顯示省略號 */
+    cursor: pointer;
+}
+
+.restaurant-tag-share:hover {
+    /* background-color: #ddd; */
+    background-color: #F4DEB3;
+}
+
+.restaurant-tag-share.selected {
+    background-color: #F4DEB3;
+}
+
+/* 氣氛、食物title */
+.tags-container {
+    display: flex;
+    flex-direction: column;
+    margin-left: 20px;
+}
+
+/* 3. 气氛和食物标签组的样式 */
+.vibe-tags-share, .food-tags-share {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 5px; /* 增加标题和标签之间的距离 */
+    margin-left:10px;
+}
+
+/* 标题样式 */
+.tag-title {
+    display: flex;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    margin-top: 10px;
 }
 
 /* share panel 右邊內容 */
@@ -602,27 +643,40 @@ button {
     right: 10px;
 }
 
-.vis-pic {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 10px;
-}
-
-.vis-button {
-    background-color: transparent;
-    border: none;
+/* share back button */
+.share-button{
+    position: relative;
+    bottom: 10px;
+    right: 25px;
+    background-color: #F8EDE3;
+    border-radius: 15px;
+    color: #3B3B3B;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 15px;
+    width: auto; /* 自适应宽度 */
+    /* margin: 5px; */
+    z-index: 1001; /* 确保按钮在地图的上方 */
     cursor: pointer;
-    margin-right: 10px;
-    border-radius: 15px;
+    /* font-family: Roobert, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; */
+    text-align: center;
+    transition: all 300ms cubic-bezier(.23, 1, 0.32, 1);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
 }
 
-.vis-button img {
-    object-fit: contain; /* 保持图片比例 */
-    border-radius: 15px;
-    transition: transform 0.2s ease; /* 加入点击动画 */
+#closePanelButton {
+    margin-right: 0px; /* 与BACK按钮之间的间距 */
 }
 
-.vis-button:hover img {
-    transform: scale(1.1); /* 鼠标悬停时放大 */
-    background-color: #F4DEB3;
+.share-button:hover {
+    background-color: #E0D4C2;
+    box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
+    transform: translateY(-2px);
+}
+
+.share-button:active {
+    box-shadow: none;
+    transform: translateY(0);
 }

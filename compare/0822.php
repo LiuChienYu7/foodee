@@ -392,7 +392,6 @@ if ($link) {
                     <svg class="map" width="250" height="200"></svg>
                 </div>
             </div>
-
             <div class="button_container"><!-- 分享和BACK按钮 -->
                 <button id="backButton" class="map-button">BACK</button>
                 <button id="shareButton" class="map-button">分享</button>
@@ -424,8 +423,8 @@ if ($link) {
             <!-- 动态生成餐厅信息 -->
         </div>
         <div class="panel-buttons">
-            <button id="closePanelButton">BACK</button>
-            <button id="finalShareButton">分享</button>
+            <button class="share-button" id="closePanelButton">BACK</button>
+            <button class="share-button" id="finalShareButton">分享</button>
         </div>
     </div>
 
@@ -575,6 +574,23 @@ if ($link) {
             // 您可以在這裡將選擇的餐廳ID保存到後端或做其他處理
         }
 
+        // // share panel
+        // document.getElementById("shareButton").addEventListener("click", function() {
+        //     // 顯示分享面板
+        //     document.getElementById("sharePanel").style.display = "block";
+
+        //     // 將 container 內的內容模糊，排除 sharePanel
+        //     document.querySelector(".container").classList.add("blur-background");
+        //     document.getElementById("sharePanel").style.zIndex = "1001"; // 確保面板在模糊效果上方
+        // });
+
+        // document.getElementById("closePanelButton").addEventListener("click", function() {
+        //     // 隱藏分享面板
+        //     document.getElementById("sharePanel").style.display = "none";
+
+        //     // 移除 container 內的模糊效果
+        //     document.querySelector(".container").classList.remove("blur-background");
+        // });
         // 名稱背景opacity0.5 
         function hexToRgba(hex, opacity) {
             // 去掉 '#' 符号
@@ -759,22 +775,22 @@ if ($link) {
                             id: 'spider',
                             src: 'spider.png', // 替换为SVG或PNG的实际路径
                             label: 'Spider',
-                            width: '80px', // 设置Spider图像的宽度
-                            height: '80px' // 设置Spider图像的高度
+                            width: '100px', // 设置Spider图像的宽度
+                            height: '100px' // 设置Spider图像的高度
                         },
                         {
                             id: 'comment',
                             src: 'comment.png', // 替换为SVG或PNG的实际路径
                             label: 'Comment',
-                            width: '120px', // 设置Comment图像的宽度
-                            height: '80px' // 设置Comment图像的高度
+                            width: '140px', // 设置Comment图像的宽度
+                            height: '100px' // 设置Comment图像的高度
                         },
                         {
                             id: 'opentime',
                             src: 'openTime.png', // 替换为SVG或PNG的实际路径
                             label: 'Open Time',
-                            width: '80px', // 设置Open Time图像的宽度
-                            height: '80px' // 设置Open Time图像的高度
+                            width: '100px', // 设置Open Time图像的宽度
+                            height: '100px' // 设置Open Time图像的高度
                         }
                     ];
 
@@ -802,6 +818,8 @@ if ($link) {
 
                         visPicDiv.appendChild(button);
                     });
+
+
                     // 创建气氛标签部分
                     const vibeTagsDiv = document.createElement('div');
                     vibeTagsDiv.className = 'vibe-tags-share';
@@ -809,7 +827,7 @@ if ($link) {
                         const vibes = restaurantData.r_vibe.split('，');
                         vibes.forEach(vibe => {
                             const button = document.createElement('button');
-                            button.className = 'restaurant-tag';
+                            button.className = 'restaurant-tag-share';
                             button.textContent = vibe.trim();
                             button.style.backgroundColor = selectedItems.vibe[vibe] ? '#F4DEB3' : ''; // 检查是否已被选中
                             button.addEventListener('click', function() {
@@ -833,7 +851,7 @@ if ($link) {
                         const dishes = restaurantData.r_food_dishes.split('、');
                         dishes.forEach(dish => {
                             const button = document.createElement('button');
-                            button.className = 'restaurant-tag';
+                            button.className = 'restaurant-tag-share';
                             button.textContent = dish.trim();
                             button.style.backgroundColor = selectedItems.food[dish] ? '#F4DEB3' : ''; // 检查是否已被选中
                             button.addEventListener('click', function() {
@@ -845,7 +863,6 @@ if ($link) {
                     }
                     foodTitle.appendChild(foodTagsDiv);
 
-                    // 新增图片切换按钮
                     const imageButtonGroup = document.createElement('div');
                     imageButtonGroup.className = 'image-button-group';
 
