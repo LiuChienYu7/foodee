@@ -935,15 +935,36 @@ if ($link) {
         });
 
         document.getElementById("finalShareButton").addEventListener("click", function() {
-            // 遍歷所有被選中的餐廳
-            selectedRestaurants.forEach(id => {
-                console.log(`Selected Vibe Items for Restaurant ${id}:`, selectedItems);
+            // 初始化一个空的查询字符串
+            let queryString = '';
+
+            // 遍历所有被选中的餐厅
+            selectedRestaurants.forEach((id, index) => {
+                // 将r_id也添加到查询字符串中
+                queryString += `r_id${index + 1}=${id}&`;
             });
 
-            // 示例：生成分享鏈接（這裡僅展示為控制台輸出，實際可以根據需求實現）
-            const shareLink = generateShareLink(selectedItems);
-            console.log('Share Link:', shareLink);
+            // 将 selectedItems 的对象转换为 JSON 字符串并进行 URL 编码
+            const vibeString = `vibe=${encodeURIComponent(JSON.stringify(selectedItems.vibe))}`;
+            const foodString = `food=${encodeURIComponent(JSON.stringify(selectedItems.food))}`;
+            const priceString = `price=${encodeURIComponent(JSON.stringify(selectedItems.price))}`;
+            const diningTimeString = `diningTime=${encodeURIComponent(JSON.stringify(selectedItems.diningTime))}`;
+            const parkingString = `parking=${encodeURIComponent(JSON.stringify(selectedItems.parking))}`;
+            const spiderString = `spider=${encodeURIComponent(JSON.stringify(selectedItems.spider))}`;
+            const commentString = `comment=${encodeURIComponent(JSON.stringify(selectedItems.comment))}`;
+            const openTimeString = `openTime=${encodeURIComponent(JSON.stringify(selectedItems.openTime))}`;
+
+            // 将这些字符串合并到一个查询字符串中
+            queryString += `${vibeString}&${foodString}&${priceString}&${diningTimeString}&${parkingString}&${spiderString}&${commentString}&${openTimeString}`;
+
+            // 构建完整的 URL
+            const shareLink = `../cellphone/cellphone.php?${queryString}`;
+
+            // 重定向用户到生成的 URL
+            window.location.href = shareLink;
         });
+
+
 
         function generateShareLink(selectedItems) {
             // 根据选中的内容生成分享链接
