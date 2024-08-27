@@ -945,7 +945,7 @@ if ($link) {
             // 将 container 內的內容模糊，排除 sharePanel
             document.querySelector(".container").classList.add("blur-background");
             document.getElementById("sharePanel").style.zIndex = "1001"; // 确保面板在模糊效果上方
-        })
+        });
 
         document.getElementById("closePanelButton").addEventListener("click", function() {
             // 隐藏分享面板
