@@ -390,16 +390,12 @@ if ($link) {
 
                 <div id="map" width="250" height="200">
                     <svg class="map" width="250" height="200"></svg>
-
-                    <!-- 分享和BACK按钮 -->
-                    <button id="shareButton" class="map-button">分享</button>
-                    <button id="backButton" class="map-button">BACK</button>
                 </div>
             </div>
 
-            <!-- <div class="button_container">
+            <div class="button_container">
                 <button id="shareButton" role="button">分享</button>
-            </div> -->
+            </div>
 
             <script type="text/javascript">
                 var globalData = {}; // 用來共享狀態的全局變量
