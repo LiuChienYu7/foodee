@@ -7,19 +7,20 @@ body, html {
 .container {
     display: flex;
     height: 100vh;
-    max-width: 1368px;
+    max-width: 1366px;
     margin-left: 10px;
     padding-top: 20px;
 }
+
 .gallery-container {
-    width: 55%;
+    width: 58%;  /*左右大小調整*/
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
 }
 .gallery-section {
     width: 32%;
-    margin-bottom: 10px;
+    margin-bottom: 7px;
     position: relative;
 }
 
@@ -31,7 +32,7 @@ body, html {
     max-width: 100%; /* 確保名稱不超過容器寬度 */
     margin: auto;
     text-align: center;
-    border-radius: 8px;
+    border-radius: 15px;
 }
 
 .vibe-tags, .food-tags {
@@ -39,6 +40,8 @@ body, html {
     flex-wrap: wrap;
     gap: 5px; /* 控制標籤間距 */
     margin-bottom: 10px;
+    margin-left: 0px;
+    cursor: default;
 }
 .restaurant-tag, .price-tag {
     display: flex;
@@ -52,11 +55,13 @@ body, html {
     white-space: nowrap; /* 防止文字換行 */
     overflow: hidden; /* 隱藏超出部分 */
     text-overflow: ellipsis; /* 當文字超出時顯示省略號 */
+    cursor: pointer;
 }
 .image-container {
     position: relative;
     width: 100%;
-    padding-top: 50%; /* Adjusted aspect ratio */
+    /* height: 3%; */
+    padding-top: 56.25%; /* Adjusted aspect ratio */
     overflow: hidden;
     margin-bottom: 10px;
 }
@@ -102,13 +107,13 @@ body, html {
 .modal {
     display: none; /* Hidden by default */
     position: fixed;
-    z-index: 999;
+    z-index: 1001;
     padding-top: 50px;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
+    overflow-y: auto;
     background-color: rgba(0, 0, 0, 0.9);
 }
 .modal-content {
@@ -185,6 +190,7 @@ h3 {
 .content.show {
     width: -webkit-fill-available;
     display: block;
+    border-radius: 15px;
     max-height: 500px; /* or any value you find appropriate */
     padding: 10px 18px;
     transition: max-height 0.5s ease-in, padding 0.5s ease-in;
@@ -194,7 +200,23 @@ h3 {
     z-index: 4;
 }
 .comments-button {
+    display: flex;
+    justify-content: center; /* 水平居中 */
     background-color: #444;
+    opacity: 0.8;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 5;
+    /* position: relative; */
+    width: 100%;
+    border-radius: 15px;
+    margin-top: 10px;
+}
+.comments-button:hover {
+    background-color: #444;
+    opacity: 1;
     color: white;
     border: none;
     padding: 10px;
@@ -202,7 +224,10 @@ h3 {
     z-index: 5;
     position: relative;
     width: 100%;
+    border-radius: 15px;
+    margin-top: 10px;
 }
+
 .slide-down {
     animation: slideDown 0.5s forwards;
 }
@@ -246,8 +271,20 @@ h3 {
     width: 100%;
     z-index: 4;
 }
+
+.upper-section{
+    background-color: #f0f0f0; /* 您可以根据需要更改颜色 */
+    border-radius: 15px;
+    padding: 10px; /* 可选的内边距，以便内容不会紧贴边框 */
+    margin-bottom: 10px; /* 可选的外边距，以便 div 之间有间距 */
+}
 /* 雷達圖跟營業時間位置 */
 .middle-section {
+    background-color: #f0f0f0; /* 您可以根据需要更改颜色 */
+    border-radius: 15px;
+    padding: 10px; /* 可选的内边距，以便内容不会紧贴边框 */
+    padding-right: 30px;
+    margin-bottom: 10px; /* 可选的外边距，以便 div 之间有间距 */
     display: flex;
     justify-content: center; /* 水平居中 */
     height: 35%; /* 使父容器占據整個可用高度 */
@@ -263,6 +300,39 @@ h3 {
 .middle-section1{
     margin-left: 70px;
 }
+
+#map{
+    border-radius: 15px;
+}
+
+/* CSS for the "分享" button */
+#shareButton {
+    background-color: #F8EDE3;
+    border-radius: 15px;
+    color: #3B3B3B;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 15px;
+    width: auto; /* 自适应宽度 */
+    margin: 5px;
+}
+
+#shareButton:disabled {
+  pointer-events: none;
+}
+
+#shareButton:hover {
+    color: #3B3B3B;
+    background-color: #E0D4C2;
+    box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
+    transform: translateY(-2px);
+}
+
+#shareButton:active {
+  box-shadow: none;
+  transform: translateY(0);
+}
+
 
 /*share panel */
 #sharePanel {
@@ -357,7 +427,7 @@ h3 {
 }
 
 /* 3. 气氛和食物标签组的样式 */
-.vibe-tags, .food-tags {
+.vibe-tags-share, .food-tags-share {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
@@ -520,4 +590,3 @@ button {
 .next {
     right: 10px;
 }
-
