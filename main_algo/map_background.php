@@ -9,7 +9,8 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="leaflet_edgeMarker.js"></script>
-    <script src="https://d3js.org/d3.v7.min.js"></script> <!-- 添加 D3.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
         /* 定義CSS樣式 */
         .custom-icon {
@@ -31,40 +32,156 @@
             maxZoom: 19,
             attribution: '&copy; <a href="https://www.maptiler.com/">MapTiler</a> contributors'
         }).addTo(map);
-        
-        if (typeof L.edgeMarker === 'function') {
-            var edgeMarker = L.edgeMarker({
-                position: [51.5, -0.09],
-                // 其他選項
-            }).addTo(map);
-        } else {
-            console.error('L.edgeMarker is not defined.');
+
+        // 餐厅图标的更新函数
+        function updateIconSize(marker, zoomLevel) {
+            const size = zoomLevel * 5; // 调整倍率，按需修改
+            const newIcon = marker.options.icon;
+            newIcon.options.iconSize = [size, size];
+            newIcon.options.iconAnchor = [size / 2, size / 2]; // 确保图标中心点正确对齐
+            marker.setIcon(newIcon);
         }
 
-        // 創建D3.js圖標
-        function createD3Icon(url) {
+        // 创建自定义的 Leaflet 图标
+        function createLeafletD3Icon(restaurant) {
+            const iconHtml = createD3Icon(restaurant); 
+            return L.divIcon({
+                className: 'custom-icon',
+                html: iconHtml,
+                iconAnchor: [20, 20] // 默认图标中心点
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // 加载餐厅数据并使用自定义图标
+            fetch('../connect_sql/get_data_json.php')
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach((restaurant, index) => {
+                        if (restaurant && Object.keys(restaurant).length > 0) {
+                            // 创建餐厅标记
+                            var marker = L.marker([restaurant.r_latitude, restaurant.r_longitude], {
+                                icon: createLeafletD3Icon(restaurant)
+                            }).addTo(map);
+
+                            // 初始化图标大小
+                            updateIconSize(marker, map.getZoom());
+
+                            // 当地图缩放时更新图标大小
+                            map.on('zoomend', function() {
+                                updateIconSize(marker, map.getZoom());
+                            });
+
+                            // 设置弹出窗口内容
+                            marker.bindPopup(`
+                                <div style="width: 300px; max-width: 300px; padding: 10px;">
+                                    <div style="display: flex; align-items: center;">
+                                        <div id="carousel-${restaurant.r_id}" class="carousel" style="flex: 0 0 120px; margin-right: 10px;">
+                                            <img src="${restaurant.r_photo_env1}" alt="環境照片1" style="width: 120px; height: 150px; border-radius: 8px; object-fit: cover;">
+                                            <img src="${restaurant.r_photo_env2}" alt="環境照片2" style="width: 120px; height: 150px; border-radius: 8px; display: none; object-fit: cover;">
+                                            <img src="${restaurant.r_photo_env3}" alt="環境照片3" style="width: 120px; height: 150px; border-radius: 8px; display: none; object-fit: cover;">
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <b style="font-size: 16px;">${restaurant.r_name}</b><br>
+                                            <b style="font-size: 14px; color: #FFD700;">評分: ${restaurant.r_rating} 星</b><br>
+                                            <div style="margin-top: 5px; word-wrap: break-word;">
+                                                ${restaurant.r_food_dishes.split('、').slice(0, 3).map(dish => `
+                                                    <span style="background-color: #FFD700; padding: 2px 5px; margin-right: 3px; margin-bottom: 3px; font-size: 12px; border-radius: 5px; display: inline-block;">
+                                                        ${dish}
+                                                    </span>
+                                                `).join('')}
+                                            </div>
+                                            <div id="bar-chart-${restaurant.r_id}" style="margin-top: 10px; width: 100%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `);
+
+                            // 初始化评分图表和轮播图
+                            marker.on('popupopen', function () {
+                                const carousel = document.querySelector(`#carousel-${restaurant.r_id}`);
+                                const items = carousel.querySelectorAll('img');  // 确保你选择的是所有的img元素
+                                items.forEach((item, index) => {
+                                    item.classList.add('carousel-item');
+                                    item.style.display = index === 0 ? 'block' : 'none';
+                                });
+
+                                let currentIndex = 0;
+                                if (items.length > 1) {
+                                    setInterval(() => {
+                                        items[currentIndex].style.display = 'none';
+                                        currentIndex = (currentIndex + 1) % items.length;
+                                        items[currentIndex].style.display = 'block';
+                                    }, 2000);
+                                }
+
+                                const ratingHTML = `
+                                    <div style="display: flex; align-items: center; margin-bottom: 0px; font-size: 12px; max-width: 200px;">
+                                        <span style="width: 40px;">服務:</span>
+                                        <div style="background-color: #ccc; width: 100px; height: 8px; border-radius: 5px; overflow: hidden; position: relative;">
+                                            <div style="background-color: gold; width: ${restaurant.r_rate_service * 20}px; height: 8px;"></div>
+                                        </div>
+                                        <span style="margin-left: 5px; white-space: nowrap;">${restaurant.r_rate_service} 星</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; margin-bottom: 0px; font-size: 12px; max-width: 200px;">
+                                        <span style="width: 40px;">食物:</span>
+                                        <div style="background-color: #ccc; width: 100px; height: 8px; border-radius: 5px; overflow: hidden; position: relative;">
+                                            <div style="background-color: gold; width: ${restaurant.r_rating_food * 20}px; height: 8px;"></div>
+                                        </div>
+                                        <span style="margin-left: 5px; white-space: nowrap;">${restaurant.r_rating_food} 星</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; margin-bottom: 0px; font-size: 12px; max-width: 200px;">
+                                        <span style="width: 40px;">環境:</span>
+                                        <div style="background-color: #ccc; width: 100px; height: 8px; border-radius: 5px; overflow: hidden; position: relative;">
+                                            <div style="background-color: gold; width: ${restaurant.r_rate_atmosphere * 20}px; height: 8px;"></div>
+                                        </div>
+                                        <span style="margin-left: 5px; white-space: nowrap;">${restaurant.r_rate_atmosphere} 星</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; font-size: 12px; max-width: 200px;">
+                                        <span style="width: 40px;">衛生:</span>
+                                        <div style="background-color: #ccc; width: 100px; height: 8px; border-radius: 5px; overflow: hidden; position: relative;">
+                                            <div style="background-color: gold; width: ${restaurant.r_rate_clean * 20}px; height: 8px;"></div>
+                                        </div>
+                                        <span style="margin-left: 5px; white-space: nowrap;">${restaurant.r_rate_clean} 星</span>
+                                    </div>
+                                `;
+
+                                // 将评分条形图添加到弹出窗口的某个元素中
+                                const popupContent = document.querySelector(`#bar-chart-${restaurant.r_id}`);
+                                popupContent.innerHTML = ratingHTML;
+                            });
+                        }
+                    });
+                })
+                .catch(error => console.error('Error loading restaurant data:', error));
+        });
+
+        // 创建D3.js图标
+        function createD3Icon(restaurant) {
             const svg = d3.create("svg")
                 .attr("width", 40)
                 .attr("height", 40)
                 .attr("viewBox", "0 0 40 40");
 
-            // 定義 mask
-            svg.append("defs").append("mask")
-                .attr("id", "circle-mask")
+            // 定义圆形遮罩
+            svg.append("defs").append("clipPath")
+                .attr("id", "circle-clip")
                 .append("circle")
                 .attr("cx", 20)
                 .attr("cy", 20)
-                .attr("r", 20)
-                .attr("fill", "white");
+                .attr("r", 20);
 
-            // 定義圖片
+            // 定义图片，使用clipPath裁剪
             svg.append("image")
-                .attr("xlink:href", url)
-                .attr("width", 40)
-                .attr("height", 40)
-                .attr("mask", "url(#circle-mask)");
+                .attr("xlink:href", restaurant.r_photo_env1)
+                .attr("width", 60)
+                .attr("height", 60)
+                .attr("x", -10)
+                .attr("y", -10)
+                .attr("clip-path", "url(#circle-clip)")
+                .attr("preserveAspectRatio", "xMidYMid slice");
 
-            // 添加圓形邊框（可選）
+            // 添加圆形边框
             svg.append("circle")
                 .attr("cx", 20)
                 .attr("cy", 20)
@@ -73,57 +190,79 @@
                 .attr("stroke-width", 2)
                 .attr("fill", "none");
 
+            // 添加星星图标
+            const smallCircleRadius = 5;
+            const iconOffset = 12;
+
+            svg.append('circle')
+                .attr('cx', 20 - iconOffset)
+                .attr('cy', 20 + iconOffset)
+                .attr('r', smallCircleRadius)
+                .attr('fill', 'white')
+                .attr('stroke', 'black')
+                .attr('stroke-width', '1px');
+
+            svg.append("text")
+                .attr("x", 20 - iconOffset)
+                .attr("y", 20 + iconOffset)
+                .attr("text-anchor", "middle")
+                .attr("alignment-baseline", "middle")
+                .attr("font-size", "10px")
+                .attr("class", "fas fa-star")
+                .attr("fill", "#FFD400")
+                .text('\uf005'); // Font Awesome - star (Unicode)
+
+            svg.append("text")
+                .attr("x", 20 - iconOffset)
+                .attr("y", 20 + iconOffset)
+                .attr("text-anchor", "middle")
+                .attr("alignment-baseline", "middle")
+                .attr("font-size", "8px")
+                .attr("font-weight", "bold")
+                .text(restaurant.r_rating !== undefined ? restaurant.r_rating : 'N/A');
+
+            // 添加停车图标
+            svg.append('circle')
+                .attr('cx', 20 + iconOffset)
+                .attr('cy', 20 + iconOffset)
+                .attr('r', smallCircleRadius)
+                .attr('fill', 'white')
+                .attr('stroke', 'black')
+                .attr('stroke-width', '1px');
+
+            svg.append("text")
+                .attr("x", 20 + iconOffset)
+                .attr("y", 20 + iconOffset)
+                .attr("text-anchor", "middle")
+                .attr("alignment-baseline", "middle")
+                .attr("font-size", "10px")
+                .attr("class", "fas fa-parking")
+                .attr('fill', restaurant.r_has_parking == 1 ? 'blue' : 'lightgrey')
+                .text('\uf540'); // Font Awesome - parking (Unicode)
+
             return svg.node().outerHTML;
         }
 
-        // 創建自定義的 Leaflet 圖標
-        function createLeafletD3Icon(url) {
-            const iconHtml = createD3Icon(url);
-            return L.divIcon({
-                className: 'custom-icon',
-                html: iconHtml,
-                iconSize: [40, 40],
-                iconAnchor: [20, 40]
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            // 加載餐廳數據並使用自定義圖標
-            fetch('../connect_sql/get_data_json.php')
-                .then(response => response.json())
-                .then(data => {
-                    data.forEach(function (restaurant) {
-                        var marker = L.marker([restaurant.r_latitude, restaurant.r_longitude], {
-                            icon: createLeafletD3Icon(restaurant.r_photo_env1)
-                        }).addTo(map);
-
-                        // 顯示餐廳名稱
-                        marker.bindPopup("name: " + restaurant.r_name).openPopup();
-                    });
-                })
-                .catch(error => console.error('Error loading restaurant data:', error));
-        });
-
-        // 加上捷運輕軌
+        // 添加捷运和轻轨线路和标记
         fetch('../connect_sql/get_data_map_json.php')
             .then(response => response.json())
             .then(data => {
                 var LRT_points = [];
                 var MRT_O_points = [];
                 var MRT_R_points = [];
-                console.log(data);
                 data.forEach(function (transportation) {
+                    var circle = null;
                     if (transportation.id.includes('C')) {
                         LRT_points.push([transportation.latitude, transportation.longitude]);
                         L.polyline(LRT_points, {
                             color: 'green',
                             weight: 2
                         }).addTo(map);
-                        var circle = L.circle([transportation.latitude, transportation.longitude], {
+                        circle = L.circleMarker([transportation.latitude, transportation.longitude], {
                             color: 'green',
                             fillColor: 'green',
                             fillOpacity: 0.9,
-                            radius: 35
+                            radius: 8  // 使用circleMarker，确保大小不受缩放影响
                         }).addTo(map);
                     } else if (transportation.id.includes('O')) {
                         MRT_O_points.push([transportation.latitude, transportation.longitude]);
@@ -131,11 +270,11 @@
                             color: 'orange',
                             weight: 2
                         }).addTo(map);
-                        var circle = L.circle([transportation.latitude, transportation.longitude], {
+                        circle = L.circleMarker([transportation.latitude, transportation.longitude], {
                             color: 'orange',
                             fillColor: 'orange',
                             fillOpacity: 0.9,
-                            radius: 35
+                            radius: 8
                         }).addTo(map);
                     } else {
                         MRT_R_points.push([transportation.latitude, transportation.longitude]);
@@ -143,11 +282,11 @@
                             color: 'red',
                             weight: 2
                         }).addTo(map);
-                        var circle = L.circle([transportation.latitude, transportation.longitude], {
+                        circle = L.circleMarker([transportation.latitude, transportation.longitude], {
                             color: 'red',
                             fillColor: '#f03',
                             fillOpacity: 0.9,
-                            radius: 35
+                            radius: 8
                         }).addTo(map);
                     }
                     circle.bindPopup("name: " + transportation.name).openPopup();
@@ -155,7 +294,7 @@
             })
             .catch(error => console.error('Error loading MRT/LRT data:', error));
 
-        // add the EdgeMarker to the map. 箭頭
+        // 添加 EdgeMarker 箭头
         var edgeMarkerLayer = L.edgeMarker({
             icon: L.icon({
                 iconUrl: 'edge_arrow_marker.png',
@@ -190,14 +329,11 @@
                             let shortestDistance = Infinity;
                             let shortestLine = null;
 
-                            console.log(`Processing restaurant: ${restaurant.r_name}`);
-
                             if (restaurant.r_MRT) {
                                 const mrtStationName = restaurant.r_MRT.replace('站', '');
                                 const mrtStation = stationMap[mrtStationName];
                                 if (mrtStation) {
                                     const mrtDistance = parseFloat(restaurant.r_MRT_dist_km);
-                                    console.log(`MRT Station: ${mrtStationName}, Distance: ${mrtDistance} km`);
                                     if (mrtDistance < shortestDistance) {
                                         shortestDistance = mrtDistance;
                                         shortestLine = L.polyline([restaurantLatLng, [mrtStation.lat, mrtStation.lng]], {
@@ -212,7 +348,6 @@
                                 const lrtStation = stationMap[lrtStationName];
                                 if (lrtStation) {
                                     const lrtDistance = parseFloat(restaurant.r_LRT_dist_km);
-                                    console.log(`LRT Station: ${lrtStationName}, Distance: ${lrtDistance} km`);
                                     if (lrtDistance < shortestDistance) {
                                         shortestDistance = lrtDistance;
                                         shortestLine = L.polyline([restaurantLatLng, [lrtStation.lat, lrtStation.lng]], {
@@ -223,7 +358,6 @@
                             }
 
                             if (shortestLine) {
-                                console.log(`Shortest Line for ${restaurant.r_name}: ${shortestDistance} km`);
                                 lineGroup.addLayer(shortestLine);
                             }
                         });
