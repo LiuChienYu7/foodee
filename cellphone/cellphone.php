@@ -42,7 +42,7 @@ if ($link) {
                     r_photo_env1, r_photo_env2, r_photo_env3, r_photo_food1, 
                     r_photo_food2, r_photo_food3, r_photo_food4, r_photo_food5, 
                     r_photo_door, r_photo_menu1, r_photo_menu2, r_photo_menu3, 
-                    r_has_parking, r_rating
+                    r_has_parking, r_rating, r_time_low
                 FROM additional
                 WHERE r_id = $r_id";
             $result = mysqli_query($link, $query);
@@ -61,20 +61,42 @@ if ($link) {
 }
 mysqli_close($link);
 
+// 初始化接收到的變數
 $vibe = isset($_GET['vibe']) ? json_decode(urldecode($_GET['vibe']), true) : [];
 $food = isset($_GET['food']) ? json_decode(urldecode($_GET['food']), true) : [];
 $price = isset($_GET['price']) ? json_decode(urldecode($_GET['price']), true) : [];
 $diningTime = isset($_GET['diningTime']) ? json_decode(urldecode($_GET['diningTime']), true) : [];
-$parking = isset($_GET['parking']) && $_GET['parking'] === 'true' ? true : false;
+$parking = isset($_GET['parking']) ? json_decode(urldecode($_GET['parking']), true) : [];
+$spider = isset($_GET['spider']) ? json_decode(urldecode($_GET['spider']), true) : [];
+$comment = isset($_GET['comment']) ? json_decode(urldecode($_GET['comment']), true) : [];
+$openTime = isset($_GET['openTime']) ? json_decode(urldecode($_GET['openTime']), true) : [];
 
-function renderTags($items, $selectedItems, $delimiter) {
+// 傳遞 PHP 變數到 JavaScript
+echo "<script>
+    const receivedVibe = " . json_encode($vibe) . ";
+    const receivedFood = " . json_encode($food) . ";
+    const receivedPrice = " . json_encode($price) . ";
+    const receivedDiningTime = " . json_encode($diningTime) . ";
+    const receivedParking = " . json_encode($parking) . ";
+    const receivedSpider = " . json_encode($spider) . ";
+    const receivedComment = " . json_encode($comment) . ";
+    const receivedOpenTime = " . json_encode($openTime) . ";
+</script>";
+
+function renderTags($items, $selectedItems, $r_id, $delimiter) {
     if (!empty($items)) {
         $tags = explode($delimiter, $items);
         foreach ($tags as $tag) {
             $tag = trim($tag);
-            $backgroundColor = array_key_exists($tag, $selectedItems) && $selectedItems[$tag] === true ? 'background-color: #fff89e;' : 'background-color: #f5f5f5;';
+            $backgroundColor = isset($selectedItems[$r_id]) && in_array($tag, $selectedItems[$r_id]) ? 'background-color: #fff89e;' : 'background-color: #f5f5f5;';
             echo "<span style='padding: 5px; margin: 5px; border-radius: 5px; $backgroundColor'>" . htmlspecialchars($tag) . "</span>";
         }
+    }
+}
+
+function highlightSvg($elementId, $shouldHighlight) {
+    if ($shouldHighlight) {
+        echo "<script>document.getElementById('$elementId').style.backgroundColor = '#fff89e';</script>";
     }
 }
 ?>
@@ -85,113 +107,11 @@ function renderTags($items, $selectedItems, $delimiter) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./cellphone.css">
+    <link rel="stylesheet" href="../cellphone/cellphone.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script src="../map/leaflet_edgeMarker.js"></script>
-    
-    <style>
-        .gallery-img {
-            width: 100%;
-            height: auto;
-            max-height: 100%;
-            display: none;
-            object-fit: cover;
-            transition: opacity 0.5s ease-in-out;
-        }
-        .gallery-img.active {
-            display: block;
-            opacity: 1;
-        }
-
-        .image-container {
-            position: relative;
-            width: 100%;
-            height: 200px;
-            overflow: hidden;
-        }
-
-        .restaurant-section {
-            display: none;
-        }
-        .restaurant-section.active {
-            display: block;
-        }
-
-        .button-container {
-            display: flex;
-            flex-wrap: wrap;
-            margin: 5px 0;
-            justify-content: center;
-            position: relative;
-        }
-
-        .button-container button {
-            width: 50px;
-            padding: 5px;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: width 0.3s, background-color 0.3s, color 0.3s;
-            text-align: center;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            position: relative;
-        }
-
-        .button-container button:hover {
-            width: auto;
-            background-color: #4CAF50;
-            color: white;
-            max-width: none;
-            z-index: 1;
-        }
-
-        .toggle-container {
-            display: flex;
-            justify-content: center;
-            margin: 10px 0;
-        }
-
-        .toggle-button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 150px;
-            text-align: center;
-        }
-
-        .toggle-button:hover {
-            background-color: #45a049;
-        }
-
-        .toggle-content {
-            display: none;
-        }
-
-        .toggle-content.active {
-            display: block;
-        }
-        .price-tag{
-            display: inline-block;
-            margin-left: 10px;
-            padding: 0 10px;
-            border-radius: 5px;
-        }
-        .parking-tag{
-            display: inline-block;
-            margin-left: 10px;
-            padding: 0 10px;
-            background-color: gray;
-        }
-    </style>
-
 </head>
 
 <body>
@@ -245,12 +165,20 @@ function renderTags($items, $selectedItems, $delimiter) {
                 }
 
                 echo "<div class='info-row'>";
-                $parkingTagClass = $parking ? 'background-color: #fff89e;' : 'background-color: #f5f5f5;';
+                $parkingTagClass = isset($parking[$r_id]) && $parking[$r_id] ? 'background-color: #fff89e;' : 'background-color: #f5f5f5;';
                 if (isset($restaurant_data['r_has_parking'])) {
                     $parkingImage = $restaurant_data['r_has_parking'] == 1 ? 'parking.png' : 'no_parking.png';
-                    echo "<div  class='parking-tag' style='display: inline-block; $parkingTagClass'><img src='$parkingImage' alt='Parking Info' width='20px'></div>";
+                    echo "<div class='parking-tag' style='display: inline-block; $parkingTagClass'><img src='$parkingImage' alt='Parking Info' width='20px'></div>";
                 }
-                $priceTagClass = !empty($price) ? 'background-color: #fff89e;' : 'background-color: #f5f5f5;';
+
+                $diningTimeTagClass = isset($diningTime[$r_id]) && $diningTime[$r_id] ? 'background-color: #fff89e;' : 'background-color: #f5f5f5;';
+                if (!empty($restaurant_data['r_time_low'])) {
+                    echo "<div class='dining-time-tag' style='display: inline-block; $diningTimeTagClass'>用餐時間: " . htmlspecialchars($restaurant_data['r_time_low']) . "</div>";
+                } else {
+                    echo "<div class='dining-time-tag' style='display: inline-block; $diningTimeTagClass'>無用餐時間限制</div>";
+                }
+                
+                $priceTagClass = isset($price[$r_id]) && $price[$r_id] ? 'background-color: #fff89e;' : 'background-color: #f5f5f5;';
                 if (!empty($restaurant_data['r_price_low']) && !empty($restaurant_data['r_price_high'])) {
                     echo "<div class='price-tag' style='$priceTagClass'>$" . htmlspecialchars($restaurant_data['r_price_low']) . " ~ $" . htmlspecialchars($restaurant_data['r_price_high']) . "</div>";
                 }
@@ -258,21 +186,26 @@ function renderTags($items, $selectedItems, $delimiter) {
 
                 echo "<div class='vibe-tags'>";
                 if (!empty($restaurant_data['r_vibe'])) {
-                    renderTags($restaurant_data['r_vibe'], $GLOBALS['vibe'], '，');
+                    renderTags($restaurant_data['r_vibe'], $GLOBALS['vibe'], $r_id, '，');
                 }
                 echo "</div>";
 
-                echo "<div class='vibe-tags'>";
+                echo "<div class='food-tags'>";
                 if (!empty($restaurant_data['r_food_dishes'])) {
-                    renderTags($restaurant_data['r_food_dishes'], $GLOBALS['food'], '、');
+                    renderTags($restaurant_data['r_food_dishes'], $GLOBALS['food'], $r_id, '、');
                 }
                 echo "</div>";
+
+                // Highlight SVG sections
+                highlightSvg("spider-$r_id", isset($GLOBALS['spider'][$r_id]));
+                highlightSvg("comment-$r_id", isset($GLOBALS['comment'][$r_id]));
+                highlightSvg("openTime-$r_id", isset($GLOBALS['openTime'][$r_id]));
                 ?>
-                <div id="chat-section">
-                    <div class="chat">
-                        <div id="chat">
-                        <?php include '../chat/chat.php'; ?>
-                        </div>
+            </div>
+            <div id="chat-section">
+                <div class="chat">
+                    <div id="chat">
+                    <?php include '../chat/chat.php'; ?>
                     </div>
                 </div>
             </div>
@@ -433,13 +366,13 @@ function renderTags($items, $selectedItems, $delimiter) {
                     <script type="text/javascript">
                         const restaurant_data = <?php echo $detail_data; ?>;
                     </script>
-                    <svg class="spider" width="300" height="200"></svg>
+                    <svg id="spider-<?php echo $r_id; ?>" class="spider" width="300" height="200"></svg>
                 </div>
                 <div class="middle-section2">
                     <script type="text/javascript">
                         const restaurant_time = <?php echo $detail_data; ?>;
                     </script>
-                    <svg class="openTime" width="300" height="250"></svg>
+                    <svg id="openTime-<?php echo $r_id; ?>" class="openTime" width="300" height="250"></svg>
                 </div>
             </div>
             <div class="resizer-horizontal-2"></div> <!-- 新增的水平分隔條 -->
@@ -450,7 +383,7 @@ function renderTags($items, $selectedItems, $delimiter) {
                 </script>
 
                 <div id="map" width="250" height="200">
-                    <svg class="map" width="250" height="200"></svg>
+                    <svg id="comment-<?php echo $r_id; ?>" class="map" width="250" height="200"></svg>
                 </div>
             </div>
 
@@ -486,6 +419,57 @@ function renderTags($items, $selectedItems, $delimiter) {
             currentIndex = (currentIndex + 1) % images.length;
             images[currentIndex].classList.add('active');
         }
+
+        window.onload = function() {
+            // 在接收到的變數中尋找並亮起相關標籤
+            function highlightTagsBasedOnReceivedData() {
+                const tagElements = document.querySelectorAll('.vibe-tags span, .food-tags span');
+                tagElements.forEach(tagElement => {
+                    const tagText = tagElement.innerText.trim();
+                    const restaurantId = tagElement.closest('.restaurant-section').id.split('-')[1]; // 获取餐厅ID
+
+                    // 检查 receivedVibe 和 receivedFood 中是否有对应的标签
+                    if ((receivedVibe[restaurantId] && receivedVibe[restaurantId].includes(tagText)) ||
+                        (receivedFood[restaurantId] && receivedFood[restaurantId].includes(tagText))) {
+                        tagElement.style.backgroundColor = '#fff89e';
+                    }
+                });
+
+                // 高亮价钱标签
+                Object.keys(receivedPrice).forEach(restaurantId => {
+                    if (receivedPrice[restaurantId]) {
+                        const priceTag = document.querySelector(`#restaurant-${restaurantId} .price-tag`);
+                        if (priceTag) {
+                            priceTag.style.backgroundColor = '#fff89e';
+                        }
+                    }
+                });
+
+                // 高亮用餐时间标签
+                Object.keys(receivedDiningTime).forEach(restaurantId => {
+                    if (receivedDiningTime[restaurantId]) {
+                        const diningTimeTag = document.querySelector(`#restaurant-${restaurantId} .dining-time-tag`);
+                        if (diningTimeTag) {
+                            diningTimeTag.style.backgroundColor = '#fff89e';
+                        }
+                    }
+                });
+
+                // 高亮停车场标签
+                Object.keys(receivedParking).forEach(restaurantId => {
+                    if (receivedParking[restaurantId]) {
+                        const parkingTag = document.querySelector(`#restaurant-${restaurantId} .parking-tag`);
+                        if (parkingTag) {
+                            parkingTag.style.backgroundColor = '#fff89e';
+                        }
+                    }
+                });
+            }
+
+            highlightTagsBasedOnReceivedData();
+        }
+
+
     </script>
 
 </body>

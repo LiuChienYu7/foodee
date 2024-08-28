@@ -935,7 +935,15 @@ if ($link) {
         });
 
         document.getElementById("finalShareButton").addEventListener("click", function() {
-            // 初始化一个空的查询字符串
+            const shareLink = generateShareLink(selectedItems, selectedRestaurants);
+            console.log('Selected Restaurants:', selectedItems);
+
+            // 重定向用户到生成的 URL
+            window.location.href = shareLink;
+        });
+
+
+        function generateShareLink(selectedItems, selectedRestaurants) {
             let queryString = '';
 
             // 遍历所有被选中的餐厅
@@ -957,20 +965,10 @@ if ($link) {
             // 将这些字符串合并到一个查询字符串中
             queryString += `${vibeString}&${foodString}&${priceString}&${diningTimeString}&${parkingString}&${spiderString}&${commentString}&${openTimeString}`;
 
-            // 构建完整的 URL
-            const shareLink = `../cellphone/cellphone.php?${queryString}`;
-
-            // 重定向用户到生成的 URL
-            window.location.href = shareLink;
-        });
-
-
-
-        function generateShareLink(selectedItems) {
-            // 根据选中的内容生成分享链接
-            // 这只是一个示例函数，您可以根据具体需求生成实际的分享链接
-            return `http://example.com/share?selectedVibe=${encodeURIComponent(JSON.stringify(selectedItems.vibe))}&selectedFood=${encodeURIComponent(JSON.stringify(selectedItems.food))}`;
+            // 返回完整的 URL
+            return `../cellphone/cellphone.php?${queryString}`;
         }
+
 
         function updateImage(category, restaurantData, index) {
             let images = [];
