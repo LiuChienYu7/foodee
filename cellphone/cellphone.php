@@ -93,12 +93,6 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
         }
     }
 }
-
-function highlightSvg($elementId, $shouldHighlight) {
-    if ($shouldHighlight) {
-        echo "<script>document.getElementById('$elementId').style.backgroundColor = '#fff89e';</script>";
-    }
-}
 ?>
 
 <!DOCTYPE html>
@@ -196,10 +190,6 @@ function highlightSvg($elementId, $shouldHighlight) {
                 }
                 echo "</div>";
 
-                // Highlight SVG sections
-                highlightSvg("spider-$r_id", isset($GLOBALS['spider'][$r_id]));
-                highlightSvg("comment-$r_id", isset($GLOBALS['comment'][$r_id]));
-                highlightSvg("openTime-$r_id", isset($GLOBALS['openTime'][$r_id]));
                 ?>
             </div>
             <div id="chat-section">
@@ -464,6 +454,17 @@ function highlightSvg($elementId, $shouldHighlight) {
                         }
                     }
                 });
+
+                // 高亮图表背景
+                if (receivedSpider[currentRestaurantId]) {
+                    document.querySelector('.middle-section1').style.backgroundColor = '#fff89e';
+                }
+                if (receivedComment[currentRestaurantId]) {
+                    document.querySelector('.upper-section').style.backgroundColor = '#fff89e';
+                }
+                if (receivedOpenTime[currentRestaurantId]) {
+                    document.querySelector('.middle-section2').style.backgroundColor = '#fff89e';
+                }
             }
 
             highlightTagsBasedOnReceivedData();
