@@ -14,11 +14,12 @@
         <div class="left-panel" id="left-panel">
             <div class="filter-container">
                 <div class="filter-fixed filter-search">
-                    <input type="text" id="search" placeholder="輸入想去的地點、類型...">
+                    <input type="text" id="search" placeholder="輸入地點、食物類型...">
+                    <i class="fa-solid fa-times clear-search" style="display: none"></i> <!-- 叉叉图标 -->
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </div>
                 <!-- opening-hours -->
-                <div class="filter-fixed filter-time">
+                <div class="filter-fixed filter-opentime">
                     <div class="filter-title">
                         <label>營業時間</label>
                     </div>
@@ -39,12 +40,12 @@
                 <!-- price -->
                 <div class="filter-item filter-price">
                     <div class="filter-title">
-                        <label>價錢<span>(主要餐點)</span></label>
+                        <label>價錢<span style="font-size: .85rem;">(最低主餐)</span></label>
                     </div>
                     <div class="range-slider">
                         <span class="slider-track"></span>
-                        <input type="range" name="min_val" class="min-val" step="50" min="50" max="2000" value="50" oninput="slideMin()">
-                        <input type="range" name="max_val" class="max-val" step="50" min="50" max="2000" value="2000" oninput="slideMax()">
+                        <input type="range" name="min_val" class="min-val" step="1" min="50" max="2000" value="50" oninput="slideMin()">
+                        <input type="range" name="max_val" class="max-val" step="1" min="50" max="2000" value="2000" oninput="slideMax()">
                         <div class="tooltip min-tooltip"></div>
                         <div class="tooltip max-tooltip"></div>
                     </div>
@@ -60,6 +61,35 @@
                             <div class="input-wrap">
                                 <span class="input-addon">$</span>
                                 <input type="text" name="max_input" class="input-field max-input" onchange="setMaxInput()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- time -->
+                <div class="filter-item filter-time">
+                    <div class="filter-title">
+                        <label>用餐時間限制</label>
+                        <button id="no-limit-btn" class="active">無限制</button>
+                    </div>
+                    <div class="range-slider">
+                        <span class="slider-track"></span>
+                        <input type="range" id="min-time-slider" name="min_time" class="min-time" step="10" min="60" max="180" value="60" oninput="slideTimeMin()">
+                        <input type="range" id="max-time-slider" name="max_time" class="max-time" step="10" min="60" max="180" value="180" oninput="slideTimeMax()">
+                        <div id="min-time-tooltip" class="tooltip min-time-tooltip"></div>
+                        <div id="max-time-tooltip" class="tooltip max-time-tooltip"></div>
+                    </div>
+                    <div class="input-box">
+                        <div class="min-box">
+                            <div class="input-wrap">
+                                <input type="text" id="min-time-input" name="min_time_input" class="input-field-time min-time-input" onchange="setMinTimeInput()">
+                                <span class="input-addon-time" style="font-size: 0.75rem;">分鐘</span>
+                            </div>
+                        </div>
+                        <span style="font-weight: bold;">~</span>
+                        <div class="max-box">
+                            <div class="input-wrap">
+                                <input type="text" id="max-time-input" name="max_time_input" class="input-field-time max-time-input" onchange="setMaxTimeInput()">
+                                <span class="input-addon-time" style="font-size: 0.75rem;">分鐘</span>
                             </div>
                         </div>
                     </div>
@@ -123,35 +153,6 @@
                         <button class="vibe-button" id="vibe-family">家庭</button>
                     </div>
                 </div>
-                <!-- time -->
-                <div class="filter-item filter-time">
-                    <div class="filter-title">
-                        <label>用餐時間限制</label>
-                        <button id="no-limit-btn" class="active">無限制</button>
-                    </div>
-                    <div class="range-slider">
-                        <span class="slider-track"></span>
-                        <input type="range" id="min-time-slider" name="min_time" class="min-time" step="10" min="60" max="180" value="60" oninput="slideTimeMin()">
-                        <input type="range" id="max-time-slider" name="max_time" class="max-time" step="10" min="60" max="180" value="180" oninput="slideTimeMax()">
-                        <div id="min-time-tooltip" class="tooltip min-time-tooltip"></div>
-                        <div id="max-time-tooltip" class="tooltip max-time-tooltip"></div>
-                    </div>
-                    <div class="input-box">
-                        <div class="min-box">
-                            <div class="input-wrap">
-                                <input type="text" id="min-time-input" name="min_time_input" class="input-field-time min-time-input" onchange="setMinTimeInput()">
-                                <span class="input-addon-time" style="font-size: 0.75rem;">分鐘</span>
-                            </div>
-                        </div>
-                        <span style="font-weight: bold;">~</span>
-                        <div class="max-box">
-                            <div class="input-wrap">
-                                <input type="text" id="max-time-input" name="max_time_input" class="input-field-time max-time-input" onchange="setMaxTimeInput()">
-                                <span class="input-addon-time" style="font-size: 0.75rem;">分鐘</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 <!-- parking -->
                 <div class="filter-item filter-parking">
                     <div class="filter-title">
@@ -170,7 +171,7 @@
         <!-- 右邊區域 -->
         <div class="right-panel" id="right-panel">
             <div id="loading">搜尋中...</div>
-            <!-- <div id="results"></div> -->
+            <div id="results"></div>
             <iframe id="scale-iframe" src="scale2.html" style="width:100%; height:800px;"></iframe>
         </div>
     <script>

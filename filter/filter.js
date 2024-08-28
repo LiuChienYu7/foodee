@@ -1,3 +1,6 @@
+let restaurantIds = []; 
+let usedRestaurantIds = [];
+
 // price filter functions
 const minVal = document.querySelector(".min-val");
 const maxVal = document.querySelector(".max-val");
@@ -77,7 +80,6 @@ function setMaxInput() {
 }
 
 
-
 // Time filter functions
 const minTimeVal = document.querySelector(".min-time");
 const maxTimeVal = document.querySelector(".max-time");
@@ -150,10 +152,9 @@ function setMaxTimeInput() {
     slideTimeMax();
 }
 
-let restaurantIds = []; 
-let usedRestaurantIds = [];
-
 document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('search');
+    const clearSearchIcon = document.querySelector('.clear-search');
     const maxSelection = 5;
     const colors = ['color-1', 'color-2', 'color-3', 'color-4', 'color-5'];
     const vibeButtons = document.querySelectorAll('.vibe-button');
@@ -212,33 +213,49 @@ document.addEventListener('DOMContentLoaded', function () {
                 // 2. 清空之前存储的 r_id
                 restaurantIds = [];
     
-                if (data.error) {
+                if (data.error|| data.length === 0) {
                     // 只在有错误时显示错误信息
                     console.error("Error:", data.error);
-                    d3.select("#results").html("錯誤: " + data.error);
+                    // 显示提示信息
+                    d3.select("#results").html("沒有找到符合條件的餐廳");
+                    // 隐藏 iframe
+                    const iframe = document.getElementById('scale-iframe');
+                    if (iframe) {
+                        iframe.style.display = 'none'; // 隐藏 iframe
+                    }
+
                 } else {
-                    // 处理成功返回的数据，但不显示
+                    // 处理成功返回的数据
                     data.forEach(d => {
                         // 将 r_id 存储到数组中
                         restaurantIds.push(d.r_id);
                     });
-    
+
+                    // 确保 iframe 显示出来
+                    const iframe = document.getElementById('scale-iframe');
+                    if (iframe) {
+                        iframe.style.display = 'block'; // 显示 iframe
+                    }
                     // 在控制台中打印 r_id 数组
                     console.log("Found restaurant IDs:", restaurantIds);
-                    
                     // 调用 applyFilters 使用最新的 restaurantIds 进行过滤
-                    applyFilters();
+                    applyFilters(true);
                 }
             })
             .catch(error => {
                 document.getElementById('loading').style.display = 'none';
                 console.error('獲取數據錯誤:', error);
-                d3.select("#results").html("無法取得數據，請稍後再試。");
+                // d3.select("#results").html("無法取得數據，請稍後再試。");
+                d3.select("#results").html("沒有找到符合條件的餐廳");
+                // 隐藏 iframe
+                const iframe = document.getElementById('scale-iframe');
+                if (iframe) {
+                    iframe.style.display = 'none'; // 隐藏 iframe
+                }
             });
     }
     // 更新篩選條件
     function applyFilters() {
-
         console.log("applyFilters function is defined");
         const minTime = minTimeSlider.value;
         const maxTime = maxTimeSlider.value;
@@ -258,10 +275,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // 基于 restaurantIds 进行初步筛选
         let filteredIds = restaurantIds; // 默认使用全局的 restaurantIds
-        
+    
 
-
-        let url = 'http://localhost/food_project/filter/data.php?';
+        let url = 'http://localhost/期末丁丁/foodee-main/main_algo/data.php?';
     
         if (selectedVibes.length > 0) {
             const vibeQuery = selectedVibes.map(vibe => encodeURIComponent(vibe)).join(',');
@@ -322,9 +338,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     .text(d => d.r_name);
 
                 // 將每個返回的 r_id 添加到 usedRestaurantIds 數組中
-                data.forEach(item => {
-                    usedRestaurantIds.push(item.r_id);
-                });
+                usedRestaurantIds = data.map(item => item.r_id);
 
                 console.log('Used Restaurant IDs:', usedRestaurantIds); // 打印已使用的 r_id
                 // 發送 usedRestaurantIds 到 scale.html 的 iframe
@@ -348,33 +362,75 @@ document.addEventListener('DOMContentLoaded', function () {
             fetchData(); // 触发搜索
         }
     });
-    
-    // 監聽每個按鈕的點擊事件
-    vibeButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            if (button.classList.contains('selected')) {
-                button.classList.remove('selected');
-                const index = selectedButtons.indexOf(button);
-                selectedButtons.splice(index, 1);
-                const colorClass = colors.find(color => button.classList.contains(color));
-                button.classList.remove(colorClass);
-                availableColors.push(colorClass);
-                availableColors.sort((a, b) => colors.indexOf(a) - colors.indexOf(b));
-            } else {
-                if (selectedButtons.length < maxSelection && availableColors.length > 0) {
-                    button.classList.add('selected');
-                    selectedButtons.push(button);
-                    const colorClass = availableColors.shift();
-                    button.classList.add(colorClass);
-                    console.log(`Button selected: ${button.innerText.trim()}, Color class added: ${colorClass}`);
-                } else if (selectedButtons.length >= maxSelection) {
-                    alert(`最多只能選擇 ${maxSelection} 個選項`);
-                }
-            }
-            console.log(`Button state: ${button.innerText.trim()}, Classes: ${Array.from(button.classList).join(', ')}`);
-            applyFilters();
-        });
+    // 监听输入框内容变化
+    searchInput.addEventListener('input', function() {
+        if (searchInput.value.length > 0) {
+            clearSearchIcon.style.display = 'block';
+        } else {
+            clearSearchIcon.style.display = 'none';
+        }
     });
+
+    // 点击叉叉图标时清空输入框内容并隐藏叉叉图标
+    clearSearchIcon.addEventListener('click', function() {
+        searchInput.value = '';
+        clearSearchIcon.style.display = 'none';
+        // 隐藏 iframe
+        const iframe = document.getElementById('scale-iframe');
+        if (iframe) {
+            iframe.style.display = 'block'; // 隐藏 iframe
+        }
+        d3.select("#results").html("");
+        restaurantIds = [];
+        applyFilters(); // 恢复默认状态
+    });
+    
+   // 監聽每個按鈕的點擊事件
+   vibeButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        if (button.classList.contains('selected')) {
+            button.classList.remove('selected');
+            const index = selectedButtons.indexOf(button);
+            selectedButtons.splice(index, 1);
+            const colorClass = colors.find(color => button.classList.contains(color));
+            button.classList.remove(colorClass);
+            availableColors.push(colorClass);
+            availableColors.sort((a, b) => colors.indexOf(a) - colors.indexOf(b));
+        } else {
+            if (selectedButtons.length < maxSelection && availableColors.length > 0) {
+                button.classList.add('selected');
+                selectedButtons.push(button);
+                const colorClass = availableColors.shift();
+                button.classList.add(colorClass);
+                console.log(`Button selected: ${button.innerText.trim()}, Color class added: ${colorClass}`);
+            } else if (selectedButtons.length >= maxSelection) {
+                alert(`最多只能選擇 ${maxSelection} 個選項`);
+            }
+        }
+
+        // 收集所有選中的氛圍名稱和顏色
+        const selectedVibesWithColors = selectedButtons.map(button => ({
+            vibe: button.innerText.trim(),
+            colorClass: colors.find(color => button.classList.contains(color))
+        }));
+
+        console.log(`Selected Vibes with Colors:`, selectedVibesWithColors);
+
+        // 將選中的氛圍名稱和顏色傳遞到主頁面
+        const iframe = document.getElementById('scale-iframe');
+        if (iframe && iframe.contentWindow) {
+            // 创建消息对象，并将 selectedVibesWithColors 作为数据发送
+            const message = {
+                type: 'vibesWithColors',  // 指定消息类型
+                data: selectedVibesWithColors  // 传递整个对象数组，而不是单一的颜色
+            };
+            iframe.contentWindow.postMessage(message, '*');
+        }
+
+        applyFilters();
+    });
+});
+
 
 
     // 監聽每個 checkbox 的變化事件
@@ -384,25 +440,52 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // 監聽勾選框變化
-    parkingCheckbox.addEventListener('change', applyFilters);
+     // 監聽勾選框變化
+     parkingCheckbox.addEventListener('change', function() {
+        applyFilters(true);
+    });
 
     // 監聽滑桿和輸入框變化
-    minVal.addEventListener('input', applyFilters);
-    maxVal.addEventListener('input', applyFilters);
-    priceInputMin.addEventListener('change', applyFilters);
-    priceInputMax.addEventListener('change', applyFilters);
+    minVal.addEventListener('input', function() {
+        filterItemPrice.style.opacity = 1;
+        applyFilters();
+    });
+    maxVal.addEventListener('input', function() {
+        filterItemPrice.style.opacity = 1;
+        applyFilters();
+    });
+    priceInputMin.addEventListener('change', function() {
+        filterItemPrice.style.opacity = 1;
+        applyFilters();
+    });
+    priceInputMax.addEventListener('change', function() {
+        filterItemPrice.style.opacity = 1;
+        applyFilters();
+    });
 
     // 監聽滑桿和輸入框變化
-    minTimeSlider.addEventListener('input', applyFilters);
-    maxTimeSlider.addEventListener('input', applyFilters);
-    minTimeInput.addEventListener('change', applyFilters);
-    maxTimeInput.addEventListener('change', applyFilters);
+    minTimeSlider.addEventListener('input', function() {
+        filterItemTime.style.opacity = 1;
+        applyFilters();
+    });
+    maxTimeSlider.addEventListener('input', function() {
+        filterItemTime.style.opacity = 1;
+        applyFilters();
+    });
+    minTimeInput.addEventListener('change', function() {
+        filterItemTime.style.opacity = 1;
+        applyFilters();
+    });
+    maxTimeInput.addEventListener('change', function() {
+        filterItemTime.style.opacity = 1;
+        applyFilters();
+    });
 
     // 當「無限制」按鈕被點擊時
     noLimitBtn.addEventListener('click', function () {
         isNoLimitActive = !isNoLimitActive;
         noLimitBtn.classList.toggle('active', isNoLimitActive);
+        filterItemTime.style.opacity = 1;
         applyFilters();
     });
 

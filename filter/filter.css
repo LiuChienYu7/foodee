@@ -1,11 +1,11 @@
-@font-face {
+/* @font-face { 可愛字體，先不用因為載入好慢
     font-family: 'HunInn';
-    src: url(https://cdn.jsdelivr.net/gh/marsnow/open-huninn-font@1.1/font/jf-openhuninn.eot); /* IE9 Compat Modes */
-    src: url(https://cdn.jsdelivr.net/gh/marsnow/open-huninn-font@1.1/font/jf-openhuninn.eot?#iefix) format('embedded-opentype'), /* IE6-IE8 */
-         url(https://cdn.jsdelivr.net/gh/marsnow/open-huninn-font@1.1/font/jf-openhuninn.woff) format('woff'), /* Modern Browsers */
-         url(https://cdn.jsdelivr.net/gh/marsnow/open-huninn-font@1.1/font/jf-openhuninn.ttf) format('truetype'), /* Safari, Android, iOS */
-         url(https://cdn.jsdelivr.net/gh/marsnow/open-huninn-font@1.1/font/jf-openhuninn.svg#SealmemoryHeader) format('svg'); /* Legacy iOS */
-}
+    src: url(https://cdn.jsdelivr.net/gh/marsnow/open-huninn-font@1.1/font/jf-openhuninn.eot); 
+    src: url(https://cdn.jsdelivr.net/gh/marsnow/open-huninn-font@1.1/font/jf-openhuninn.eot?#iefix) format('embedded-opentype'), 
+         url(https://cdn.jsdelivr.net/gh/marsnow/open-huninn-font@1.1/font/jf-openhuninn.woff) format('woff'), 
+         url(https://cdn.jsdelivr.net/gh/marsnow/open-huninn-font@1.1/font/jf-openhuninn.ttf) format('truetype'), 
+         url(https://cdn.jsdelivr.net/gh/marsnow/open-huninn-font@1.1/font/jf-openhuninn.svg#SealmemoryHeader) format('svg'); 
+} */
 
 body{
     margin: 0;
@@ -13,13 +13,12 @@ body{
     display: flex;
     height: 100%;
     width: 100%;
-    font-family: 'HunInn', sans-serif;
-
+    /* font-family: 'HunInn', sans-serif; */
 }
 
-*{
+/* *{
     font-family: 'HunInn', sans-serif;
-}
+} */
 
 .index-container{
     display: flex;
@@ -117,13 +116,32 @@ body{
 }
 
 .filter-search {
-    padding-left: .5rem;
-    padding-right: .5rem; /* 添加右側內邊距，防止輸入框與容器邊緣貼齊 */
-    display: flex;
+    display:  inline-block;
     align-items: center; /* 垂直居中對齊 */
     justify-content: center; /* 水平居中對齊 */
     width: 100%; /* 確保父容器佔據全寬 */
     box-sizing: border-box; /* 包括內邊距和邊框在內的總寬度 */
+    position: relative;
+    margin-right: 1rem;
+}
+
+#search {
+    padding-right: 25px; /* 给右侧留出空间用于叉叉图标 */
+    width: 100%; /* 确保输入框占满父元素 */
+}
+
+.clear-search {
+    position: absolute;
+    right: 35px; /* 调整位置至搜索框的内部右侧 */
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 14px;
+    color: #aaa;
+    display: none; /* 默认隐藏 */
+}
+.clear-search:hover {
+    color: #333; /* 鼠标悬停时改变颜色 */
 }
 
 .filter-search input {
@@ -131,11 +149,29 @@ body{
     margin-right: 0.2rem; /* 圖標和輸入框之間的間距 */
     box-sizing: border-box; /* 包括內邊距和邊框在內的總寬度 */
     height: 1.75rem;
+    outline: none;
+    border: 2px solid rgb(200, 200, 200);
+    border-radius: 10px;
 }
 
-.filter-search i {
+.filter-search input:focus, .filter-search input:hover {
+    outline: none;
+    border-color: rgb(247, 215, 70);
+    box-shadow: 0 0 0 1px  rgba(247, 215, 70, 0.281);
+}
+
+/* .filter-search i {
     font-size: 1.2rem;
-    flex-shrink: 0; /* 防止圖標縮小 */
+    flex-shrink: 0; 
+} */
+.fa-magnifying-glass {
+    position: absolute;
+    right: 10px; /* 放大镜图标位置 */
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
 }
 
 .filter-time{
@@ -143,6 +179,19 @@ body{
     flex-direction: column;
     justify-content: center;            
     align-items: center;  
+    background-color: #FFF;
+    box-shadow: 3px 3px 3px 3px rgba(0, 0, 0, .1);
+    border: none;
+    opacity: .55; /* 初始透明度 */
+    transition: opacity 0.2s ease; /* 平滑过渡效果 */
+}
+
+.filter-price{
+    background-color: #FFF;
+    box-shadow: 3px 3px 3px 3px rgba(0, 0, 0, .1);
+    border: none;
+    opacity: .55; /* 初始透明度 */
+    transition: opacity 0.2s ease; /* 平滑过渡效果 */
 }
 
 .opening-hours{
@@ -249,8 +298,8 @@ input[type="range"]::-webkit-slider-thumb{
     height: 20px;
     width: 10px;
     border-radius: 20%;
-    border: 3px solid #FFF;
-    background: #FFF;
+    border: 3px solid rgba(247, 215, 70);
+    background: rgba(247, 215, 70);
     pointer-events: auto;
     appearance: none;
     cursor: pointer;
