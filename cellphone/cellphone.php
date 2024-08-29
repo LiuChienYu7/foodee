@@ -132,10 +132,21 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
             echo "</div>";
 
             echo "<div class='button-container'>";
+            $colors = [
+                "rgba(255, 112, 174, 0.5)",  // #FF70AE with 50% opacity
+                "rgba(133, 180, 255, 0.5)",  // #85B4FF with 50% opacity
+                "rgba(255, 206, 71, 0.5)"    // #FFCE47 with 50% opacity
+            ];
+            $index = 0;
+            
             foreach ($GLOBALS['restaurant_names'] as $r_id => $r_name) {
-                echo "<button onclick='changeRestaurant($r_id)'>" . htmlspecialchars($r_name) . "</button>";
+                $color = $colors[$index % count($colors)]; // 根據索引選擇顏色
+                echo "<button style='background-color: $color;' onclick='changeRestaurant($r_id)'>" . htmlspecialchars($r_name) . "</button>";
+                $index++;
             }
-            echo "</div>";
+            
+            echo "</div>";            
+
         ?>
             <div id="restaurant-info" class="toggle-content active">
                 <?php
@@ -372,13 +383,13 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
 
             <!--<div class="button_container">
                 <button id="shareButton">分享</button>
-            </div>-->
+            </div>
             
             <script type="text/javascript">
                 var globalData = {}; // 用來共享狀態的全局變量
             </script>
 
-            <!-- <script src="https://d3js.org/d3.v7.min.js"></script> -->
+            <! <script src="https://d3js.org/d3.v7.min.js"></script> -->
             <script type="module">
                 // import '../word_tree/word_tree_modify.js';
                 import '../comment/comment.js'
