@@ -746,18 +746,18 @@ if ($link) {
                     const visPicDiv = document.createElement('div');
                     visPicDiv.className = 'vis-pic';
 
-                    const visualButtons = [{
-                            id: 'spider',
-                            src: 'spider.png', 
-                            label: 'Spider',
-                            width: '100px',
-                            height: '100px'
-                        },
+                    const visualButtons = [
                         {
                             id: 'comment',
                             src: 'comment.png', 
                             label: 'Comment',
                             width: '140px',
+                            height: '100px'
+                        },{
+                            id: 'spider',
+                            src: 'spider.png', 
+                            label: 'Spider',
+                            width: '100px',
                             height: '100px'
                         },
                         {
