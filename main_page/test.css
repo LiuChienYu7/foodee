@@ -1,0 +1,82 @@
+.box3 {
+    width: 100%;
+    height: calc(100% - 50px);
+    /* 留出 box4 的空間 */
+    background-color: white;
+}
+
+.box4 {
+    width: 100%;
+    height: 50px;
+    background-color: lightblue;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: fixed;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.box4.expanded {
+    height: 200px;
+}
+
+#popup-content {
+    display: none;
+    padding: 10px;
+    background-color: white;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+    border-radius: 5px;
+    width: 100%;
+    display: flex;
+    /* 使用 flex 佈局 */
+    flex-wrap: nowrap;
+    /* 讓內容橫向排列 */
+    overflow-x: auto;
+    /* 讓內容超出時可橫向滾動 */
+}
+
+.box4.expanded #popup-content {
+    display: flex;
+    /* 當 box4 展開時，顯示 popup 內容 */
+}
+
+.restaurant-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 20px;
+    /* 每個餐廳資訊之間的間距 */
+}
+
+.box4-header {
+    cursor: pointer;
+    background-color: #f1f1f1;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.box4-header .toggle-text {
+    margin-right: 20px;
+    /* 為箭頭留出空間 */
+}
+
+.box4-header::after {
+    content: "▲";
+    /* 下箭頭 */
+    transition: transform 0.3s ease;
+}
+
+.box4.expanded .box4-header::after {
+    transform: rotate(180deg);
+    /* 展開時旋轉箭頭 */
+}
