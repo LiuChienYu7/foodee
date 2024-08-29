@@ -83,6 +83,7 @@ echo "<script>
     const receivedOpenTime = " . json_encode($openTime) . ";
 </script>";
 
+
 function renderTags($items, $selectedItems, $r_id, $delimiter) {
     if (!empty($items)) {
         $tags = explode($delimiter, $items);
@@ -97,6 +98,7 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
 
 <!DOCTYPE html>
 <html lang="en">
+    
 
 <head>
     <meta charset="UTF-8">
@@ -348,6 +350,7 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
                     // 在PHP中将JSON数据传递给JS
                     const reviewData = <?php echo $json_data; ?>;
                     console.log('reviewData', reviewData);
+                    console.log('reviewtime', receivedOpenTime);
                 </script>
                 <!-- <svg class="comment" width="600" height="220"></svg> -->
                 <!-- <div class="comment_comment">評論</div> -->
@@ -366,7 +369,7 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
                     <script type="text/javascript">
                         const restaurant_time = <?php echo $detail_data; ?>;
                     </script>
-                    <svg id="openTime-<?php echo $r_id; ?>" class="openTime" width="300" height="250"></svg>
+                    <svg id="openTime-<?php echo $r_id; ?>" class="openTime" ></svg>
                 </div>
             </div>
             <div class="resizer-horizontal-2"></div> <!-- 新增的水平分隔條 -->

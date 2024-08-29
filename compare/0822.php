@@ -761,7 +761,7 @@ if ($link) {
                             height: '100px'
                         },
                         {
-                            id: 'opentime',
+                            id: 'openTime',
                             src: 'openTime.png', 
                             label: 'Open Time',
                             width: '100px',

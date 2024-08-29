@@ -158,7 +158,7 @@ function updateChart(restaurant_time) {
 
   const svg = svgContainer
     .append("svg")
-    .attr("width", 300)
+    //.attr("width", 300)
     .attr("height", 250)
     .append("g")
     .attr("class", "openTime")
