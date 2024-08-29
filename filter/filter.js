@@ -163,6 +163,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const maxTimeSlider = document.querySelector('.max-time');
     const minTimeInput = document.querySelector('.min-time-input');
     const maxTimeInput = document.querySelector('.max-time-input');
+    const filterItemPrice = document.querySelector('.filter-price');
+    const filterItemTime = document.querySelector('.filter-time');
     let selectedButtons = [];
     let availableColors = [...colors];
     let isNoLimitActive = false;
