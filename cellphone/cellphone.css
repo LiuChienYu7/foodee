@@ -73,7 +73,6 @@
 .vibe-tags, .food-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 5px;
     margin: 5px 0;
     font-size: 15px;
     font-weight: normal;
@@ -101,6 +100,12 @@
     display: flex;
     align-items: center;
     margin-top: 10px;
+}
+.info-row div{
+    margin: 0 5px;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #f5f5f5;
 }
 
 #map {
@@ -149,6 +154,7 @@ svg{
 }
 
 .button-container button {
+    margin: 0 5px;
     width: 50px; /* 默认宽度 */
     padding: 5px;
     background-color: #f0f0f0;
@@ -210,4 +216,11 @@ svg{
     margin-left: 10px;
     padding: 0 10px;
     background-color: gray;
+}
+.upper-section{
+    margin: 10px 0;
+}
+.middle-section svg{
+    padding: 10px;
+    width: -webkit-fill-available;
 }

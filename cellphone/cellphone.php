@@ -192,13 +192,6 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
 
                 ?>
             </div>
-            <div id="chat-section">
-                <div class="chat">
-                    <div id="chat">
-                    <?php include '../chat/chat.php'; ?>
-                    </div>
-                </div>
-            </div>
             <?php
             echo "</div>";
         }
@@ -377,9 +370,9 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
                 </div>
             </div>
 
-            <div class="button_container">
+            <!--<div class="button_container">
                 <button id="shareButton">分享</button>
-            </div>
+            </div>-->
             
             <script type="text/javascript">
                 var globalData = {}; // 用來共享狀態的全局變量
@@ -393,6 +386,13 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
                 import '../openTime/openTime.js'
                 import '../map/compare_map.js'
             </script>
+            <div id="chat-section">
+                <div class="chat">
+                    <div id="chat">
+                    <?php include '../chat/chat.php'; ?>
+                    </div>
+                </div>
+            </div>
 
     <script>
         let currentRestaurantId = <?php echo reset($restaurant_ids); ?>;

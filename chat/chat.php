@@ -120,18 +120,18 @@ if ($link) {
 
 <body>
 
-    <div class="comment-section">
-        <?php if ($all_comments): ?>
-            <?php foreach ($all_comments as $comment): ?>
+    <!--<div class="comment-section">
+        <//?php if ($all_comments): ?>
+            <//?php foreach ($all_comments as $comment): ?>
                 <div class="comment">
-                    <h4><?php echo htmlspecialchars($comment['user']); ?> (<?php echo htmlspecialchars($comment['r_name']); ?>)</h4>
-                    <p><?php echo nl2br(htmlspecialchars($comment['comment'])); ?></p>
+                    <h4><//?php echo htmlspecialchars($comment['user']); ?> (<?php echo htmlspecialchars($comment['r_name']); ?>)</h4>
+                    <p><//?php echo nl2br(htmlspecialchars($comment['comment'])); ?></p>
                 </div>
-            <?php endforeach; ?>
-        <?php else: ?>
+            <//?php endforeach; ?>
+        <//?php else: ?>
             <p>No comments yet. Be the first to comment!</p>
-        <?php endif; ?>
-    </div>
+        <//?php endif; ?>
+    </div>-->
 
     <div class="comment-form">
         <h2>Leave a Comment</h2>
