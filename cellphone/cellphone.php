@@ -478,8 +478,17 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
                 }
             }
 
+            // 檢查傳過來的變數 spider 是否為 true，並亮起 middle-section1 背景
+            if (receivedSpider === true) {
+                document.querySelector('.middle-section1').style.backgroundColor = '#fff89e';
+            }
+            if (receivedOpenTime === true) {
+                document.querySelector('.middle-section2').style.backgroundColor = '#fff89e';
+            }
+
             highlightTagsBasedOnReceivedData();
         }
+
 
 
     </script>
