@@ -694,11 +694,11 @@ button {
 }
 
 .image-container-share.highlighted .corner-svg svg {
-    fill: #E0D4C2;
+    fill: #F4DEB3;
 }
 
 .image-toggle-button {
-    background-color: lightgray;
+    background-color: #ddd;
     border: none;
     padding: 5px 10px;
     border-radius: 20px;
@@ -706,11 +706,11 @@ button {
 }
 
 .image-toggle-button.selected {
-    background-color: #E0D4C2;
+    background-color: #ccc;
 }
 
 .image-toggle-button:hover {
-    background-color: #F4DEB3;
+    background-color: #ccc;
 }
 
 

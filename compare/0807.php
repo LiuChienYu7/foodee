@@ -929,7 +929,7 @@ if ($link) {
 
                             // 更新角标 SVG 和按钮背景颜色
                             cornerSvgContainer.innerHTML = buttonSvgState[category].isSvgToggled ? deletSvg : addSvg;
-                            button.style.backgroundColor = buttonSvgState[category].isSvgToggled ? '#E0D4C2' : '';
+                            button.style.backgroundColor = buttonSvgState[category].isSvgToggled ? '#F4DEB3' : '';
                         });
 
                         return button;
@@ -948,7 +948,7 @@ if ($link) {
                             const category = selectedButton.textContent;
                             buttonSvgState[category].isSvgToggled = !buttonSvgState[category].isSvgToggled;
                             cornerSvgContainer.innerHTML = buttonSvgState[category].isSvgToggled ? deletSvg : addSvg;
-                            selectedButton.style.backgroundColor = buttonSvgState[category].isSvgToggled ? '#E0D4C2' : '';
+                            selectedButton.style.backgroundColor = buttonSvgState[category].isSvgToggled ? '#F4DEB3' : '';
                         }
                     });
 
