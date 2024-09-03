@@ -98,8 +98,6 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
 
 <!DOCTYPE html>
 <html lang="en">
-    
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -471,29 +469,26 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
 
                 // 高亮图表背景
                 if (receivedSpider[currentRestaurantId]) {
-                    document.querySelector('.middle-section1').style.backgroundColor = '#fff89e';
+                    document.querySelector('.middle-section1').style.backgroundColor = 'rgba(255, 248, 158, 0.5)';
                 }
                 if (receivedComment[currentRestaurantId]) {
-                    document.querySelector('.upper-section').style.backgroundColor = '#fff89e';
+                    document.querySelector('.upper-section').style.backgroundColor = 'rgba(255, 248, 158, 0.5)';
                 }
                 if (receivedOpenTime[currentRestaurantId]) {
-                    document.querySelector('.middle-section2').style.backgroundColor = '#fff89e';
+                    document.querySelector('.middle-section2').style.backgroundColor = 'rgba(255, 248, 158, 0.5)';
                 }
             }
 
             // 檢查傳過來的變數 spider 是否為 true，並亮起 middle-section1 背景
             if (receivedSpider === true) {
-                document.querySelector('.middle-section1').style.backgroundColor = '#fff89e';
+                document.querySelector('.middle-section1').style.backgroundColor = 'rgba(255, 248, 158, 0.5)';
             }
             if (receivedOpenTime === true) {
-                document.querySelector('.middle-section2').style.backgroundColor = '#fff89e';
+                document.querySelector('.middle-section2').style.backgroundColor = 'rgba(255, 248, 158, 0.5)';
             }
 
             highlightTagsBasedOnReceivedData();
         }
-
-
-
     </script>
 
 </body>
