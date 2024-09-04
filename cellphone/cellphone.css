@@ -155,7 +155,7 @@ svg{
 
 .button-container button {
     margin: 0 5px;
-    width: 50px; /* 默认宽度 */
+    /* width: 50px; 默认宽度 */
     padding: 5px;
     background-color: #f0f0f0;
     border: 1px solid #ccc;
@@ -171,8 +171,7 @@ svg{
 
 .button-container button:hover {
     width: auto; /* 悬停时自动调整宽度 */
-    background-color: #4CAF50;
-    color: white;
+    /*color: white;*/
     max-width: none; /* 防止宽度被限制 */
     z-index: 1; /* 确保悬停时按钮在其他元素上方 */
 }
@@ -226,4 +225,35 @@ svg{
 .middle-section2 svg{
     height: 250px;
     width: 280px;
+}
+.vote {
+    z-index: 1000;
+    border-radius: 50px;
+    padding: 5px;
+    background-color: whitesmoke;
+    display: flex;
+    flex-wrap: wrap;
+    margin: 5px 0;
+    justify-content: center;
+    position: fixed; /* 修改为fixed */
+    bottom: 5; /* 固定在视窗底部 */
+    width: -webkit-fill-available;
+    border: 2px solid #555; /* 完整的边框语法 */
+}
+.vote button{
+    transition: none;
+        background-color: rgba(255, 112, 174, 0.1); /* 初始背景颜色 */
+        border: none;
+        padding: 5px; /* 增加内边距以便更好地显示名称 */
+        margin: 5px;
+        border-radius: 5px;
+        width: auto; /* 自动宽度，确保显示完整名称 */
+        white-space: nowrap; /* 禁止换行，确保名称在一行内显示 */
+        overflow: visible; /* 确保内容不会被截断 */
+        text-overflow: clip; /* 防止省略号出现 */
+        font-size: 16px; /* 根据需要调整字体大小 */
+    
+}
+#chat-section{
+    margin-bottom: 80px;
 }
