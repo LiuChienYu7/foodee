@@ -659,12 +659,12 @@ if ($link) {
                     const nameSpan = document.createElement('span');
                     nameSpan.textContent = restaurantData.r_name;
 
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.placeholder = '想說ㄉ話...';
+                    //const input = document.createElement('input');
+                    //input.type = 'text';
+                    //input.placeholder = '想說ㄉ話...';
 
                     titleDiv.appendChild(nameSpan);
-                    titleDiv.appendChild(input);
+                    //titleDiv.appendChild(input);
 
                     // 左侧列: 包括名称和按钮
                     const leftColumn = document.createElement('div');
@@ -997,20 +997,333 @@ if ($link) {
             // 移除 container 內的模糊效果
             document.querySelector(".container").classList.remove("blur-background");
         });
-        document.getElementById("finalShareButton").addEventListener("click", function() {
-            // 这里可以将选中的内容保存到后端，或者生成一个分享链接
-            console.log('Selected Vibe Items:', selectedItems.vibe);
-            console.log('Selected Food Items:', selectedItems.food);
+        document.getElementById("shareButton").addEventListener("click", function() {
+            const shareContent = document.getElementById('share-content');
+            shareContent.innerHTML = ''; // 清空之前的內容
 
-            // 示例：生成分享链接（这里仅展示为控制台输出，实际可以根据需求实现）
-            const shareLink = generateShareLink(selectedItems);
-            console.log('Share Link:', shareLink);
+            const selectedCount = selectedRestaurants.length;
+            let panelHeight;
+            if (selectedCount === 1) {
+                panelHeight = '350px';
+            } else {
+                panelHeight = '600px';
+            }
+
+            sharePanel.style.height = panelHeight;
+
+            if (selectedCount > 1) {
+                sharePanel.style.overflowY = 'scroll';
+            } else {
+                sharePanel.style.overflowY = 'hidden';
+            }
+
+            const colors = ["#FF70AE", "#85B4FF", "#FFCE47"];
+
+            selectedRestaurants.forEach((id, index) => {
+                const restaurantData = all_restaurant_data[id];
+                console.log("restaurant_data= ", restaurantData);
+                const colorIndex = restaurantColorIndices[id];
+                const backgroundColor = colors[colorIndex];
+                const rgbaBackgroundColor = hexToRgba(backgroundColor, 0.5);
+
+                if (restaurantData) {
+                    const restaurantTitle = document.createElement('div');
+                    restaurantTitle.className = 'restaurant-title-div';
+
+                    const restaurantItem = document.createElement('div');
+                    restaurantItem.className = 'restaurant-item';
+
+                    const titleDiv = document.createElement('div');
+                    titleDiv.className = 'restaurant-title';
+                    titleDiv.style.backgroundColor = rgbaBackgroundColor;
+
+                    const nameSpan = document.createElement('span');
+                    nameSpan.textContent = restaurantData.r_name;
+
+                    //const input = document.createElement('input');
+                    //input.type = 'text';
+                    //input.placeholder = '想說ㄉ話...';
+
+                    titleDiv.appendChild(nameSpan);
+                    //titleDiv.appendChild(input);
+
+                    const leftColumn = document.createElement('div');
+                    leftColumn.className = 'left-column';
+
+                    const buttonGroup = document.createElement('div');
+                    buttonGroup.className = 'button-group';
+
+                    const parkingButton = document.createElement('button');
+                    parkingButton.className = 'parking-button';
+
+                    const parkingSvg = `
+                    <svg fill="${restaurantData.r_has_parking == 1 ? '#0000FF' : '#A9A9A9'}" width="20px" height="20px" viewBox="0 0 454 454" xmlns="http://www.w3.org/2000/svg">
+                        <g>
+                            <g>
+                                <path d="M228.062,154.507h-34.938v65.631h34.938c18.094,0,32.814-14.72,32.814-32.814
+                                    C260.877,169.23,246.156,154.507,228.062,154.507z"/>
+                                <path d="M0,0v454h454V0H0z M228.062,279.648h-34.938v79.398h-59.512V94.952l94.451,0.043c50.908,0,92.325,41.418,92.325,92.328
+                                    C320.388,238.232,278.971,279.648,228.062,279.648z"/>
+                            </g>
+                        </g>
+                    </svg>`;
+
+                    parkingButton.innerHTML = parkingSvg;
+
+                    parkingButton.addEventListener('click', function() {
+                        selectedItems.parking[id] = !selectedItems.parking[id];
+                        parkingButton.style.backgroundColor = selectedItems.parking[id] ? '#F4DEB3' : '';
+                    });
+
+                    const priceButton = document.createElement('button');
+                    priceButton.className = 'price-button';
+                    priceButton.innerHTML = `
+                    <svg height="20px" width="20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 235.517 235.517" fill="#f9f053">
+                        <path d="M118.1,235.517c7.898,0,14.31-6.032,14.31-13.483c0-7.441,0-13.473,0-13.473 c39.069-3.579,64.932-24.215,64.932-57.785v-0.549c0-34.119-22.012-49.8-65.758-59.977V58.334c6.298,1.539,12.82,3.72,19.194,6.549 c10.258,4.547,22.724,1.697,28.952-8.485c6.233-10.176,2.866-24.47-8.681-29.654c-11.498-5.156-24.117-8.708-38.095-10.236V8.251 c0-4.552-6.402-8.251-14.305-8.251c-7.903,0-14.31,3.514-14.31,7.832c0,4.335,0,7.843,0,7.843 c-42.104,3.03-65.764,25.591-65.764,58.057v0.555c0,34.114,22.561,49.256,66.862,59.427v33.021 c-10.628-1.713-21.033-5.243-31.623-10.65c-11.281-5.755-25.101-3.72-31.938,6.385c-6.842,10.1-4.079,24.449,7.294,30.029 c16.709,8.208,35.593,13.57,54.614,15.518v13.755C103.79,229.36,110.197,235.517,118.1,235.517z M131.301,138.12 c14.316,4.123,18.438,8.257,18.438,15.681v0.555c0,7.979-5.776,12.651-18.438,14.033V138.12z M86.999,70.153v-0.549 c0-7.152,5.232-12.657,18.71-13.755v29.719C90.856,81.439,86.999,77.305,86.999,70.153z"/>
+                    </svg> 
+                    ${restaurantData.r_price_low} ~ ${restaurantData.r_price_high}`;
+
+                    priceButton.addEventListener('click', function() {
+                        selectedItems.price[id] = !selectedItems.price[id];
+                        priceButton.style.backgroundColor = selectedItems.price[id] ? '#F4DEB3' : '';
+                    });
+
+                    const diningTimeButton = document.createElement('button');
+                    diningTimeButton.className = 'dining-time-button';
+                    const diningTime = restaurantData.r_time_low ? `${restaurantData.r_time_low} min` : "未限時";
+
+                    diningTimeButton.innerHTML = `
+                    <svg fill="#000000" width="20px" height="20px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20,3a1,1,0,0,0,0-2H4A1,1,0,0,0,4,3H5.049c.146,1.836.743,5.75,3.194,8-2.585,2.511-3.111,7.734-3.216,10H4a1,1,0,0,0,0,2H20a1,1,0,0,0,0-2H18.973c-.105-2.264-.631-7.487-3.216-10,2.451-2.252,3.048-6.166,3.194-8Zm-6.42,7.126a1,1,0,0,0,.035,1.767c2.437,1.228,3.2,6.311,3.355,9.107H7.03c.151-2.8.918-7.879,3.355-9.107a1,1,0,0,0,.035-1.767C7.881,8.717,7.227,4.844,7.058,3h9.884C16.773,4.844,16.119,8.717,13.58,10.126ZM12,13s3,2.4,3,3.6V20H9V16.6C9,15.4,12,13,12,13Z"/>
+                    </svg> 
+                    用餐時間: ${diningTime}`;
+
+                    diningTimeButton.addEventListener('click', function() {
+                        selectedItems.diningTime[id] = !selectedItems.diningTime[id];
+                        diningTimeButton.style.backgroundColor = selectedItems.diningTime[id] ? '#F4DEB3' : '';
+                    });
+
+                    const middleColumn = document.createElement('div');
+                    middleColumn.className = 'middle-column';
+
+                    const rightColumn = document.createElement('div');
+                    rightColumn.className = 'right-column';
+
+                    const vibeTitle = document.createElement('div');
+                    vibeTitle.className = 'tag-title';
+                    vibeTitle.textContent = '氣氛';
+
+                    const visPicDiv = document.createElement('div');
+                    visPicDiv.className = 'vis-pic';
+
+                    const visualButtons = [
+                        {
+                            id: 'comment',
+                            src: 'comment.png', 
+                            label: 'Comment',
+                            width: '140px',
+                            height: '100px'
+                        },{
+                            id: 'spider',
+                            src: 'spider.png', 
+                            label: 'Spider',
+                            width: '100px',
+                            height: '100px'
+                        },
+                        {
+                            id: 'openTime',
+                            src: 'openTime.png', 
+                            label: 'Open Time',
+                            width: '100px',
+                            height: '100px'
+                        }
+                    ];
+
+                    visualButtons.forEach(buttonInfo => {
+                        const button = document.createElement('button');
+                        button.className = 'vis-button';
+                        button.id = buttonInfo.id;
+
+                        const img = document.createElement('img');
+                        img.src = buttonInfo.src;
+                        img.alt = buttonInfo.label;
+
+                        img.style.width = buttonInfo.width;
+                        img.style.height = buttonInfo.height;
+
+                        button.appendChild(img);
+
+                        button.addEventListener('click', function() {
+                            if (!selectedItems[buttonInfo.id]) {
+                                selectedItems[buttonInfo.id] = {};
+                            }
+
+                            if (typeof selectedItems[buttonInfo.id][id] === 'undefined') {
+                                selectedItems[buttonInfo.id][id] = false;
+                            }
+
+                            selectedItems[buttonInfo.id][id] = !selectedItems[buttonInfo.id][id];
+                            button.style.backgroundColor = selectedItems[buttonInfo.id][id] ? '#F4DEB3' : '';
+                        });
+
+                        visPicDiv.appendChild(button);
+                    });
+
+                    const vibeTagsDiv = document.createElement('div');
+                    vibeTagsDiv.className = 'vibe-tags-share';
+                    if (restaurantData.r_vibe) {
+                        const vibes = restaurantData.r_vibe.split('，');
+                        vibes.forEach(vibe => {
+                            const button = document.createElement('button');
+                            button.className = 'restaurant-tag-share';
+                            button.textContent = vibe.trim();
+                            
+                            button.addEventListener('click', function() {
+                                if (!selectedItems.vibe[id]) {
+                                    selectedItems.vibe[id] = []; 
+                                }
+                                
+                                const index = selectedItems.vibe[id].indexOf(vibe);
+                                if (index > -1) {
+                                    selectedItems.vibe[id].splice(index, 1); 
+                                } else {
+                                    selectedItems.vibe[id].push(vibe); 
+                                }
+
+                                button.style.backgroundColor = selectedItems.vibe[id].includes(vibe) ? '#F4DEB3' : '';
+                            });
+
+                            vibeTagsDiv.appendChild(button);
+                        });
+                    }
+                    vibeTitle.appendChild(vibeTagsDiv);
+
+                    const foodTitle = document.createElement('div');
+                    foodTitle.className = 'tag-title';
+                    foodTitle.textContent = '食物';
+
+                    const foodTagsDiv = document.createElement('div');
+                    foodTagsDiv.className = 'food-tags-share';
+                    if (restaurantData.r_food_dishes) {
+                        const dishes = restaurantData.r_food_dishes.split('、');
+                        dishes.forEach(dish => {
+                            const button = document.createElement('button');
+                            button.className = 'restaurant-tag-share';
+                            button.textContent = dish.trim();
+                            
+                            button.addEventListener('click', function() {
+                                if (!selectedItems.food[id]) {
+                                    selectedItems.food[id] = []; 
+                                }
+                                
+                                const index = selectedItems.food[id].indexOf(dish);
+                                if (index > -1) {
+                                    selectedItems.food[id].splice(index, 1); 
+                                } else {
+                                    selectedItems.food[id].push(dish); 
+                                }
+
+                                button.style.backgroundColor = selectedItems.food[id].includes(dish) ? '#F4DEB3' : '';
+                            });
+
+                            foodTagsDiv.appendChild(button);
+                        });
+                    }
+                    foodTitle.appendChild(foodTagsDiv);
+
+                    const imageButtonGroup = document.createElement('div');
+                    imageButtonGroup.className = 'image-button-group';
+
+                    let selectedCategory = '環境';
+
+                    const imageToggleButtons = ['環境', '食物', '菜單', '地圖'].map(category => {
+                        const button = document.createElement('button');
+                        button.className = 'image-toggle-button';
+                        button.textContent = category;
+
+                        if (category === selectedCategory) {
+                            button.classList.add('selected');
+                            updateImage(selectedCategory, restaurantData, index);
+                        }
+
+                        button.addEventListener('click', function() {
+                            document.querySelectorAll('.image-toggle-button').forEach(btn => btn.classList.remove('selected'));
+                            button.classList.add('selected');
+                            updateImage(category, restaurantData, index);
+                        });
+                        return button;
+                    });
+
+                    imageToggleButtons.forEach(button => imageButtonGroup.appendChild(button));
+                    rightColumn.appendChild(imageButtonGroup);
+
+                    const imageDisplayContainer = document.createElement('div');
+                    imageDisplayContainer.className = 'image-display-container';
+
+                    const imageContainer = document.createElement('div');
+                    imageContainer.className = 'image-container-share';
+                    imageContainer.innerHTML = `<span class="nav-arrow prev" onclick="changeImage(this, -1, ${index})">‹</span>
+                                                <img src="default.jpg" class="displayed-img displayed-img-${index}" style="object-fit: cover;">
+                                                <span class="nav-arrow next" onclick="changeImage(this, 1, ${index})">›</span>`;
+                    rightColumn.appendChild(imageDisplayContainer);
+                    imageDisplayContainer.appendChild(imageContainer);
+
+                    buttonGroup.appendChild(priceButton);
+                    buttonGroup.appendChild(diningTimeButton);
+                    buttonGroup.appendChild(parkingButton);
+
+                    leftColumn.appendChild(buttonGroup);
+
+                    middleColumn.appendChild(vibeTitle);
+                    middleColumn.appendChild(foodTitle);
+                    middleColumn.appendChild(visPicDiv);
+
+                    restaurantTitle.appendChild(titleDiv);
+                    restaurantTitle.appendChild(restaurantItem);
+                    restaurantItem.appendChild(leftColumn);
+                    restaurantItem.appendChild(middleColumn);
+                    restaurantItem.appendChild(rightColumn);
+
+                    shareContent.appendChild(restaurantTitle);
+                }
+            });
+
+            document.getElementById("sharePanel").style.display = "block";
+            document.querySelector(".container").classList.add("blur-background");
+            document.getElementById("sharePanel").style.zIndex = "1001";
+        });
+        document.getElementById("finalShareButton").addEventListener("click", function() {
+            const shareLink = generateShareLink(selectedItems, selectedRestaurants);
+            console.log('Selected Restaurants:', selectedItems);
+
+            // 重定向用户到生成的 URL
+            window.location.href = shareLink;
         });
 
-        function generateShareLink(selectedItems) {
-            // 根据选中的内容生成分享链接
-            // 这只是一个示例函数，您可以根据具体需求生成实际的分享链接
-            return `http://example.com/share?selectedVibe=${encodeURIComponent(JSON.stringify(selectedItems.vibe))}&selectedFood=${encodeURIComponent(JSON.stringify(selectedItems.food))}`;
+        function generateShareLink(selectedItems, selectedRestaurants) {
+            let queryString = '';
+
+            // 遍历所有被选中的餐厅
+            selectedRestaurants.forEach((id, index) => {
+                // 将r_id也添加到查询字符串中
+                queryString += `r_id${index + 1}=${id}&`;
+            });
+
+            // 将 selectedItems 的对象转换为 JSON 字符串并进行 URL 编码
+            const vibeString = `vibe=${encodeURIComponent(JSON.stringify(selectedItems.vibe))}`;
+            const foodString = `food=${encodeURIComponent(JSON.stringify(selectedItems.food))}`;
+            const priceString = `price=${encodeURIComponent(JSON.stringify(selectedItems.price))}`;
+            const diningTimeString = `diningTime=${encodeURIComponent(JSON.stringify(selectedItems.diningTime))}`;
+            const parkingString = `parking=${encodeURIComponent(JSON.stringify(selectedItems.parking))}`;
+            const spiderString = `spider=${encodeURIComponent(JSON.stringify(selectedItems.spider))}`;
+            const commentString = `comment=${encodeURIComponent(JSON.stringify(selectedItems.comment))}`;
+            const openTimeString = `openTime=${encodeURIComponent(JSON.stringify(selectedItems.openTime))}`;
+
+            // 将这些字符串合并到一个查询字符串中
+            queryString += `${vibeString}&${foodString}&${priceString}&${diningTimeString}&${parkingString}&${spiderString}&${commentString}&${openTimeString}`;
+
+            // 返回完整的 URL
+            return `../cellphone/cellphone.php?${queryString}`;
         }
 
         function updateImage(category, restaurantData, index) {
