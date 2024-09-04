@@ -6,6 +6,7 @@ $dbname = 'foodee';
 $link = mysqli_connect($host, $dbuser, $dbpassword, $dbname);
 
 // 初始化變數
+// 初始化變數
 $all_restaurant_data = [];
 
 if ($link) {
@@ -19,12 +20,19 @@ if ($link) {
         }
     }
 
-    // Fetch images, names, vibes, dishes, and prices for each restaurant
+    // Fetch images, names, vibes, dishes, prices, and votes for each restaurant
     foreach ($r_ids as $r_id) {
-        $query = "SELECT r_name, r_vibe, r_food_dishes, r_price_low, r_price_high, r_photo_env1, r_photo_env2, r_photo_env3, r_photo_food1, r_photo_food2, r_photo_food3, r_photo_food4, r_photo_food5, r_photo_door, r_photo_menu1, r_photo_menu2, r_photo_menu3,
-                         special_comment_sum, notice_comment_sum
-                  FROM additional_ 
-                  WHERE r_id = $r_id";
+        $query = "
+            SELECT a.r_name, a.r_vibe, a.r_food_dishes, a.r_price_low, a.r_price_high, 
+                   a.r_photo_env1, a.r_photo_env2, a.r_photo_env3, 
+                   a.r_photo_food1, a.r_photo_food2, a.r_photo_food3, a.r_photo_food4, a.r_photo_food5, 
+                   a.r_photo_door, a.r_photo_menu1, a.r_photo_menu2, a.r_photo_menu3,
+                   a.special_comment_sum, a.notice_comment_sum, 
+                   v.vote
+            FROM additional_ a
+            LEFT JOIN vote v ON a.r_id = v.r_id
+            WHERE a.r_id = $r_id";
+        
         $result = mysqli_query($link, $query);
 
         if ($result) {
@@ -38,6 +46,7 @@ if ($link) {
 } else {
     echo "Failed to connect to the database: " . mysqli_connect_error();
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -115,6 +124,12 @@ if ($link) {
                 echo "<div class='restaurant-name' style='background-color: {$backgroundColor}; display: flex; align-items: start;'>";
                 echo "<input type='checkbox' class='restaurant-checkbox' data-id='{$r_id}' style='margin-right: 10px; cursor: pointer;' onchange='handleCheckboxChange(this)'>";
                 echo "<div style = 'cursor: default;'>" . htmlspecialchars($restaurant_data['r_name']) . "</div>";
+                 // 獲取投票次數
+                $vote_count = isset($restaurant_data['vote']) ? $restaurant_data['vote'] : 0;
+                
+                // 顯示餐廳的投票次數
+                echo "<div style = 'cursor: default;'> - 投票次數: " . htmlspecialchars($vote_count) . "</div>";
+
                 echo "</div>";
 
                 // 更新計數器
