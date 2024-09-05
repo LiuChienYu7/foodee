@@ -30,16 +30,20 @@
         <div class="box4" id="box4">
             <div class="box4-header">拖移餐廳看更多餐廳資訊 已選0間餐廳</div>
             <div id="popup-content">
+                <button id="left-arrow" style="display: none;">←</button>
                 <div class="btn">
                     <button id="clear-btn">清除全部</button>
                 </div>
                 <!-- show the detailed info of restaurants -->
-                <div id="restaurant-info">
-                    <p id="defaultText">尚未加入任何餐廳</p>
+                <div id="restaurant-info-wrapper">                   
+                    <div id="restaurant-info">
+                        <p id="defaultText">尚未加入任何餐廳</p>
+                    </div>
                 </div>
                 <div class="btn">
                     <button id="compare-btn">去比較(0/3)</button>
                 </div>
+                <button id="right-arrow" style="display: none;">→</button>
             </div>
         </div>
     </div>
@@ -49,7 +53,7 @@
 
 
     <script>
-        d3.json('http://localhost/foodee/index.php').then(function (data) {
+        d3.json('http://localhost/foodee/connect_sql/index.php').then(function (data) {
 
             //console.log(data);
 

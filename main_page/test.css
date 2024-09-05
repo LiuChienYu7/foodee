@@ -9,7 +9,7 @@
     width: 100%;
     height: 50px;
     background-color: lightblue;
-    cursor: pointer;
+    cursor: default;
     transition: all 0.3s ease;
     overflow: hidden;
     position: absolute;
@@ -42,12 +42,37 @@
     /*overflow-x: auto;*/
     /* 讓內容超出時可橫向滾動 */
 }
+#left-arrow, #right-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%); /* 垂直居中 */
+    background-color: rgba(0, 0, 0, 0.5); /* 半透明背景 */
+    color: white;
+    border: none;
+    padding: 5px 10px 10px 10px;
+    font-size: 24px;
+    cursor: pointer;
+}
 
+#left-arrow {
+    left: 20px; /* 定位到畫面最左邊 */
+}
+
+#right-arrow {
+    right: 20px; /* 定位到畫面最右邊 */
+}
+
+.restaurant-info-wrapper{
+    display: flex;
+    align-items: start;
+    
+}
 #restaurant-info {
     display: flex;
     flex-direction: row;
     align-items: center;
     margin-right: 20px;
+    margin-left: 40px;
     height: auto;
     /* 每個餐廳資訊之間的間距 */
 }
@@ -87,6 +112,114 @@
 }
 
 .clear-btn{
-    
     text-align: right;
+}
+
+#left-arrow{
+
+}
+#right-arrow{
+
+}
+
+/* 詳細資料 */
+.restaurant{
+    width: 300px;
+    height: auto;
+}
+button{
+    background-color: #ddd;
+    border: transparent;
+    cursor: pointer;
+    border-radius: 5px;
+}
+button:hover{
+    background-color: #ccc;
+}
+.delete-restaurant{
+    height: 20px;
+    background-color: #e98b8b;
+    margin-top: 8px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin-left: 10px;
+}
+.delete-restaurant:hover{
+    background-color: #D37676;
+}
+
+.upperBlock{
+    display: flex;
+}
+.drag-name{
+    text-align: start;
+}
+h4{
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-right: 10px;
+}
+.drag-star {
+    display: flex; /* 讓星星橫向排列 */
+}
+.drag-star svg {
+    padding-top: 10px;
+    margin-right: 5px; /* 控制星星之間的間距 */
+}
+.drag-parking{
+    margin-top: 8px;
+}
+
+h5{
+    margin: 3px;
+}
+
+.drag-vibe-tag{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px; /* 控制標籤間距 */
+    margin-bottom: 10px;
+    margin-left: 0px;
+    cursor: default;
+}
+.drag-food-tag{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px; /* 控制標籤間距 */
+    margin-bottom: 10px;
+    margin-left: 0px;
+    cursor: default;
+}
+.drag-restaurant-tag{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 5px;
+    background-color: #ddd;
+    border-radius: 5px;
+    font-size: 0.8em;
+    white-space: nowrap; /* 防止文字換行 */
+    overflow: hidden; /* 隱藏超出部分 */
+    text-overflow: ellipsis; /* 當文字超出時顯示省略號 */
+    cursor: default;
+}
+
+.price-diningTime{
+    display: flex;
+}
+.drag-price{
+    margin-left: 10px;
+}
+
+/* 比較button */
+#compare-btn {
+    position: absolute;
+    right: 40px; /* 定位到畫面最右邊 */
+    opacity: 0.5; /* 預設為不可點狀態 */
+    cursor: not-allowed; /* 指針顯示為不可用 */
+    transition: opacity 0.3s ease; /* 點擊時的過渡效果 */
+}
+
+#compare-btn:enabled {
+    cursor: pointer; /* 當按鈕可點擊時，顯示正常指針 */
 }
