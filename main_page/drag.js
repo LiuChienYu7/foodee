@@ -1,5 +1,5 @@
 let currentPage = 1;
-const restaurantsPerPage = 4;
+const restaurantsPerPage = 3;
 // 記錄選中的餐廳ID
 let selectedRestaurantIds = [];
 
@@ -116,7 +116,7 @@ function dragElement(circles, x, y) {
           restaurantImage.className = "drag-image";
           restaurantImage.src = foodPhotos[currentImageIndex]; // 預設顯示 food 類型的第一張圖片
           restaurantImage.alt = d.r_name;
-          restaurantImage.style.width = "300px";
+          restaurantImage.style.width = "320px";
           restaurantImage.style.height = "200px";
           restaurantImage.style.objectFit = "cover";
           DragImageContainer.appendChild(restaurantImage);
@@ -131,7 +131,7 @@ function dragElement(circles, x, y) {
           // 營業時間
           // 創建表示營業時間的容器
           const openingHoursContainer = document.createElement("div");
-          openingHoursContainer.className = "opening-hours";
+          openingHoursContainer.className = "drag-opening-hours";
 
           // 確保 d.r_hours_periods 是字串，並嘗試解析成 JSON 陣列
           let r_hours_periods = [];

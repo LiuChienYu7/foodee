@@ -64,7 +64,7 @@
 
 .restaurant-info-wrapper{
     display: flex;
-    align-items: start;
+    align-items: flex-start;
 
 }
 #restaurant-info {
@@ -79,8 +79,12 @@
 
 /* 每個餐廳的樣式 */
 .restaurant {
-    margin: 10px; /* 每個餐廳之間的間距 */
+    width: 320px;
+    padding: 0 40px 20px 40px; /* 每個餐廳之間的間距 */
+    margin-top: 20px;
     text-align: center; /* 讓圖片和文字居中 */
+    align-items: flex-start; 
+    position: relative; /* 為了讓 delete-restaurant 定位相對於餐廳 */
 }
 
 .box4-header {
@@ -123,10 +127,6 @@
 }
 
 /* 詳細資料 */
-.restaurant{
-    width: 300px;
-    height: auto;
-}
 button{
     background-color: #ddd;
     border: transparent;
@@ -137,12 +137,15 @@ button:hover{
     background-color: #ccc;
 }
 .delete-restaurant{
+    position: absolute;
+    top: 5px; /* 距離上方 10px */
+    right: 10px; /* 距離右方 10px */
     height: 20px;
     background-color: #e98b8b;
-    margin-top: 8px;
-    padding-top: 0px;
-    padding-bottom: 0px;
-    margin-left: 10px;
+    text-align: center; /* 讓內容居中 */
+    cursor: pointer; /* 滑鼠指標變為手型 */
+    font-size: 14px; /* 調整文字大小 */
+    line-height: 20px; /* 垂直居中 */
 }
 .delete-restaurant:hover{
     background-color: #D37676;
@@ -228,7 +231,7 @@ h5{
 /* 圖片容器設置為 relative 以便讓左右箭頭絕對定位 */
 .drag-image-container {
     position: relative;
-    width: 300px;
+    width: 320px;
     height: 200px;
     padding: 5px 0 5px 0;
     display: flex;
@@ -279,7 +282,7 @@ h5{
 }
 
 /* 營業時間容器，對齊圖片中的營業時間 */
-.opening-hours {
+.drag-opening-hours {
     display: flex;
     justify-content: space-between; /* 使各天的圓圈均勻分布 */
     margin: 0 0 5px 0;
