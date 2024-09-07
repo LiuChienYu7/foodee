@@ -65,7 +65,7 @@
 .restaurant-info-wrapper{
     display: flex;
     align-items: start;
-    
+
 }
 #restaurant-info {
     display: flex;
@@ -223,3 +223,88 @@ h5{
 #compare-btn:enabled {
     cursor: pointer; /* 當按鈕可點擊時，顯示正常指針 */
 }
+
+/* 圖片設定 */
+/* 圖片容器設置為 relative 以便讓左右箭頭絕對定位 */
+.drag-image-container {
+    position: relative;
+    width: 300px;
+    height: 200px;
+    padding: 5px 0 5px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.drag-image{
+    border-radius: 15px;
+}
+
+/* 左右箭頭設置為絕對定位 */
+.drag-image-left-arrow, .drag-image-right-arrow {
+    position: absolute;
+    background-color: transparent;
+    font-size: 20px;
+    color: white;
+    text-shadow: 0px 0px 5px black;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    top: 50%; /* 垂直居中 */
+    transform: translateY(-50%); /* 修正垂直居中 */
+    z-index: 1; /* 確保箭頭位於圖片上方 */
+}
+
+/* 左箭頭定位在圖片左側 */
+.drag-image-left-arrow {
+    left: 0;
+    transition: background-color 500ms ease, opacity 500ms ease; /* 定義過渡時間為500毫秒 */
+}
+
+/* 右箭頭定位在圖片右側 */
+.drag-image-right-arrow {
+    right: 0;
+    transition: background-color 500ms ease, opacity 500ms ease; /* 定義過渡時間為500毫秒 */
+}
+
+.drag-image-left-arrow:hover {
+    background-color: #000;
+    opacity: 0.5;
+}
+
+/* 右箭頭定位在圖片右側 */
+.drag-image-right-arrow:hover {
+    background-color: #000;
+    opacity: 0.5;
+}
+
+/* 營業時間容器，對齊圖片中的營業時間 */
+.opening-hours {
+    display: flex;
+    justify-content: space-between; /* 使各天的圓圈均勻分布 */
+    margin: 0 0 5px 0;
+    width: 90%; /* 確保容器寬度與圖片一致 */
+    padding: 0 15px; /* 為圓圈兩側添加一些內距 */
+}
+
+/* 每一天的營業時間圓圈 */
+.drag-day {
+    width: 25px; /* 調整圓圈大小 */
+    height: 25px;
+    text-align: center;
+    line-height: 25px; /* 使文字在圓圈內居中 */
+    margin: 0 3px; /* 控制圓圈之間的間距 */
+    border-radius: 50%; /* 使元素呈現圓形 */
+    background-color: #ddd; /* 預設為關店色 */
+    font-size: 12px; /* 調整文字大小 */
+    font-weight: bold; /* 增加文字的粗細 */
+}
+
+/* 營業時間開放的顏色 */
+.drag-day.open {
+    background-color: #F4DEB3; /* 營業時的顏色 */
+}
+
+
+
+/* end of 圖片 */

@@ -83,13 +83,118 @@ function dragElement(circles, x, y) {
           restaurant.appendChild(upperBlock);
 
           // Create and append the restaurant image
+          // 變數來追蹤當前顯示的圖片類型（environment 或 food）和當前圖片索引
+          let currentImageType = "food";
+          let currentImageIndex = 0;
+
+          // 照片數組
+          const environmentPhotos = [
+            d.r_photo_env1,
+            d.r_photo_env2,
+            d.r_photo_env3,
+            d.r_photo_door,
+          ];
+          const foodPhotos = [
+            d.r_photo_food1,
+            d.r_photo_food2,
+            d.r_photo_food3,
+            d.r_photo_food4,
+            d.r_photo_food5,
+          ];
+
+          // 創建和附加餐廳圖片
+          const DragImageContainer = document.createElement("div");
+          DragImageContainer.className = "drag-image-container";
+
+          // 創建左右切換按鈕
+          const leftArrow = document.createElement("button");
+          leftArrow.innerHTML = "<";
+          leftArrow.className = "drag-image-left-arrow";
+          DragImageContainer.appendChild(leftArrow);
+
           const restaurantImage = document.createElement("img");
-          restaurantImage.src = d.r_photo_food1;
+          restaurantImage.className = "drag-image";
+          restaurantImage.src = foodPhotos[currentImageIndex]; // 預設顯示 food 類型的第一張圖片
           restaurantImage.alt = d.r_name;
           restaurantImage.style.width = "300px";
-          restaurantImage.style.height = "250px";
+          restaurantImage.style.height = "200px";
           restaurantImage.style.objectFit = "cover";
-          restaurant.appendChild(restaurantImage);
+          DragImageContainer.appendChild(restaurantImage);
+
+          const rightArrow = document.createElement("button");
+          rightArrow.innerHTML = ">";
+          rightArrow.className = "drag-image-right-arrow";
+          DragImageContainer.appendChild(rightArrow);
+          restaurant.appendChild(DragImageContainer);
+          // end of image
+
+          // 營業時間
+          // 創建表示營業時間的容器
+          const openingHoursContainer = document.createElement("div");
+          openingHoursContainer.className = "opening-hours";
+
+          // 確保 d.r_hours_periods 是字串，並嘗試解析成 JSON 陣列
+          let r_hours_periods = [];
+          // 星期名稱對應
+          const daysOfWeek = ["一", "二", "三", "四", "五", "六", "日"];
+          try {
+            // 假設 r_hours_periods 是一個字串，嘗試解析它
+            if (typeof d.r_hours_periods === "string") {
+              r_hours_periods = JSON.parse(
+                d.r_hours_periods.replace(/'/g, '"')
+              ); // 將單引號替換成雙引號，然後解析 JSON
+            }
+          } catch (e) {
+            console.error(
+              "Failed to parse r_hours_periods:",
+              d.r_hours_periods,
+              e
+            );
+          }
+
+          // 檢查是否成功解析為陣列
+          if (Array.isArray(r_hours_periods)) {
+            // 使用解析後的資料進行處理
+            const openDays = new Set();
+            r_hours_periods.forEach((hour) => {
+              if (hour.status === "open") {
+                openDays.add(hour.day); // 紀錄有營業的天數
+              }
+            });
+
+            // 初始化 rightData 為 0，並設置營業天數
+            let rightData = daysOfWeek.map(() => 0);
+            openDays.forEach((day) => {
+              rightData[day - 1] = 1; // 將對應的 day 設為 1 (營業)
+            });
+
+            // 根據 rightData 來創建每一天的元素並設置背景顏色
+            daysOfWeek.forEach((day, index) => {
+              const dayElement = document.createElement("div");
+              dayElement.className = "drag-day";
+              dayElement.setAttribute("data-day", index + 1); // 為每一天設置 data-day 屬性
+              dayElement.textContent = day;
+
+              // 根據營業狀態設置背景顏色：1 為營業（黃色），0 為不營業（灰色）
+              if (rightData[index] === 1) {
+                dayElement.style.backgroundColor = "#F4DEB3"; // 開店設置為黃色
+              } else {
+                dayElement.style.backgroundColor = "#ddd"; // 不營業設置為灰色
+              }
+
+              // 將 day 元素附加到營業時間容器
+              openingHoursContainer.appendChild(dayElement);
+            });
+          } else {
+            console.error(
+              "r_hours_periods is not an array or is undefined",
+              d.r_hours_periods
+            );
+          }
+
+          // 將營業時間容器附加到 DragImageContainer
+          restaurant.appendChild(openingHoursContainer);
+          // end of 營業時間
 
           const vibeTitle = document.createElement("h5");
           vibeTitle.className = "drag-vibe-title";
@@ -226,6 +331,55 @@ function dragElement(circles, x, y) {
               container.appendChild(halfStar);
             }
           }
+
+          // 照片功能
+          // 切換圖片邏輯
+          function updateImage() {
+            const photoArray =
+              currentImageType === "environment"
+                ? environmentPhotos
+                : foodPhotos;
+            restaurantImage.src = photoArray[currentImageIndex];
+          }
+
+          // 監聽左右按鈕的點擊事件
+          leftArrow.addEventListener("click", function () {
+            const photoArray =
+              currentImageType === "environment"
+                ? environmentPhotos
+                : foodPhotos;
+            currentImageIndex =
+              (currentImageIndex - 1 + photoArray.length) % photoArray.length;
+            updateImage();
+          });
+
+          rightArrow.addEventListener("click", function () {
+            const photoArray =
+              currentImageType === "environment"
+                ? environmentPhotos
+                : foodPhotos;
+            currentImageIndex = (currentImageIndex + 1) % photoArray.length;
+            updateImage();
+          });
+
+          // 監聽外部按鈕切換圖片類型
+          document
+            .getElementById("environment")
+            .addEventListener("click", function () {
+              currentImageType = "environment";
+              currentImageIndex = 0; // 切換到 environment 類型時顯示第一張圖片
+              updateImage();
+            });
+
+          document
+            .getElementById("food")
+            .addEventListener("click", function () {
+              currentImageType = "food";
+              currentImageIndex = 0; // 切換到 food 類型時顯示第一張圖片
+              updateImage();
+            });
+          // 照片功能結束
+
           addRestaurant(d.r_id);
           console.log("id有沒有正確放入", selectedRestaurantIds);
           restaurant
@@ -249,6 +403,48 @@ function dragElement(circles, x, y) {
             y(d.r_time_low) + y.bandwidth() / 2
           })`
         );
+        // 全部清除功能
+        // 設置 clear-btn 的點擊事件來清除所有餐廳
+        document
+          .getElementById("clear-btn")
+          .addEventListener("click", function () {
+            const restaurantInfo = document.getElementById("restaurant-info");
+            const defaultText = document.getElementById("defaultText");
+            const circles = d3.selectAll(".circle-group"); // 獲取所有 D3 圓圈
+
+            // 移除所有的餐廳 div，但保留 defaultText
+            const childrenToRemove = Array.from(restaurantInfo.children).filter(
+              (child) => child !== defaultText
+            );
+            childrenToRemove.forEach((child) =>
+              restaurantInfo.removeChild(child)
+            );
+
+            // 恢復圓圈的可見性，並將它們返回到首頁的位置
+            circles.each(function (d) {
+              d3.select(this)
+                .style("visibility", "visible") // 恢復圓圈的可見性
+                .attr(
+                  "transform",
+                  `translate(${x(d.r_price_low)}, ${
+                    y(d.r_time_low) + y.bandwidth() / 2
+                  })`
+                ); // 回到原始位置
+            });
+
+            // 清空 selectedRestaurantIds 陣列
+            selectedRestaurantIds = [];
+
+            // 顯示 "尚未加入任何餐廳" 的文本
+            defaultText.style.display = "block";
+
+            // 更新餐廳數量和比較按鈕狀態
+            updateRestaurantCount();
+            updateCompareButtonState();
+            updatePagination();
+          });
+
+        // end of 全部清除
 
         // Function to update the restaurant count in the header
         function updateRestaurantCount() {
@@ -298,7 +494,6 @@ function dragElement(circles, x, y) {
             }
           };
         }
-        
 
         // 當餐廳添加或刪除時，更新按鈕狀態
         function updateCompareButtonState() {

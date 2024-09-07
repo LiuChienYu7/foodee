@@ -22,13 +22,13 @@ if ($conn->connect_error) {
 $sql = "
 SELECT 
     additional_.*, 
-    detail.*, 
+    detail2.*, 
     photos.*, 
     review.*
 FROM 
     additional_
 JOIN 
-    detail ON additional_.r_id = detail.r_id
+    detail2 ON additional_.r_id = detail2.r_id
 JOIN 
     photos ON additional_.r_id = photos.r_id
 JOIN 
