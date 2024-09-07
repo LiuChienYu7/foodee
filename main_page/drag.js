@@ -86,8 +86,8 @@ function dragElement(circles, x, y) {
           const restaurantImage = document.createElement("img");
           restaurantImage.src = d.r_photo_food1;
           restaurantImage.alt = d.r_name;
-          restaurantImage.style.width = "200px";
-          restaurantImage.style.height = "200px";
+          restaurantImage.style.width = "300px";
+          restaurantImage.style.height = "250px";
           restaurantImage.style.objectFit = "cover";
           restaurant.appendChild(restaurantImage);
 
