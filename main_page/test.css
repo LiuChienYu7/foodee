@@ -177,10 +177,33 @@ h5{
     margin: 3px;
 }
 
-.drag-vibe-tag{
+/* 父容器 */
+.drag-vibe-tag, .drag-food-tag {
     display: flex;
     flex-wrap: wrap;
-    gap: 5px; /* 控制標籤間距 */
+    gap: 5px; 
+    margin-bottom: 10px;
+    margin-left: 0px;
+    cursor: default;
+    max-height: 25px; /* 控制單行高度，假設每個標籤高度為40px */
+    overflow: hidden;  /* 超過高度的部分不顯示 */
+  }
+  
+  .drag-restaurant-tag {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 5px;
+    background-color: #ddd;
+    border-radius: 5px;
+    font-size: 0.8em;
+    white-space: nowrap; /* 防止文本換行 */
+  }
+  
+/* .drag-vibe-tag{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px; 
     margin-bottom: 10px;
     margin-left: 0px;
     cursor: default;
@@ -188,7 +211,7 @@ h5{
 .drag-food-tag{
     display: flex;
     flex-wrap: wrap;
-    gap: 5px; /* 控制標籤間距 */
+    gap: 5px; 
     margin-bottom: 10px;
     margin-left: 0px;
     cursor: default;
@@ -201,18 +224,11 @@ h5{
     background-color: #ddd;
     border-radius: 5px;
     font-size: 0.8em;
-    white-space: nowrap; /* 防止文字換行 */
-    overflow: hidden; /* 隱藏超出部分 */
-    text-overflow: ellipsis; /* 當文字超出時顯示省略號 */
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
     cursor: default;
-}
-
-.price-diningTime{
-    display: flex;
-}
-.drag-price{
-    margin-left: 10px;
-}
+} */
 
 /* 比較button */
 #compare-btn {
@@ -280,6 +296,7 @@ h5{
     background-color: #000;
     opacity: 0.5;
 }
+/* end of 圖片 */
 
 /* 營業時間容器，對齊圖片中的營業時間 */
 .drag-opening-hours {
@@ -308,6 +325,21 @@ h5{
     background-color: #F4DEB3; /* 營業時的顏色 */
 }
 
+.price-diningTime{
+    /* position: relative; */
+    display: flex;
+}
+.drag-price{
+    margin-left: 10px;
+}
 
-
-/* end of 圖片 */
+/* 評分 */
+.rating-bar-container {
+    display: flex;
+    /* top: 5px; */
+  }
+  .bar {
+    fill-opacity: 0.7;
+  }
+  
+  /* end of 評分 */

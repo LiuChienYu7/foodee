@@ -263,6 +263,16 @@ function dragElement(circles, x, y) {
 
           restaurant.appendChild(priceAndDiningTime);
 
+          // 評分
+          // Create a div to contain the rating bars
+          const ratingBarContainer = document.createElement("div");
+          ratingBarContainer.className = "rating-bar-container";
+          restaurant.appendChild(ratingBarContainer);
+
+          // Call the drawRatingBars function to append the bar chart to the restaurant
+          drawRatingBars(ratingBarContainer, d); // 這裡的 d 包含評分資料，例如 d.r_rating_food
+          restaurant.appendChild(ratingBarContainer);
+
           restaurantInfo.appendChild(restaurant);
           d3.select(this).style("visibility", "hidden");
 
