@@ -233,6 +233,7 @@ h5{
 /* 比較button */
 #compare-btn {
     position: absolute;
+    bottom: 10px;
     right: 40px; /* 定位到畫面最右邊 */
     opacity: 0.5; /* 預設為不可點狀態 */
     cursor: not-allowed; /* 指針顯示為不可用 */
@@ -327,10 +328,15 @@ h5{
 
 .price-diningTime{
     /* position: relative; */
+    align-items: center; /*垂直方向居中*/
     display: flex;
 }
 .drag-price{
     margin-left: 10px;
+    text-align: center;
+}
+.drag-dingingTime{
+    align-items: center; /* 垂直居中 */
 }
 
 /* 評分 */

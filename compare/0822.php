@@ -2,7 +2,7 @@
 $host = 'localhost';
 $dbuser = 'root';
 $dbpassword = '';
-$dbname = 'foodee';
+$dbname = 'foodee2';
 $link = mysqli_connect($host, $dbuser, $dbpassword, $dbname);
 
 // 初始化變數
@@ -23,7 +23,7 @@ if ($link) {
     foreach ($r_ids as $r_id) {
         $query = "SELECT r_name, r_vibe, r_food_dishes, r_price_low, r_price_high, r_photo_env1, r_photo_env2, r_photo_env3, r_photo_food1, r_photo_food2, r_photo_food3, r_photo_food4, r_photo_food5, r_photo_door, r_photo_menu1, r_photo_menu2, r_photo_menu3,
                          special_comment_sum, notice_comment_sum
-                  FROM additional_ 
+                  FROM additional 
                   WHERE r_id = $r_id";
         $result = mysqli_query($link, $query);
 
@@ -241,7 +241,7 @@ if ($link) {
         }
 
         // 连接数据库并查询数据
-        $conn = new mysqli('localhost', 'root', '', 'foodee');
+        $conn = new mysqli('localhost', 'root', '', 'foodee2');
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
         }
@@ -314,7 +314,7 @@ if ($link) {
         }
 
         // 连接数据库并查询数据
-        $conn = new mysqli('localhost', 'root', '', 'foodee');
+        $conn = new mysqli('localhost', 'root', '', 'foodee2');
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
         }
@@ -322,7 +322,7 @@ if ($link) {
         // 構建SQL查詢
         if (!empty($r_ids)) {
             $ids = implode("','", $r_ids); // 將數組中的ID轉換為SQL字符串格式
-            $sql = "SELECT * FROM detail2 WHERE r_id IN ('$ids')";
+            $sql = "SELECT * FROM detail WHERE r_id IN ('$ids')";
 
             $result = $conn->query($sql);
 

@@ -8,7 +8,7 @@ header('Content-Type: application/json');
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "foodee";
+$dbname = "foodee2";
 
 // 建立連接
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -21,18 +21,12 @@ if ($conn->connect_error) {
 // 使用 JOIN 查詢多個表格
 $sql = "
 SELECT 
-    additional_.*, 
-    detail.*, 
-    photos.*, 
-    review.*
+    additional.*, 
+    detail.*
 FROM 
-    additional_
+    additional
 JOIN 
-    detail ON additional_.r_id = detail.r_id
-JOIN 
-    photos ON additional_.r_id = photos.r_id
-JOIN 
-    review ON additional_.r_id = review.r_id;
+    detail ON additional.r_id = detail.r_id;
 ";
 
 $result = $conn->query($sql);
