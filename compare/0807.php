@@ -127,15 +127,12 @@ if ($link) {
                 echo "<div class='restaurant-name' style='background-color: {$backgroundColor}; display: flex; align-items: start;'>";
                 echo "<input type='checkbox' class='restaurant-checkbox' data-id='{$r_id}' style='margin-right: 10px; cursor: pointer;' onchange='handleCheckboxChange(this)'>";
                 echo "<div style = 'cursor: default;'>" . htmlspecialchars($restaurant_data['r_name']) . "</div>";
-<<<<<<< HEAD
                 // 獲取投票次數
                 $vote_count = isset($restaurant_data['vote']) ? $restaurant_data['vote'] : 0;
 
                 // 顯示餐廳的投票次數
                 echo "<div style = 'cursor: default;'> - 投票次數: " . htmlspecialchars($vote_count) . "</div>";
 
-=======
->>>>>>> b1e1c00ec3ef1aa72a27d28e8736175e79722a60
                 echo "</div>";
                 
                 // 顯示投票數，移動到餐廳名稱的下方
@@ -1033,7 +1030,7 @@ if ($link) {
             // 移除 container 內的模糊效果
             document.querySelector(".container").classList.remove("blur-background");
         });
-        
+
         document.getElementById("finalShareButton").addEventListener("click", function() {
             const shareLink = generateShareLink(selectedItems, selectedRestaurants);
             console.log('Selected Restaurants:', selectedItems);
