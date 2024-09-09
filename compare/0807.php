@@ -32,7 +32,7 @@ if ($link) {
             FROM additional_ a
             LEFT JOIN vote v ON a.r_id = v.r_id
             WHERE a.r_id = $r_id";
-        
+
         $result = mysqli_query($link, $query);
 
         if ($result) {
@@ -124,9 +124,9 @@ if ($link) {
                 echo "<div class='restaurant-name' style='background-color: {$backgroundColor}; display: flex; align-items: start;'>";
                 echo "<input type='checkbox' class='restaurant-checkbox' data-id='{$r_id}' style='margin-right: 10px; cursor: pointer;' onchange='handleCheckboxChange(this)'>";
                 echo "<div style = 'cursor: default;'>" . htmlspecialchars($restaurant_data['r_name']) . "</div>";
-                 // 獲取投票次數
+                // 獲取投票次數
                 $vote_count = isset($restaurant_data['vote']) ? $restaurant_data['vote'] : 0;
-                
+
                 // 顯示餐廳的投票次數
                 echo "<div style = 'cursor: default;'> - 投票次數: " . htmlspecialchars($vote_count) . "</div>";
 
@@ -744,26 +744,27 @@ if ($link) {
                     const visPicDiv = document.createElement('div');
                     visPicDiv.className = 'vis-pic';
 
-                    const visualButtons = [
-                        {
-                            id: 'comment',
-                            src: 'comment.png', 
-                            label: 'Comment',
-                            width: '100px',
-                            height: '100px'
-                        },{
+                    // 使用 SVG 或 PNG 图像创建按钮
+                    const visualButtons = [{
                             id: 'spider',
-                            src: 'spider.png', 
+                            src: 'spider.png', // 替换为SVG或PNG的实际路径
                             label: 'Spider',
-                            width: '100px',
-                            height: '100px'
+                            width: '100px', // 设置Spider图像的宽度
+                            height: '100px' // 设置Spider图像的高度
                         },
                         {
-                            id: 'openTime',
-                            src: 'openTime.png', 
+                            id: 'comment',
+                            src: 'comment.png', // 替换为SVG或PNG的实际路径
+                            label: 'Comment',
+                            width: '140px', // 设置Comment图像的宽度
+                            height: '100px' // 设置Comment图像的高度
+                        },
+                        {
+                            id: 'opentime',
+                            src: 'openTime.png', // 替换为SVG或PNG的实际路径
                             label: 'Open Time',
-                            width: '100px',
-                            height: '100px'
+                            width: '100px', // 设置Open Time图像的宽度
+                            height: '100px' // 设置Open Time图像的高度
                         }
                     ];
 
@@ -772,26 +773,43 @@ if ($link) {
                         button.className = 'vis-button';
                         button.id = buttonInfo.id;
 
+                        // 创建图像元素
                         const img = document.createElement('img');
                         img.src = buttonInfo.src;
                         img.alt = buttonInfo.label;
 
-                        img.style.width = buttonInfo.width;
-                        img.style.height = buttonInfo.height;
+                        // 根据配置设置图像大小
+                        img.style.width = buttonInfo.width; // 设置图像宽度
+                        img.style.height = buttonInfo.height; // 设置图像高度
 
                         button.appendChild(img);
 
+                        // Hover 事件同步
+                        button.addEventListener('mouseenter', function() {
+                            // 找到所有相同圖片的按鈕並同步 hover 效果
+                            document.querySelectorAll(`.vis-button img[src='${buttonInfo.src}']`).forEach(otherImg => {
+                                otherImg.style.transform = 'scale(1.1)'; // 放大圖片
+                                otherImg.parentElement.style.backgroundColor = '#F4DEB3'; // 改變背景顏色
+                            });
+                        });
+
+                        button.addEventListener('mouseleave', function() {
+                            // 恢復所有相同圖片的 hover 效果
+                            document.querySelectorAll(`.vis-button img[src='${buttonInfo.src}']`).forEach(otherImg => {
+                                otherImg.style.transform = 'scale(1)'; // 恢復圖片大小
+                                otherImg.parentElement.style.backgroundColor = '#eee'; // 恢復背景顏色
+                            });
+                        });
+
+                        // Click 事件同步
                         button.addEventListener('click', function() {
-                            if (!selectedItems[buttonInfo.id]) {
-                                selectedItems[buttonInfo.id] = {};
-                            }
+                            // 切換選中狀態
+                            selectedItems[buttonInfo.id] = !selectedItems[buttonInfo.id];
 
-                            if (typeof selectedItems[buttonInfo.id][id] === 'undefined') {
-                                selectedItems[buttonInfo.id][id] = false;
-                            }
-
-                            selectedItems[buttonInfo.id][id] = !selectedItems[buttonInfo.id][id];
-                            button.style.backgroundColor = selectedItems[buttonInfo.id][id] ? '#F4DEB3' : '';
+                            // 找到所有相同圖片的按鈕並同步點擊效果
+                            document.querySelectorAll(`.vis-button img[src='${buttonInfo.src}']`).forEach(otherImg => {
+                                otherImg.parentElement.style.backgroundColor = selectedItems[buttonInfo.id] ? '#F4DEB3' : '#eee'; // 根據點擊改變背景顏色
+                            });
                         });
 
                         visPicDiv.appendChild(button);
@@ -805,17 +823,17 @@ if ($link) {
                             const button = document.createElement('button');
                             button.className = 'restaurant-tag-share';
                             button.textContent = vibe.trim();
-                            
+
                             button.addEventListener('click', function() {
                                 if (!selectedItems.vibe[id]) {
-                                    selectedItems.vibe[id] = []; 
+                                    selectedItems.vibe[id] = [];
                                 }
-                                
+
                                 const index = selectedItems.vibe[id].indexOf(vibe);
                                 if (index > -1) {
-                                    selectedItems.vibe[id].splice(index, 1); 
+                                    selectedItems.vibe[id].splice(index, 1);
                                 } else {
-                                    selectedItems.vibe[id].push(vibe); 
+                                    selectedItems.vibe[id].push(vibe);
                                 }
 
                                 button.style.backgroundColor = selectedItems.vibe[id].includes(vibe) ? '#F4DEB3' : '';
@@ -838,17 +856,17 @@ if ($link) {
                             const button = document.createElement('button');
                             button.className = 'restaurant-tag-share';
                             button.textContent = dish.trim();
-                            
+
                             button.addEventListener('click', function() {
                                 if (!selectedItems.food[id]) {
-                                    selectedItems.food[id] = []; 
+                                    selectedItems.food[id] = [];
                                 }
-                                
+
                                 const index = selectedItems.food[id].indexOf(dish);
                                 if (index > -1) {
-                                    selectedItems.food[id].splice(index, 1); 
+                                    selectedItems.food[id].splice(index, 1);
                                 } else {
-                                    selectedItems.food[id].push(dish); 
+                                    selectedItems.food[id].push(dish);
                                 }
 
                                 button.style.backgroundColor = selectedItems.food[id].includes(dish) ? '#F4DEB3' : '';
@@ -864,27 +882,46 @@ if ($link) {
 
                     let selectedCategory = '環境';
 
-                    const imageToggleButtons = ['環境', '食物', '菜單', '地圖'].map(category => {
-                        const button = document.createElement('button');
-                        button.className = 'image-toggle-button';
-                        button.textContent = category;
+                    // 定义 SVG 图标
+                    const addSvg = `
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="256" height="256" viewBox="0 0 256 256" xml:space="preserve">
+                        <defs>
+                        </defs>
+                        <g style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;" transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)">
+                            <path d="M 45 90 C 20.187 90 0 69.813 0 45 C 0 20.187 20.187 0 45 0 c 24.813 0 45 20.187 45 45 C 90 69.813 69.813 90 45 90 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: #C5705D; fill-rule: nonzero; opacity: 1;" transform="matrix(1 0 0 1 0 0)" stroke-linecap="round" />
+                            <path d="M 45 70.454 c -2.761 0 -5 -2.238 -5 -5 V 24.545 c 0 -2.761 2.239 -5 5 -5 c 2.762 0 5 2.239 5 5 v 40.909 C 50 68.216 47.762 70.454 45 70.454 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: #fff; fill-rule: nonzero; opacity: 1;" transform="matrix(1 0 0 1 0 0)" stroke-linecap="round" />
+                            <path d="M 65.454 50 H 24.545 c -2.761 0 -5 -2.238 -5 -5 c 0 -2.761 2.239 -5 5 -5 h 40.909 c 2.762 0 5 2.239 5 5 C 70.454 47.762 68.216 50 65.454 50 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: #fff; fill-rule: nonzero; opacity: 1;" transform="matrix(1 0 0 1 0 0)" stroke-linecap="round" />
+                        </g>
+                    </svg>`;
 
-                        if (category === selectedCategory) {
-                            button.classList.add('selected');
-                            updateImage(selectedCategory, restaurantData, index);
+
+                    const deletSvg = `
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="256" height="256" viewBox="0 0 256 256" xml:space="preserve">
+                        <defs>
+                        </defs>
+                        <g style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;" transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)" >
+                            <circle cx="45" cy="45" r="45" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: #3C3D37; fill-rule: nonzero; opacity: 1;" transform="  matrix(1 0 0 1 0 0) "/>
+                            <path d="M 65.592 29.574 h -5.395 h -3.776 v -3.481 c 0 -3.635 -2.957 -6.593 -6.593 -6.593 h -9.656 c -3.635 0 -6.593 2.958 -6.593 6.593 v 3.481 h -3.777 h -5.394 c -1.104 0 -2 0.896 -2 2 s 0.896 2 2 2 h 3.394 V 60.41 c 0 5.563 4.526 10.09 10.09 10.09 h 14.215 c 5.563 0 10.09 -4.526 10.09 -10.09 V 33.574 h 3.395 c 1.104 0 2 -0.896 2 -2 S 66.696 29.574 65.592 29.574 z M 37.579 26.093 c 0 -1.43 1.163 -2.593 2.593 -2.593 h 9.656 c 1.43 0 2.593 1.163 2.593 2.593 v 3.481 H 37.579 V 26.093 z M 58.197 60.41 c 0 3.358 -2.731 6.09 -6.09 6.09 H 37.892 c -3.358 0 -6.09 -2.731 -6.09 -6.09 V 33.574 h 3.777 h 18.842 h 3.776 V 60.41 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
+                            <path d="M 40.3 39.566 c -1.104 0 -2 0.896 -2 2 V 56.78 c 0 1.104 0.896 2 2 2 s 2 -0.896 2 -2 V 41.566 C 42.3 40.462 41.404 39.566 40.3 39.566 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
+                            <path d="M 49.7 39.566 c -1.104 0 -2 0.896 -2 2 V 56.78 c 0 1.104 0.896 2 2 2 s 2 -0.896 2 -2 V 41.566 C 51.7 40.462 50.805 39.566 49.7 39.566 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
+                        </g>
+                    </svg> `;
+
+                    // 记录各个按钮和 SVG 状态的对象
+                    const buttonSvgState = {
+                        環境: {
+                            isSvgToggled: false
+                        },
+                        食物: {
+                            isSvgToggled: false
+                        },
+                        菜單: {
+                            isSvgToggled: false
+                        },
+                        地圖: {
+                            isSvgToggled: false
                         }
-
-                        button.addEventListener('click', function() {
-                            document.querySelectorAll('.image-toggle-button').forEach(btn => btn.classList.remove('selected'));
-                            button.classList.add('selected');
-                            updateImage(category, restaurantData, index);
-                        });
-                        return button;
-                    });
-                    middleColumn.appendChild(vibeTitle);
-                    middleColumn.appendChild(foodTitle);
-                    imageToggleButtons.forEach(button => imageButtonGroup.appendChild(button));
-                    middleColumn.appendChild(imageButtonGroup);
+                    };
 
                     const imageDisplayContainer = document.createElement('div');
                     imageDisplayContainer.className = 'image-display-container';
@@ -894,22 +931,74 @@ if ($link) {
                     imageContainer.innerHTML = `<span class="nav-arrow prev" onclick="changeImage(this, -1, ${index})">‹</span>
                                                 <img src="default.jpg" class="displayed-img displayed-img-${index}" style="object-fit: cover;">
                                                 <span class="nav-arrow next" onclick="changeImage(this, 1, ${index})">›</span>`;
-                    middleColumn.appendChild(imageDisplayContainer);
+                    const cornerSvgContainer = document.createElement('div');
+                    cornerSvgContainer.className = 'corner-svg';
+                    cornerSvgContainer.innerHTML = addSvg;
+
+                    const imageToggleButtons = ['環境', '食物', '菜單', '地圖'].map(category => {
+                        const button = document.createElement('button');
+                        button.className = 'image-toggle-button';
+                        button.textContent = category;
+
+                        if (category === selectedCategory) {
+                            button.classList.add('selected');
+                            updateImage(selectedCategory, restaurantData, index); // 默认加载环境图片
+                            cornerSvgContainer.innerHTML = buttonSvgState[category].isSvgToggled ? deletSvg : addSvg;
+                        }
+
+                        button.addEventListener('click', function() {
+                            // 切换选中的按钮
+                            document.querySelectorAll('.image-toggle-button').forEach(btn => btn.classList.remove('selected'));
+                            button.classList.add('selected');
+
+                            // 更新图片
+                            updateImage(category, restaurantData, index);
+
+                            // 更新角标 SVG 和按钮背景颜色
+                            cornerSvgContainer.innerHTML = buttonSvgState[category].isSvgToggled ? deletSvg : addSvg;
+                            button.style.backgroundColor = buttonSvgState[category].isSvgToggled ? '#F4DEB3' : '';
+                        });
+
+                        return button;
+                    });
+                    rightColumn.appendChild(imageButtonGroup);
+                    imageToggleButtons.forEach(button => imageButtonGroup.appendChild(button));
+                    imageContainer.appendChild(cornerSvgContainer);
                     imageDisplayContainer.appendChild(imageContainer);
+                    rightColumn.appendChild(imageDisplayContainer);
 
-                    buttonGroup.appendChild(priceButton);
-                    buttonGroup.appendChild(diningTimeButton);
-                    buttonGroup.appendChild(parkingButton);
+                    // 处理角标 SVG 点击事件
+                    cornerSvgContainer.addEventListener('click', function() {
+                        const selectedButton = document.querySelector('.image-toggle-button.selected');
+                        if (selectedButton) {
+                            const category = selectedButton.textContent;
+                            buttonSvgState[category].isSvgToggled = !buttonSvgState[category].isSvgToggled;
+                            cornerSvgContainer.innerHTML = buttonSvgState[category].isSvgToggled ? deletSvg : addSvg;
+                            selectedButton.style.backgroundColor = buttonSvgState[category].isSvgToggled ? '#F4DEB3' : '';
+                        }
+                    });
 
+
+                    buttonGroup.appendChild(priceButton); // 添加价钱按钮
+                    buttonGroup.appendChild(diningTimeButton); // 添加用餐时间按钮
+                    buttonGroup.appendChild(parkingButton); // 添加停车场按钮
                     leftColumn.appendChild(buttonGroup);
-                    rightColumn.appendChild(visPicDiv);
 
+                    middleColumn.appendChild(vibeTitle);
+                    middleColumn.appendChild(foodTitle);
+                    middleColumn.appendChild(visPicDiv);
+
+                    // 将元素加入到餐厅条目中     
                     restaurantTitle.appendChild(titleDiv);
                     restaurantTitle.appendChild(restaurantItem);
                     restaurantItem.appendChild(leftColumn);
                     restaurantItem.appendChild(middleColumn);
                     restaurantItem.appendChild(rightColumn);
 
+                    console.log('Environment Images:', restaurantData.r_photo_env1, restaurantData.r_photo_env2, restaurantData.r_photo_env3);
+                    console.log('Food Images:', restaurantData.r_photo_food1, restaurantData.r_photo_food2, restaurantData.r_photo_food3);
+
+                    // 添加到分享内容容器中
                     shareContent.appendChild(restaurantTitle);
                 }
             });
@@ -919,6 +1008,14 @@ if ($link) {
             document.getElementById("sharePanel").style.zIndex = "1001";
         });
 
+        document.getElementById("closePanelButton").addEventListener("click", function() {
+            // 隐藏分享面板
+            document.getElementById("sharePanel").style.display = "none";
+
+            // 移除 container 內的模糊效果
+            document.querySelector(".container").classList.remove("blur-background");
+        });
+        
         document.getElementById("finalShareButton").addEventListener("click", function() {
             const shareLink = generateShareLink(selectedItems, selectedRestaurants);
             console.log('Selected Restaurants:', selectedItems);

@@ -574,6 +574,7 @@ button {
 
 /* share panel 右邊內容 */
 /* 新增图片按钮和展示区的样式 */
+/* 新增图片按钮和展示区的样式 */
 .image-button-group {
     display: flex;
     justify-content: space-around;
