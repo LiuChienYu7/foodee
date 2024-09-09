@@ -347,7 +347,7 @@ h3 {
 
 /*share panel */
 #sharePanel {
-    display: none;
+    display:none;
     position: fixed;
     top: 50%;
     left: 50%;
@@ -356,11 +356,13 @@ h3 {
     background-color: white;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
     z-index: 1001; /* 确保面板在模糊效果上方 */
-    padding: 20px;
+    padding: 20px 20px 0 20px;
     border-radius: 10px;
     overflow-y: hidden; /* 默认隐藏滚动条 */
     overflow-x: hidden;
     transition: height 0.3s ease-in-out; /* 平滑过渡效果 */
+    display: flex;
+    flex-direction: row;
 }
 .blur-background {
     filter: blur(5px);
@@ -500,11 +502,14 @@ button {
 /* share panel 中間內容 */
 .vis-pic {
     display: flex;
+    flex-direction: row;
     justify-content: space-around;
-    margin-top: 10px;
 }
 
+
 .vis-button {
+    margin-top: 10px;
+    width: min-content;
     background-color: #eee;
     border: none;
     cursor: pointer;
@@ -513,6 +518,7 @@ button {
 }
 
 .vis-button img {
+    width: 100px;
     object-fit: contain; /* 保持图片比例 */
     border-radius: 15px;
     transition: transform 0.2s ease; /* 加入点击动画 */

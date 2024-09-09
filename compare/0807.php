@@ -120,25 +120,36 @@ if ($link) {
                 $backgroundColor = hexToRgba($colors[$colorIndex], 0.5); // Convert HEX to RGBA with 0.5 opacity
                 // 记录颜色索引
                 $restaurantColorIndices[$r_id] = $colorIndex;
+                
                 echo "<div class='gallery-section'>";
+                
+                // 餐廳名稱部分
                 echo "<div class='restaurant-name' style='background-color: {$backgroundColor}; display: flex; align-items: start;'>";
                 echo "<input type='checkbox' class='restaurant-checkbox' data-id='{$r_id}' style='margin-right: 10px; cursor: pointer;' onchange='handleCheckboxChange(this)'>";
                 echo "<div style = 'cursor: default;'>" . htmlspecialchars($restaurant_data['r_name']) . "</div>";
+<<<<<<< HEAD
                 // 獲取投票次數
                 $vote_count = isset($restaurant_data['vote']) ? $restaurant_data['vote'] : 0;
 
                 // 顯示餐廳的投票次數
                 echo "<div style = 'cursor: default;'> - 投票次數: " . htmlspecialchars($vote_count) . "</div>";
 
+=======
+>>>>>>> b1e1c00ec3ef1aa72a27d28e8736175e79722a60
                 echo "</div>";
-
+                
+                // 顯示投票數，移動到餐廳名稱的下方
+                $vote_count = isset($restaurant_data['vote']) ? $restaurant_data['vote'] : 0;
+                echo "<div class='vote-count' style='cursor: default; margin-top: 5px;'>投票數: " . htmlspecialchars($vote_count) . "</div>";
+                
                 // 更新計數器
                 $counter++;
-                // Display environment images
+                
+                // 環境圖片部分
                 if ($isFirst) {
                     echo "<h3 style='cursor: default;'>環境</h3>";
                 } else {
-                    echo "<h3 style='color: white; cursor: default;'> 我 </h3>";
+                    echo "<h3 style='color: white; cursor: default;'>我</h3>";
                 }
                 echo "<div class='vibe-tags'>";
                 if (!empty($restaurant_data['r_vibe'])) {
@@ -148,6 +159,8 @@ if ($link) {
                     }
                 }
                 echo "</div>";
+                
+                // 環境圖片
                 echo "<div class='image-container'>";
                 foreach (['r_photo_env1', 'r_photo_env2', 'r_photo_env3', 'r_photo_door'] as $index => $field) {
                     if (!empty($restaurant_data[$field])) {
@@ -159,11 +172,11 @@ if ($link) {
                 echo "<span class='nav-arrow next' onclick='changeImage(this, 1)'>›</span>";
                 echo "</div>";
 
-                // Display food images
+                // 食物圖片部分
                 if ($isFirst) {
                     echo "<h3 style='cursor: default;'>食物</h3>";
                 } else {
-                    echo "<h3 style='color: white; cursor: default;'> 我 </h3>";
+                    echo "<h3 style='color: white; cursor: default;'>我</h3>";
                 }
                 echo "<div class='food-tags'>";
                 if (!empty($restaurant_data['r_food_dishes'])) {
@@ -173,6 +186,8 @@ if ($link) {
                     }
                 }
                 echo "</div>";
+
+                // 食物圖片
                 echo "<div class='image-container'>";
                 foreach (['r_photo_food1', 'r_photo_food2', 'r_photo_food3', 'r_photo_food4', 'r_photo_food5'] as $index => $field) {
                     if (!empty($restaurant_data[$field])) {
@@ -184,17 +199,19 @@ if ($link) {
                 echo "<span class='nav-arrow next' onclick='changeImage(this, 1)'>›</span>";
                 echo "</div>";
 
-                // Display price range
+                // 菜單圖片部分
                 if ($isFirst) {
                     echo "<h3 style='cursor: default;'>菜單</h3>";
                 } else {
-                    echo "<h3 style='color: white; cursor: default;'> 我 </h3>";
+                    echo "<h3 style='color: white; cursor: default;'>我</h3>";
                 }
                 echo "<div class='vibe-tags'>";
                 if (!empty($restaurant_data['r_price_low']) && !empty($restaurant_data['r_price_high'])) {
                     echo "<div class='price-tag' style='cursor: default;'>價錢: $" . htmlspecialchars($restaurant_data['r_price_low']) . " ~ $" . htmlspecialchars($restaurant_data['r_price_high']) . "</div>";
                 }
                 echo "</div>";
+
+                // 菜單圖片
                 echo "<div class='image-container'>";
                 foreach (['r_photo_menu1', 'r_photo_menu2', 'r_photo_menu3'] as $index => $field) {
                     if (!empty($restaurant_data[$field])) {
@@ -206,7 +223,7 @@ if ($link) {
                 echo "<span class='nav-arrow next' onclick='changeImage(this, 1)'>›</span>";
                 echo "</div>";
 
-                // Display collapsible comments
+                // 可折叠的評論部分
                 echo "<div class='collapsible-comments'>";
                 echo "<button type='button' class='comments-button' onclick='toggleComments(this)'>特色 & 注意事項 <img src='up.png' style='width:12px; height:12px; vertical-align:middle;' /></button> ";
                 echo "<div class='content'>";
@@ -229,6 +246,7 @@ if ($link) {
 
                 echo "</div>";
             }
+
 
             if ($all_restaurant_data) {
                 $isFirst = true; // 初始化标志位

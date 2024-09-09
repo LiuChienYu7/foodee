@@ -376,7 +376,7 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
                 // import '../word_tree/word_tree_modify.js';
                 import '../comment/cell_comment.js'
                 import '../spider/cell_spider.js';
-                import '../openTime/openTime.js'
+                import '../openTime/cell_openTime.js'
                 import '../map/compare_map.js'
             </script>
 
@@ -594,6 +594,20 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
 
             highlightTagsBasedOnReceivedData();
         }
+    // 定义一个函数来更新 chat-section 的 margin-bottom
+    function updateMarginBottom() {
+        // 获取 .vote 元素的高度
+        var voteHeight = document.querySelector('.vote').offsetHeight;
+
+        // 设置 chat-section 的 margin-bottom 为 voteHeight + 80px
+        document.querySelector('#chat-section').style.marginBottom = (voteHeight + 20) + 'px';
+    }
+
+    // 页面加载后立即更新一次
+    updateMarginBottom();
+
+    // 如果 .vote 的高度可能会改变，可以监听窗口大小变化事件
+    window.addEventListener('resize', updateMarginBottom);
     </script>
 
 </body>
