@@ -389,10 +389,9 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
             </div>
         </div>
         <div class="vote">
-            <p>投票 </p>
             <?php
             if (!empty($restaurant_names)) {
-                echo "<div class='button-container'>";
+                echo "<div class='vote-button'>";
                 $colors = [
                     "rgba(255, 112, 174, 0.2)",  // #FF70AE with 20% opacity
                     "rgba(133, 180, 255, 0.2)",  // #85B4FF with 20% opacity
@@ -410,12 +409,12 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
 
                 echo "</div>";
             } else {
-                echo "没有餐廳资料可显示。";
+                echo "没有餐廳资料可顯示。";
             }
             ?>
             <form id="voteForm">
                 <input type="hidden" id="votedRestaurants" name="votedRestaurants" value="">
-                <button type="button" onclick="submitVote()">送出</button>
+                <button type="button" style="width: auto;" onclick="submitVote()">投票</button>
             </form>
             <div id="voteMessage"></div> <!-- 显示确认信息 -->
         </div>
@@ -492,7 +491,7 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
 
         xhr.send(formData);
     } else {
-        document.getElementById('voteMessage').innerText = '请选择至少一个餐厅进行投票。';
+        document.getElementById('voteMessage').innerText = '至少選一個:/';
     }
 }
 

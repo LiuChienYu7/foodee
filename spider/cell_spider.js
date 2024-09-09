@@ -1,15 +1,15 @@
 const NUM_OF_SIDES = 4;
 const NUM_OF_LEVEL = 5;
 const margin = 0; // 增加邊距
-const spider_width = 270; // 設置固定寬度
+const spider_width = window.innerWidth; // 設置寬度為頁面寬度
 const spider_height = 250; // 設置固定高度
 const size = Math.min(spider_width, spider_height) - margin * 2; // 使用固定的寬度和高度
 const offset = Math.PI;
 const polyangle = (Math.PI * 2) / NUM_OF_SIDES;
 const r = 0.8 * size;
 const r_0 = r / 2.5;
-const shiftX = 80; // 用于调整图表水平位置的偏移量
-const shiftY = 50;
+const shiftX = spider_width / 2 - 15; // 中心點位置
+const shiftY = spider_height / 2 + 20; // 固定高度的中心點位置
 const center = {
   x: 0,
   y: 0,
@@ -63,9 +63,7 @@ const svg_spider = d3
 
 const g = svg_spider
   .append("g")
-  .attr(
-    "transform",
-    `translate(${spider_width / 2}, ${spider_height / 2})`);
+  .attr("transform", `translate(${shiftX}, ${shiftY})`); // 使用頁面寬度置中
 
 // 繪製雷達圖表格的函數
 const generateAndDrawLevels = (levelsCount, sideCount) => {
