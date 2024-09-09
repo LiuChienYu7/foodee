@@ -63,12 +63,8 @@ function initializeReviews(reviewData) {
   console.log(data);
 
   d3.select(".comment_comment")
-    .on("mouseover", function () {
-      d3.select(this).style("cursor", "pointer").style("color", "#DC8686"); // 使用 style 来设置颜色
-    })
-    .on("mouseout", function () {
-      d3.select(this).style("color", "black"); // 恢复原始颜色，可以设置为空或原来的颜色值
-    });
+    .on("mouseover", null)
+    .on("mouseout", null);
 
   const svg = d3
     .select(".upper-section")
@@ -84,41 +80,14 @@ function initializeReviews(reviewData) {
     .append("g")
     .attr("class", "block-group")
     .attr("transform", (d, i) => `translate(0, ${i * 45})`)
-    .on("mouseover", function (event, d) {
-      if (!Fixed) {
-        // 清除之前的線條和區塊
-        svg
-          .selectAll(".link, .review-block, .detail-link, .detail-block")
-          .remove();
-        //標籤變化 - 背景
-        d3.select(this).select("rect").attr("fill", "#E0D4C2"); // 當滑鼠懸停時變深
-        // - 文字
-        d3.select(this)
-          .select("text")
-          .attr("fill", "#7B6F5A") // 文字變深
-          .attr("font-weight", "bold");
-
-        // 只有在未固定時才顯示評論細節
-        showReviews(svg, d, this);
-      }
-    })
-    .on("mouseout", function () {
-      if (!Fixed) {
-        svg.selectAll(`.detail-group`).remove();
-        d3.select(this).select("rect").attr("fill", "#F8EDE3"); // 恢復原背景顏色
-        d3.select(this)
-          .select("text")
-          .attr("fill", "black") // 恢復原文字顏色
-          .attr("font-weight", "normal");
-        // 只有在未固定時才隱藏評論細節
-        svg.selectAll(".link, .review-group").remove();
-      }
+    .on("mouseover", function () {
+      // 设置鼠标指针为点击手型
+      d3.select(this).style("cursor", "pointer");
     })
     .on("click", function (event, d) {
       // 點擊時鎖定顯示評論細節
       if (Fixed) {
-        //要收起來時
-        //全部標籤變正常
+        // 全部標籤變正常
         d3.selectAll(".block-group").select("rect").attr("fill", "#F8EDE3"); // 恢復原背景顏色
         d3.selectAll(".block-group")
           .select("text")
@@ -162,6 +131,7 @@ function initializeReviews(reviewData) {
   showReviews(svg, firstCategory, groups.nodes()[0]); // 顯示第一個類別的總評
 }
 
+
 function showReviews(svg, d, blockGroup) {
   console.log("Data passed to showReviews:", d); // 检查传入的数据
   if (!d.reviews || !Array.isArray(d.reviews)) {
@@ -198,7 +168,7 @@ function showReviews(svg, d, blockGroup) {
       .attr("width", 130) // 根据区块宽度设置文本宽度
       .text(review);
 
-    wrapText(tempText, 130);  // 自动换行
+    wrapText(tempText, 130); // 自动换行
 
     const bbox = tempText.node().getBBox();
     const textHeight = bbox.height + 10; // 加上适当的 padding
@@ -322,5 +292,3 @@ function wrapText(text, width) {
     }
   });
 }
-
-

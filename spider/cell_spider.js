@@ -11,8 +11,8 @@ const r_0 = r / 2.5;
 const shiftX = 80; // 用于调整图表水平位置的偏移量
 const shiftY = 50;
 const center = {
-  x: size / 2 + margin - shiftX,
-  y: size / 2 + 5 - shiftY,
+  x: 0,
+  y: 0,
 };
 
 // 計算多邊形頂點座標
@@ -63,7 +63,9 @@ const svg_spider = d3
 
 const g = svg_spider
   .append("g")
-  .attr("transform", `translate(${margin + 80},${margin + 65})`);
+  .attr(
+    "transform",
+    `translate(${spider_width / 2}, ${spider_height / 2})`);
 
 // 繪製雷達圖表格的函數
 const generateAndDrawLevels = (levelsCount, sideCount) => {
