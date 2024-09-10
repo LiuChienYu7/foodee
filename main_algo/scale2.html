@@ -14,15 +14,16 @@
             display: none;
         }
         #chart {
-            padding-top: 10%; /* 将主图表下移，避免与顶部的按钮和控制项重叠 */
+            padding-top: 12%; /* 将主图表下移，避免与顶部的按钮和控制项重叠 */
         }
         .x-axis-container {
             position: fixed;
             bottom: 0;
             width: 100%;
             background: white;
+            z-index: 1000; /* 确保在其他元素之上 */
         }
-        
+
         .top-container {
             position: fixed;
             left: 60%;  /* 将容器移到画面的中央 */
@@ -235,7 +236,7 @@
             newPositions2 = data;
             const width = window.innerWidth;
             const height = 800;
-            const margin = { top: 20, right: 50, bottom: 50, left: 40 };
+            const margin = { top: 20, right: 80, bottom: 40 , left: 80 };
             const innerRadius = 45;
             const rectWidth = 120;
             const rectHeight = 60;
@@ -623,7 +624,8 @@
                     .on("error", function() {
                         console.error("Image load error: " + url); 
                     });
-            }   const colors = d3.scaleOrdinal(d3.schemeCategory10)
+            }   
+            const colors = d3.scaleOrdinal(d3.schemeCategory10)
                 .domain(sortedTimes); // 確保 domain 包含所有可能的 time 值
 
             // 預先繪製rect
@@ -879,7 +881,7 @@
                     .style("stroke-width", "1px");
 
                 // 右側文字
-                const days = ["M", "T", "W", "T", "F", "S", "S"];
+                const days = ["一", "二", "三", "四", "五", "六", "日"];
                 circles.selectAll('text.days')
                     .data(rightDataReady)
                     .enter()
@@ -964,23 +966,6 @@
                     return map;
                 }, {});
 
-
-                // 繪製白色線條分隔線
-                svg.append("g")
-                    .selectAll(".interval-separator")
-                    .data(currentIntervals)
-                    .enter()
-                    .append("line")
-                    .attr("class", "interval-separator")
-                    .attr("x1", (d, i) => i < currentIntervals.length - 1 ? intervalPositions[d] -40 +intervalWidths[d] : null)  // 只为非最后一个区间绘制线条
-                    .attr("y1", margin.top)
-                    .attr("x2", (d, i) => i < currentIntervals.length - 1 ? intervalPositions[d] -40 + intervalWidths[d] : null)  // 只为非最后一个区间绘制线条
-                    .attr("y2", totalHeight - margin.bottom)
-                    .attr("stroke", "white")  
-                    .attr("stroke-width", 2);
-
-
-
                 svg.append("g")
                     .selectAll("text")
                     .data(positions.filter(d => d.label))
@@ -994,87 +979,141 @@
                     .attr("font-weight", "bold")
                     .attr("fill", "black") // 添加顏色以確保文本可見
                     .text(d => `用餐時間: ${d.r_time_low}`);
-                    
-                // 设置 SVG 宽度为 1200px
-                const xAxisSvg = d3.select("#x-axis-svg")
-                    .attr("width", 1200)
-                    .attr("height", 50);  // 高度可以根据需求调整
+                                    
+                // 為每個區間的右邊界繪製分隔線
+                svg.append("g")
+                    .selectAll(".interval-separator")
+                    .data(currentIntervals.filter((d, i) => i < currentIntervals.length - 1))  // 過濾掉最後一個區間
+                    .enter()
+                    .append("line")
+                    .attr("class", "interval-separator")
+                    .attr("x1", d => intervalPositions[d] + intervalWidths[d])  // 計算右邊界
+                    .attr("y1", margin.top)
+                    .attr("x2", d => intervalPositions[d] + intervalWidths[d])  // 計算右邊界
+                    .attr("y2", totalHeight - margin.bottom)
+                    .attr("stroke", "white")
+                    .attr("stroke-width", 2);
 
-                const svgWidth = 1200; // 设置目标宽度
-                const totalWidth = d3.sum(Object.values(intervalWidths)); // 计算所有区间的总宽度
+                                
+            // 设置 SVG 宽度为窗口宽度
+            const xAxisSvg = d3.select("#x-axis-svg")
+                .attr("width", window.innerWidth)
+                .attr("height", 50);  // 高度可以根据需求调整
 
-                // 使用 d3.scaleLinear() 将区间映射到 1200px 的宽度范围
-                const xScale = d3.scaleLinear()
-                    .domain([0, totalWidth])
-                    .range([0, svgWidth]);
+            // 設置 xScale，將 domain 設置為 0 到總區間寬度
+            const xScale = d3.scaleLinear()
+                .domain([0, width])  // 定義 domain 是 0 到總區間寬度
+                .range([0, width]);  // 映射到整個 SVG 寬度範圍
 
-                // 调试输出，检查 xScale 的值是否正确映射
-                const scaledPositions = currentIntervals.map(interval => ({
-                    interval: interval,
-                    originalPosition: intervalPositions[interval],
-                    scaledPosition: xScale(intervalPositions[interval])
-                }));
+            // 初始化 tickValues 数组，第一个 tickValue 为 margin.left
+            let tickValues = [margin.left];
 
-                console.log("xScale values:", scaledPositions);
+            // 累积计算 tickValues，第二个 tickValue 为第一个区间的宽度，依次累加
+            currentIntervals.reduce((accWidth, interval, i) => {
+                const intervalWidth = intervalWidths[interval];
+                const nextTickValue = accWidth + intervalWidth;
+                tickValues.push(nextTickValue);  // 将累积宽度作为下一个 tickValue
+                return nextTickValue;
+            }, margin.left);  // 初始化累积宽度为 margin.left
 
-                // 重新绘制 X 轴
-                xAxisSvg.append("g")
-                    .attr("transform", `translate(0, 0)`)
-                    .call(d3.axisBottom(xScale)
-                        .tickValues(scaledPositions.map(d => d.originalPosition))  // 使用实际的位置值
-                        .tickFormat((d, i) => {
-                            const closestInterval = scaledPositions.find(pos => pos.originalPosition === d);
-                            return closestInterval ? closestInterval.interval : '';  // 返回最近的区间标签或空字符串
-                        })
-                    );
+            // 调试输出检查 tickValues
+            console.log("Calculated tickValues:", tickValues);
 
-// 向左移动的箭头
-d3.select("body").append("div")
-    .attr("class", "arrow arrow-left")
-    .text("◀")
-    .on("click", () => {
-        const firstIndex = intervals.indexOf(currentIntervals[0]);
+            // 使用 tickValues 来绘制 X 轴
+            xAxisSvg.append("g")
+                .attr("transform", `translate(0, 0)`)
+                .call(d3.axisBottom(xScale)
+                    .tickValues(tickValues)  // 使用计算的 tickValues
+                    .tickFormat((d, i) => {
+                        // 返回区间标签或空字符串
+                        const closestInterval = currentIntervals[i];
+                        return closestInterval ? closestInterval : '';  
+                    })
+                );
 
-        if (firstIndex > 0) {
-            // Calculate new interval set to shift left by one
-            const prevStartIndex = Math.max(firstIndex - 1, 0);
-            const prevEndIndex = Math.min(prevStartIndex + 2, intervals.length - 1); // 保证仍然显示三个区间
+            // 向左移动的箭头
+            d3.select("body").append("div")
+                .attr("class", "arrow arrow-left")
+                .text("◀")
+                .on("click", () => {
+                    const firstIndex = intervals.indexOf(currentIntervals[0]);
 
-            // Update currentIntervals to ensure it always contains 3 intervals
-            currentIntervals = intervals.slice(prevStartIndex+1 , prevEndIndex);  // +1 是为了确保包含 endIndex
+                    if (firstIndex > 0) {
+                        // Calculate new interval set to shift left by one
+                        const prevStartIndex = Math.max(firstIndex - 1, 0);
+                        const prevEndIndex = Math.min(prevStartIndex + 2, intervals.length - 1); // 保证仍然显示三个区间
 
-            console.log("Updated intervals after left click:", currentIntervals);
+                        // Update currentIntervals to ensure it always contains 3 intervals
+                        currentIntervals = intervals.slice(prevStartIndex+1 , prevEndIndex);  // +1 是为了确保包含 endIndex
 
-            // Call update function
-            updateIntervals();
-        } else {
-            console.log("已经到达第一个区间，无法继续向左移动。");
-        }
+                        console.log("Updated intervals after left click:", currentIntervals);
+
+                        // Call update function
+                        updateIntervals();
+                    } else {
+                        console.log("已经到达第一个区间，无法继续向左移动。");
+                    }
+                });
+
+            // 向右移动的箭头
+            d3.select("body").append("div")
+                .attr("class", "arrow arrow-right")
+                .text("▶")
+                .on("click", () => {
+                    const lastIndex = intervals.indexOf(currentIntervals[currentIntervals.length - 1]);
+
+                    if (lastIndex < intervals.length - 1) {
+                        // Calculate new interval set to shift right by one 
+                        const nextStartIndex = Math.min(lastIndex, intervals.length - 2); // 移动起点，确保不超出范围
+                        const nextEndIndex = Math.min(nextStartIndex + 2, intervals.length - 1); // 确保显示三个区间
+
+                        // Update currentIntervals to ensure it always contains 3 intervals
+                        currentIntervals = intervals.slice(nextStartIndex, nextEndIndex + 1);
+
+                        console.log("Updated intervals after right click:", currentIntervals);
+                        
+                        // Call update function
+                        updateIntervals();
+                    } else {
+                        console.log("已经到达最后一个区间，无法继续向右移动。");
+                    }
+                });
+
+// 计算每个区间的中间位置
+const buttonPositions = currentIntervals.map(interval => {
+    const position = intervalPositions[interval] + intervalWidths[interval] / 2;  // 区间的中间位置
+    return { interval: interval, position: position };  // 返回区间和位置的对象
+});
+
+// 绘制每个按钮，确保 X 轴是通过 translate 来定位，Y 轴通过 CSS 控制
+const buttons = svg.selectAll(".save-button")
+    .data(buttonPositions)
+    .enter()
+    .append("g")
+    .attr("class", "save-button")
+    .attr("transform", d => `translate(${d.position}, 0)`);  // X 轴的平移使用 translate
+
+// 创建按钮外框
+buttons.append("rect")
+    .attr("width", 50)
+    .attr("height", 20)
+    .attr("fill", "lightblue")
+    .attr("rx", 5)  // 圆角矩形
+    .attr("ry", 5)
+    .on("click", (event, d) => {
+        const restaurantsInInterval = data.filter(restaurant => categorizePrice(restaurant.r_price_low) === d.interval);
+        const restaurantIds = restaurantsInInterval.map(r => r.r_id);
+        const restaurantIdsParam = restaurantIds.join(",");
+        window.location.href = `map_background.php?restaurant_ids=${restaurantIdsParam}`;
     });
 
-   // 向右移动的箭头
-d3.select("body").append("div")
-    .attr("class", "arrow arrow-right")
-    .text("▶")
-    .on("click", () => {
-        const lastIndex = intervals.indexOf(currentIntervals[currentIntervals.length - 1]);
-
-        if (lastIndex < intervals.length - 1) {
-            // Calculate new interval set to shift right by one 
-            const nextStartIndex = Math.min(lastIndex, intervals.length - 2); // 移动起点，确保不超出范围
-            const nextEndIndex = Math.min(nextStartIndex + 2, intervals.length - 1); // 确保显示三个区间
-
-            // Update currentIntervals to ensure it always contains 3 intervals
-            currentIntervals = intervals.slice(nextStartIndex, nextEndIndex + 1);
-
-            console.log("Updated intervals after right click:", currentIntervals);
-             
-            // Call update function
-            updateIntervals();
-        } else {
-            console.log("已经到达最后一个区间，无法继续向右移动。");
-        }
-    });
+// 在按钮中添加文字
+buttons.append("text")
+    .attr("x", 25)
+    .attr("y", 15)
+    .attr("text-anchor", "middle")
+    .attr("fill", "black")
+    .text("Save");
 
 
             }
@@ -1161,6 +1200,7 @@ d3.select("body").append("div")
                                 time: time,
                                 label: false,
                                 r_name: restaurant.r_name,
+                                r_price_low :restaurant.r_price_low,
                                 r_photo_env1: restaurant.r_photo_env1,
                                 r_photo_env2: restaurant.r_photo_env2,  // 添加第二张照片的URL
                                 r_photo_env3: restaurant.r_photo_env3,  // 添加第三张照片的URL
@@ -1272,6 +1312,7 @@ d3.select("body").append("div")
                                 time: time,
                                 label: false,
                                 r_name: restaurant.r_name,
+                                r_price_low :restaurant.r_price_low,
                                 r_photo_env1: restaurant.r_photo_env1,
                                 r_photo_env2: restaurant.r_photo_env2,  // 添加第二张照片的URL
                                 r_photo_env3: restaurant.r_photo_env3,  // 添加第三张照片的URL
