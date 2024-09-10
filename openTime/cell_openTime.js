@@ -1,39 +1,25 @@
-
-
-const parseTime = d3.timeParse("%H%M");
-const formatTime = d3.timeFormat("%H:%M");
-const days = ["一", "二", "三", "四", "五", "六", "日"];
-
-const colors = ["#FF70AE", "#85B4FF", "#FFCE47"]; // 定义颜色数组
-
-// 新的时间转换函数
-function convertTimeToNormalized(time) {
-  const hour = time.getHours();
-  const minute = time.getMinutes();
-  // 如果时间在 06:00 到 23:59 之间
-  if (hour >= 6) {
-    return hour - 6 + minute / 60;
-  }
-  // 如果时间在 00:00 到 05:59 之间
-  return hour + 18 + minute / 60;
-}
-
 function updateChart(restaurant_time) {
   const svgContainer = d3.select(".openTime");
   svgContainer.selectAll("*").remove();
 
+  // 获取页面宽度，并为SVG设定宽度
+  const pageWidth = window.innerWidth * 0.8; // 设置为页面宽度的80%，你可以根据需要调整
+  const margin = { top: 0, right: 40, bottom: 0, left: 40 };
+  const svgWidth = pageWidth - margin.left - margin.right;
+  const svgHeight = 250;
+
   const svg = svgContainer
     .append("svg")
-    //.attr("width", 300)
-    .attr("height", 250)
+    .attr("width", svgWidth)
+    .attr("height", svgHeight + margin.top + margin.bottom)
     .append("g")
     .attr("class", "openTime")
-    .attr("transform", "translate(40,60)");
+    .attr("transform", `translate(${margin.left},${margin.top})`);
 
-  const xScale = d3.scaleBand().domain(days).range([0, 200]).padding(0.1);
+  const xScale = d3.scaleBand().domain(days).range([0, svgWidth]).padding(0.1);
   
   // 定义 yScale，范围从 0 (6:00) 到 21 (次日3:00)
-  const yScale = d3.scaleLinear().domain([0, 21]).range([0, 180]);
+  const yScale = d3.scaleLinear().domain([0, 21]).range([0, svgHeight]);
 
   restaurant_time.forEach((restaurant, index) => {
     const extendedData = [];
@@ -103,36 +89,3 @@ function updateChart(restaurant_time) {
     .attr("transform", "translate(0,0)")
     .call(xAxis);
 }
-
-export function highlightRestaurant(index) {
-  d3.selectAll(".open-bar").classed("dim", true);
-  d3.selectAll(".open-bar-" + index)
-    .classed("highlight", true)
-    .classed("dim", false);
-
-  d3.select(`#button-${restaurantIds[index]}`)
-    .style("background-color", colors[index])
-    .style("color", "#fff");
-}
-
-export function resetHighlight() {
-  d3.selectAll(".open-bar").classed("dim", false).classed("highlight", false);
-
-  d3.selectAll(".button-container button")
-    .style("background-color", "#f0f0f0")
-    .style("color", "#000");
-}
-
-export function showRestaurantData(restaurantId) {
-  const hoursPeriods = data[restaurantId];
-  updateChart([hoursPeriods]);
-
-  document.querySelectorAll(".button-container button").forEach((button) => {
-    button.classList.remove("selected");
-  });
-  document.getElementById(`button-${restaurantId}`).classList.add("selected");
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  updateChart(Object.values(restaurant_time)); // 显示所有餐厅的详细营业时间
-});
