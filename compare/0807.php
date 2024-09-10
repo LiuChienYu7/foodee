@@ -136,8 +136,8 @@ if ($link) {
                 echo "</div>";
 
                 // 顯示投票數，移動到餐廳名稱的下方
-                $vote_count = isset($restaurant_data['vote']) ? $restaurant_data['vote'] : 0;
-                echo "<div class='vote-count' style='cursor: default; margin-top: 5px;'>投票數: " . htmlspecialchars($vote_count) . "</div>";
+                // $vote_count = isset($restaurant_data['vote']) ? $restaurant_data['vote'] : 0;
+                // echo "<div class='vote-count' style='cursor: default; margin-top: 5px;'>投票數: " . htmlspecialchars($vote_count) . "</div>";
 
                 // 更新計數器
                 $counter++;
