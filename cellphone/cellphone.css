@@ -1,4 +1,8 @@
 /* 基本樣式設置 */
+body {
+    background-color: rgb(247, 215, 70, 0.1);
+}
+
 .restaurant-section {
     display: none;
 }
@@ -73,7 +77,7 @@
 .vibe-tags, .food-tags {
     display: flex;
     flex-wrap: wrap;
-    margin: 5px 0;
+    margin: 5px 0 0 0;
     font-size: 15px;
     font-weight: normal;
 }
@@ -105,26 +109,27 @@
     margin: 0 5px;
     padding: 5px;
     border-radius: 5px;
-    background-color: #f5f5f5;
+    background-color: white;
 }
 
 #map {
-    width: -webkit-fill-available;
+    /*width: -webkit-fill-available;*/
     height: 150px;
 }
 svg{
-    width:-webkit-fill-available;
+    /*width: -webkit-fill-available;*/
 }
 #chat{
-    width:-webkit-fill-available;
+    /*width: -webkit-fill-available;*/
 }
 .gallery-img {
     width: 100%;
-    height: auto;
+    height: 100%;
     max-height: 100%;
     display: none;
     object-fit: cover;
     transition: opacity 0.5s ease-in-out;
+    border-radius: 5px;
 }
 .gallery-img.active {
     display: block;
@@ -154,8 +159,9 @@ svg{
 }
 
 .button-container button {
-    margin: 0 5px;
-    width: 50px; /* 默认宽度 */
+    width: 20%;
+    margin: 2px 5px;
+    /* width: 50px; 默认宽度 */
     padding: 5px;
     background-color: #f0f0f0;
     border: 1px solid #ccc;
@@ -167,15 +173,23 @@ svg{
     white-space: nowrap;
     text-overflow: ellipsis;
     position: relative;
+    font-size: large;
 }
 
-.button-container button:hover {
-    width: auto; /* 悬停时自动调整宽度 */
-    background-color: #4CAF50;
-    color: white;
-    max-width: none; /* 防止宽度被限制 */
-    z-index: 1; /* 确保悬停时按钮在其他元素上方 */
+.restaurant-name{
+    margin: 0 5px;
 }
+
+.star-rating{
+    margin: 5px;
+}
+
+/*.button-container button:hover {
+    width: auto; /* 悬停时自动调整宽度 
+    /*color: white;
+    max-width: none; /* 防止宽度被限制 
+    z-index: 1; /* 确保悬停时按钮在其他元素上方 
+}*/
 
 .toggle-container {
     display: flex;
@@ -220,7 +234,65 @@ svg{
 .upper-section{
     margin: 10px 0;
 }
-.middle-section2 svg{
-    height: 250px;
-    width: 280px;
+.middle-section{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    flex-wrap: wrap;
 }
+.middle-section1{
+    margin: auto;
+}
+.middle-section2{
+    margin: 10px 0;
+}
+.middle-section2 svg{
+    margin-left: 10px;
+    height: 250px;
+}
+.vote {
+    z-index: 1000;
+    border-radius: 20px;
+    padding:10px 20px;
+    background-color: white;
+    display: flex;
+    flex-wrap: nowrap;
+    margin: 0 5px 0 0;
+    justify-content: space-between;
+    position: fixed; /* 修改为fixed */
+    bottom: 5; /* 固定在视窗底部 */
+    width: -webkit-fill-available;
+    border: 2px solid #555; /* 完整的边框语法 */
+    align-items: center;
+}
+.vote button{
+    width: 25%;
+    margin: 2px 5px;
+    /* width: 50px; 默认宽度 */
+    padding: 5px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: width 0.3s, background-color 0.3s, color 0.3s; /* 增加宽度的平滑过渡 */
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    position: relative;
+    font-size: large;  
+}
+#voteForm{
+    margin:auto 0;
+}
+#voteMessage{
+    margin:auto 0;
+}
+#chat-section{
+    margin: 5px 0;
+    padding: 0 10px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+}
+

@@ -7,6 +7,7 @@
     <title>Combined Visualization with Icons</title>
     <!-- Load d3.js -->
     <script src="https://d3js.org/d3.v6.js"></script>
+    <script src="rating.js"></script>
     <!-- Font awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="test.css">
@@ -28,19 +29,32 @@
         </div>
         <div class="box3"></div>
         <div class="box4" id="box4">
-            <div class="box4-header">Drag</div>
+            <div class="box4-header">拖移餐廳看更多餐廳資訊 已選0間餐廳</div>
             <div id="popup-content">
+                <button id="left-arrow" style="display: none;">←</button>
+                <div class="btn">
+                    <button id="clear-btn">清除全部</button>
+                </div>
                 <!-- show the detailed info of restaurants -->
+                <div id="restaurant-info-wrapper">                   
+                    <div id="restaurant-info">
+                        <p id="defaultText">尚未加入任何餐廳</p>
+                    </div>
+                </div>
+                <div class="btn">
+                    <button id="compare-btn">去比較(0/3)</button>
+                </div>
+                <button id="right-arrow" style="display: none;">→</button>
             </div>
         </div>
     </div>
     <script src="drag.js"></script>
     <script src="change_photo.js"></script>
     <script src="hide.js"></script>
-  
+
 
     <script>
-        d3.json('http://localhost/foodee/index.php').then(function (data) {
+        d3.json('http://localhost/foodee/connect_sql/index2.php').then(function (data) {
 
             //console.log(data);
 
@@ -50,7 +64,7 @@
                 height = 640 - margin.top - margin.bottom;
 
             // Append SVG object
-            const svg = d3.select(".box3")
+            const svg = d3.select(".container")
                 .append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
@@ -91,11 +105,9 @@
 
             // inner part (image)
 
-            const defs = svg.append("defs");
-
             // Generate patterns
             data.forEach((d, i) => {
-                defs.append("pattern")
+                svg.append("pattern")
                     .attr("id", `pattern-${i}`)
                     .attr("patternUnits", "objectBoundingBox")
                     .attr("width", 1)
@@ -158,24 +170,29 @@
 
             // Add star icon
             circles.append('circle')
+                .attr('class', 'small-circle') // Add class for hiding/showing
                 .attr('cx', Math.cos(-Math.PI / 5) * iconOffset)
                 .attr('cy', Math.sin(-Math.PI / 5) * iconOffset)
                 .attr('r', smallCircleRadius)
                 .attr('fill', 'white')
                 .attr('stroke', 'black')
                 .attr('stroke-width', '1px');
+
+            // Add star icon
             circles.append("text")
+                .attr("class", "icon-text") // Add class for hiding/showing
                 .attr("x", Math.cos(-Math.PI / 5) * iconOffset)
                 .attr("y", Math.sin(-Math.PI / 5) * iconOffset)
                 .attr("text-anchor", "middle")
                 .attr("alignment-baseline", "middle")
                 .attr("font-size", "15px")
-                .attr("class", "fas fa-star")
                 .attr("fill", "#FFD400")
-                .text('\uf005'); // Font Awesome - star (Unicode)
+                .text('\uf005') // Font Awesome - star (Unicode)
+                .style("font-family", "FontAwesome"); // Ensure font-family is set
 
             // Add score
             circles.append('text')
+                .attr('class', 'icon-text') // Add class for hiding/showing
                 .attr('x', Math.cos(-Math.PI / 5) * iconOffset)
                 .attr('y', Math.sin(-Math.PI / 5) * iconOffset) // Adjust position below the star
                 .attr('text-anchor', 'middle')
@@ -186,21 +203,25 @@
 
             // Add parking icon
             circles.append('circle')
+                .attr('class', 'small-circle') // Add class for hiding/showing
                 .attr('cx', Math.cos(-Math.PI / 4 + 0.5) * iconOffset)
                 .attr('cy', Math.sin(-Math.PI / 4 + 0.5) * iconOffset)
                 .attr('r', smallCircleRadius)
                 .attr('fill', 'white')
                 .attr('stroke', 'black')
                 .attr('stroke-width', '1px');
+
+            // Add parking icon
             circles.append("text")
+                .attr("class", "icon-text") // Add class for hiding/showing
                 .attr("x", Math.cos(-Math.PI / 4 + 0.5) * iconOffset)
-                .attr("y", Math.sin(-Math.PI / 4 + 0.51) * iconOffset)
+                .attr("y", Math.sin(-Math.PI / 4 + 0.5) * iconOffset)
                 .attr("text-anchor", "middle")
                 .attr("alignment-baseline", "middle")
                 .attr("font-size", "15px")
-                .attr("class", "fas fa-parking")
-                .attr('fill', d => d.r_has_parking == 1 ? 'blue' : 'lightgrey') // Conditional color based on parking availability
-                .text('\uf540'); // Font Awesome - parking (Unicode)
+                .attr("fill", d => d.r_has_parking == 1 ? 'blue' : 'lightgrey') // Conditional color based on parking availability
+                .text('\uf540') // Font Awesome - parking (Unicode)
+                .style("font-family", "FontAwesome"); // Ensure font-family is set
 
             // Toggle box4 on click
             document.querySelector(".box4-header").addEventListener("click", function () {

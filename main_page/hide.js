@@ -7,14 +7,15 @@ document.getElementById("hide").addEventListener("click", function () {
 
         if (isHidden) {
             // 恢復原狀：顯示外圈並縮小內圈
-            circleGroup.selectAll(".left, .right").style("display", null);
+            // Hide or show icons and text
+            circleGroup.selectAll(".left, .right, circle.small-circle, text.icon-text").style("display", null);
             circleGroup.select("circle")
                 .transition()
                 .duration(500)
                 .attr("r", 35);  // 縮小回到原本大小
         } else {
             // 隱藏外圈並放大內圈
-            circleGroup.selectAll(".left, .right").style("display", "none");
+            circleGroup.selectAll(".left, .right, circle.small-circle, text.icon-text").style("display", "none");
             circleGroup.select("circle")
                 .transition()
                 .duration(500)

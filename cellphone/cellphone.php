@@ -89,7 +89,7 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
         $tags = explode($delimiter, $items);
         foreach ($tags as $tag) {
             $tag = trim($tag);
-            $backgroundColor = isset($selectedItems[$r_id]) && in_array($tag, $selectedItems[$r_id]) ? 'background-color: #fff89e;' : 'background-color: #f5f5f5;';
+            $backgroundColor = isset($selectedItems[$r_id]) && in_array($tag, $selectedItems[$r_id]) ? 'background-color: #fff89e;' : 'background-color: #FFFFFF;';
             echo "<span style='padding: 5px; margin: 5px; border-radius: 5px; $backgroundColor'>" . htmlspecialchars($tag) . "</span>";
         }
     }
@@ -98,8 +98,6 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
 
 <!DOCTYPE html>
 <html lang="en">
-    
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -135,15 +133,15 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
 
             echo "<div class='button-container'>";
             $colors = [
-                "rgba(255, 112, 174, 0.5)",  // #FF70AE with 50% opacity
-                "rgba(133, 180, 255, 0.5)",  // #85B4FF with 50% opacity
-                "rgba(255, 206, 71, 0.5)"    // #FFCE47 with 50% opacity
+                "rgba(255, 112, 174, 0.2)",  // #FF70AE with 50% opacity
+                "rgba(133, 180, 255, 0.2)",  // #85B4FF with 50% opacity
+                "rgba(255, 206, 71, 0.2)"    // #FFCE47 with 50% opacity
             ];
             $index = 0;
             
             foreach ($GLOBALS['restaurant_names'] as $r_id => $r_name) {
                 $color = $colors[$index % count($colors)]; // 根據索引選擇顏色
-                echo "<button style='background-color: $color;' onclick='changeRestaurant($r_id)'>" . htmlspecialchars($r_name) . "</button>";
+                echo "<button style='background-color: $color;' onclick='changeRestaurant($r_id);'>" . htmlspecialchars($r_name) . "</button>";
                 $index++;
             }
             
@@ -172,20 +170,20 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
                 }
 
                 echo "<div class='info-row'>";
-                $parkingTagClass = isset($parking[$r_id]) && $parking[$r_id] ? 'background-color: #fff89e;' : 'background-color: #f5f5f5;';
+                $parkingTagClass = isset($parking[$r_id]) && $parking[$r_id] ? 'background-color: #fff89e;' : 'background-color: #FFFFFF;';
                 if (isset($restaurant_data['r_has_parking'])) {
                     $parkingImage = $restaurant_data['r_has_parking'] == 1 ? 'parking.png' : 'no_parking.png';
                     echo "<div class='parking-tag' style='display: inline-block; $parkingTagClass'><img src='$parkingImage' alt='Parking Info' width='20px'></div>";
                 }
 
-                $diningTimeTagClass = isset($diningTime[$r_id]) && $diningTime[$r_id] ? 'background-color: #fff89e;' : 'background-color: #f5f5f5;';
+                $diningTimeTagClass = isset($diningTime[$r_id]) && $diningTime[$r_id] ? 'background-color: #fff89e;' : 'background-color: #FFFFFF;';
                 if (!empty($restaurant_data['r_time_low'])) {
                     echo "<div class='dining-time-tag' style='display: inline-block; $diningTimeTagClass'>用餐時間: " . htmlspecialchars($restaurant_data['r_time_low']) . "</div>";
                 } else {
                     echo "<div class='dining-time-tag' style='display: inline-block; $diningTimeTagClass'>無用餐時間限制</div>";
                 }
                 
-                $priceTagClass = isset($price[$r_id]) && $price[$r_id] ? 'background-color: #fff89e;' : 'background-color: #f5f5f5;';
+                $priceTagClass = isset($price[$r_id]) && $price[$r_id] ? 'background-color: #fff89e;' : 'background-color: #FFFFFF;';
                 if (!empty($restaurant_data['r_price_low']) && !empty($restaurant_data['r_price_high'])) {
                     echo "<div class='price-tag' style='$priceTagClass'>$" . htmlspecialchars($restaurant_data['r_price_low']) . " ~ $" . htmlspecialchars($restaurant_data['r_price_high']) . "</div>";
                 }
@@ -251,25 +249,6 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
                 }
             }
 
-            // 查询朋友的评论
-            $sql_friends = "SELECT * FROM comment WHERE r_id IN ('$ids')";
-            $result_friends = $conn->query($sql_friends);
-
-            $friend_comments = array();
-            if ($result_friends->num_rows > 0) {
-                while ($row = $result_friends->fetch_assoc()) {
-                    $friend_comments[] = $row;
-                }
-            }
-
-            // 將朋友評論合併到原本的數據中
-            foreach ($r_ids as $restaurant_id) {
-                if (isset($data[$restaurant_id])) {
-                    $data[$restaurant_id]['friend_reviews'] = array_filter($friend_comments, function ($comment) use ($restaurant_id) {
-                        return $comment['r_id'] == $restaurant_id;
-                    });
-                }
-            }
 
             // 按照 $r_ids 的顺序重新排序 $data
             $ordered_data = array();
@@ -395,11 +374,12 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
             <! <script src="https://d3js.org/d3.v7.min.js"></script> -->
             <script type="module">
                 // import '../word_tree/word_tree_modify.js';
-                import '../comment/comment.js'
-                import '../spider/spider.js';
-                import '../openTime/openTime.js'
+                import '../comment/cell_comment.js'
+                import '../spider/cell_spider.js';
+                import '../openTime/cell_openTime.js'
                 import '../map/compare_map.js'
             </script>
+
             <div id="chat-section">
                 <div class="chat">
                     <div id="chat">
@@ -407,7 +387,129 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="vote">
+            <?php
+            if (!empty($restaurant_names)) {
+                echo "<div class='vote-button'>";
+                $colors = [
+                    "rgba(255, 112, 174, 0.2)",  // #FF70AE with 20% opacity
+                    "rgba(133, 180, 255, 0.2)",  // #85B4FF with 20% opacity
+                    "rgba(255, 206, 71, 0.2)"    // #FFCE47 with 20% opacity
+                ];
+                $index = 0;
 
+                foreach ($restaurant_ids as $r_id) {
+                    if (isset($restaurant_names[$r_id])) {
+                        $color = $colors[$index % count($colors)]; // 根据索引选择颜色
+                        echo "<button class='restaurant-button' style='background-color: $color;' onclick='changeButtonState(this, $r_id)' data-selected='false'>" . htmlspecialchars($restaurant_names[$r_id]) . "</button>";
+                        $index++;
+                    }
+                }
+
+                echo "</div>";
+            } else {
+                echo "没有餐廳资料可顯示。";
+            }
+            ?>
+            <form id="voteForm">
+                <input type="hidden" id="votedRestaurants" name="votedRestaurants" value="">
+                <button type="button" style="width: auto;" onclick="submitVote()">投票</button>
+            </form>
+            <div id="voteMessage"></div> <!-- 显示确认信息 -->
+        </div>
+
+        <script>
+        function changeButtonState(button, r_id) {
+            // 获取当前按钮的选中状态
+            let isSelected = button.getAttribute('data-selected') === 'true';
+
+            if (isSelected) {
+                // 如果已选中，则将状态设为未选中，并恢复背景颜色
+                button.setAttribute('data-selected', 'false');
+                button.style.backgroundColor = button.getAttribute('data-initial-color');
+                removeRestaurantFromVote(r_id);
+                console.log(`餐厅ID ${r_id} 已取消选择`);
+            } else {
+                // 如果未选中，则将状态设为选中，并将背景颜色设置为黄色透明度0.7
+                button.setAttribute('data-selected', 'true');
+                button.setAttribute('data-initial-color', button.style.backgroundColor);
+                button.style.backgroundColor = 'rgba(255, 255, 0, 0.7)';
+                addRestaurantToVote(r_id);
+                console.log(`餐厅ID ${r_id} 已选择`);
+            }
+
+            // 打印当前按钮的状态
+            console.log(`按钮状态: ${button.getAttribute('data-selected')}`);
+        }
+
+
+        function addRestaurantToVote(r_id) {
+            let votedRestaurants = document.getElementById('votedRestaurants').value;
+            votedRestaurants = votedRestaurants ? votedRestaurants.split(',') : [];
+            if (!votedRestaurants.includes(r_id.toString())) {
+                votedRestaurants.push(r_id);
+            }
+            document.getElementById('votedRestaurants').value = votedRestaurants.join(',');
+        }
+
+        function removeRestaurantFromVote(r_id) {
+            let votedRestaurants = document.getElementById('votedRestaurants').value;
+            votedRestaurants = votedRestaurants ? votedRestaurants.split(',') : [];
+            const index = votedRestaurants.indexOf(r_id.toString());
+            if (index > -1) {
+                votedRestaurants.splice(index, 1);
+            }
+            document.getElementById('votedRestaurants').value = votedRestaurants.join(',');
+        }
+
+        function submitVote() {
+    // 收集所有选中的餐厅 r_id
+    const votedRestaurants = [];
+    document.querySelectorAll('.restaurant-button').forEach(button => {
+        if (button.getAttribute('data-selected') === 'true') {
+            const r_id = button.getAttribute('onclick').match(/\d+/)[0]; // 从onclick中提取r_id
+            votedRestaurants.push(r_id);
+        }
+    });
+
+    // 如果有选中的餐厅，发送数据到服务器
+    if (votedRestaurants.length > 0) {
+        const xhr = new XMLHttpRequest();
+        const formData = new FormData();
+        formData.append('votedRestaurants', votedRestaurants.join(',')); // 传递r_id而不是名称
+
+        xhr.open("POST", "../cellphone/vote_processor.php", true);
+
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                document.getElementById('voteMessage').innerText = '投票成功！';
+            } else {
+                document.getElementById('voteMessage').innerText = '投票失败，请重试。';
+            }
+        };
+
+        xhr.send(formData);
+    } else {
+        document.getElementById('voteMessage').innerText = '至少選一個:/';
+    }
+}
+
+    </script>
+
+    <script>
+    function changeButtonColor(button) {
+        // 检查当前背景颜色是否为黄色
+        if (button.style.backgroundColor === 'rgba(255, 255, 0, 0.7)') { // 若背景色为黄色透明度0.7
+            // 如果是黄色，恢复到初始颜色
+            button.style.backgroundColor = button.getAttribute('data-initial-color');
+        } else {
+            // 否则，保存当前颜色并设置为黄色透明度0.7
+            button.setAttribute('data-initial-color', button.style.backgroundColor);
+            button.style.backgroundColor = 'rgba(255, 255, 0, 0.7)'; // 黄色透明度0.7
+        }
+    }
+    </script>
     <script>
         let currentRestaurantId = <?php echo reset($restaurant_ids); ?>;
         function changeRestaurant(r_id) {
@@ -471,29 +573,40 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
 
                 // 高亮图表背景
                 if (receivedSpider[currentRestaurantId]) {
-                    document.querySelector('.middle-section1').style.backgroundColor = '#fff89e';
+                    document.querySelector('.middle-section1').style.backgroundColor = 'rgba(255, 248, 158, 0.5)';
                 }
                 if (receivedComment[currentRestaurantId]) {
-                    document.querySelector('.upper-section').style.backgroundColor = '#fff89e';
+                    document.querySelector('.upper-section').style.backgroundColor = 'rgba(255, 248, 158, 0.5)';
                 }
                 if (receivedOpenTime[currentRestaurantId]) {
-                    document.querySelector('.middle-section2').style.backgroundColor = '#fff89e';
+                    document.querySelector('.middle-section2').style.backgroundColor = 'rgba(255, 248, 158, 0.5)';
                 }
             }
 
             // 檢查傳過來的變數 spider 是否為 true，並亮起 middle-section1 背景
             if (receivedSpider === true) {
-                document.querySelector('.middle-section1').style.backgroundColor = '#fff89e';
+                document.querySelector('.middle-section1').style.backgroundColor = 'rgba(255, 248, 158, 0.5)';
             }
             if (receivedOpenTime === true) {
-                document.querySelector('.middle-section2').style.backgroundColor = '#fff89e';
+                document.querySelector('.middle-section2').style.backgroundColor = 'rgba(255, 248, 158, 0.5)';
             }
 
             highlightTagsBasedOnReceivedData();
         }
+    // 定义一个函数来更新 chat-section 的 margin-bottom
+    function updateMarginBottom() {
+        // 获取 .vote 元素的高度
+        var voteHeight = document.querySelector('.vote').offsetHeight;
 
+        // 设置 chat-section 的 margin-bottom 为 voteHeight + 80px
+        document.querySelector('#chat-section').style.marginBottom = (voteHeight + 20) + 'px';
+    }
 
+    // 页面加载后立即更新一次
+    updateMarginBottom();
 
+    // 如果 .vote 的高度可能会改变，可以监听窗口大小变化事件
+    window.addEventListener('resize', updateMarginBottom);
     </script>
 
 </body>

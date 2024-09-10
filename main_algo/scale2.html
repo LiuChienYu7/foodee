@@ -14,15 +14,16 @@
             display: none;
         }
         #chart {
-            padding-top: 10%; /* 将主图表下移，避免与顶部的按钮和控制项重叠 */
+            padding-top: 12%; /* 将主图表下移，避免与顶部的按钮和控制项重叠 */
         }
         .x-axis-container {
             position: fixed;
             bottom: 0;
             width: 100%;
             background: white;
+            z-index: 1000; /* 确保在其他元素之上 */
         }
-        
+
         .top-container {
             position: fixed;
             left: 60%;  /* 将容器移到画面的中央 */
@@ -235,7 +236,7 @@
             newPositions2 = data;
             const width = window.innerWidth;
             const height = 800;
-            const margin = { top: 20, right: 50, bottom: 50, left: 40 };
+            const margin = { top: 20, right: 80, bottom: 40 , left: 80 };
             const innerRadius = 45;
             const rectWidth = 120;
             const rectHeight = 60;
@@ -395,10 +396,6 @@
                 // 在此处将接收到的氛围数据赋值给 leftData
                 leftData = effectiveVibes;
 
-                // 确保绘制圆饼图使用的是最新的 leftData
-                console.log('Rendered left pie chart with leftData:', leftData);
-                console.log("Filtered positions2:", filteredPositions2);
-
                 // 更新当前显示的数据集
                 data = filteredPositions2;
 
@@ -418,10 +415,6 @@
                 drawChart(intervalWidths, intervalPositions, total, totalHeightValue, newPositions2);
             }
 
-            function exampleUsage() {
-                console.log('Current Selected Vibes:', selectedVibesWithColors);
-                console.log('Current Selected Restaurant IDs:', selectedRestaurantIds);
-            }
 
             //依照餐廳數計算區間寬度
             function getCurrentIntervalTotals(intervals) {
@@ -445,83 +438,144 @@
                 return intervalTotals;
             }
 
-            function updateIntervals() {
+            
+    function updateIntervals() {
+        const minIntervalWidth = 65;
+        currentIntervals = Array.from(new Set(currentIntervals));
 
-    const minIntervalWidth = 65; 
-    // 清除舊區間
-    currentIntervals = Array.from(new Set(currentIntervals));
+        console.log("Current intervals after deduplication:", currentIntervals);
 
-    console.log("Current intervals after deduplication:", currentIntervals);
+        if (!currentIntervals || currentIntervals.length === 0) {
+            console.warn("currentIntervals 为空或未定义，跳过更新。");
+            const maxIntervalSet = findMaxIntervalWithNeighbors();
+            if (!maxIntervalSet) {
+                console.log("所有区间没有数据，重置视图。");
+                resetToDefaultView();
+                return;
+            }
+            currentIntervals = maxIntervalSet;
+        } else {
+            const intervalTotals = getCurrentIntervalTotals(currentIntervals);
+            const total = d3.sum(Object.values(intervalTotals));
 
-    if (!currentIntervals || currentIntervals.length === 0) {
-        console.warn("currentIntervals 為空或未定義，跳过更新。");
-        return;
-    }
+            if (isNaN(total) || total === 0) {
+                console.warn("Total 餐厅数为 NaN 或 0，跳过更新。");
+                resetToDefaultView();
+                return;
+            }
 
-    // 重置 intervalWidths 對象
-    Object.keys(intervalWidths).forEach(key => delete intervalWidths[key]);
+            // Ensure only one interval is moved, and always display 3 intervals
+            const maxInterval = currentIntervals.reduce((a, b) => (intervalTotals[a] > intervalTotals[b] ? a : b));
+            const maxIntervalIndex = intervals.indexOf(maxInterval);
 
-    const intervalTotals = getCurrentIntervalTotals(currentIntervals);
-    const total = d3.sum(Object.values(intervalTotals));
+            // Adjust to show 3 intervals while moving only one interval at a time
+            let startIndex = maxIntervalIndex > 0 ? maxIntervalIndex - 1 : 0;
+            let endIndex = startIndex + 2;
 
-    if (isNaN(total) || total === 0) {
-        console.warn("Total 餐廳數為 NaN 或 0，跳过更新。");
-        return;
-    }
+            // Ensure endIndex doesn't exceed array length
+            if (endIndex >= intervals.length) {
+                endIndex = intervals.length - 1;
+                startIndex = Math.max(0, endIndex - 2);  // Adjust startIndex to ensure 3 intervals if possible
+            }
 
-    let totalUsedWidth = 0;
-
-    // 計算所有區間寬度，即使目前某个区间没有数据，也要为其分配宽度
-    currentIntervals.forEach(interval => {
-        const intervalTotal = intervalTotals[interval] || 0;
-        intervalWidths[interval] = Math.max((intervalTotal / total) * (width - margin.left - margin.right), minIntervalWidth);
-        if (isNaN(intervalWidths[interval])) {
-            console.error(`Invalid interval width for interval: ${interval}`);
+            currentIntervals = intervals.slice(startIndex, endIndex + 1);
         }
-        totalUsedWidth += intervalWidths[interval];
-    });
 
-    // 如果使用宽度超过了svg宽度，進行缩放
-    if (totalUsedWidth > (width - margin.left - margin.right)) {
-        const scaleFactor = (width - margin.left - margin.right) / totalUsedWidth;
+        let totalUsedWidth = 0;
+
         currentIntervals.forEach(interval => {
-            intervalWidths[interval] *= scaleFactor;
-            if (isNaN(intervalWidths[interval])) {
-                console.error(`Invalid scaled interval width for interval: ${interval}`);
+            const intervalTotals = getCurrentIntervalTotals(currentIntervals);
+            const total = d3.sum(Object.values(intervalTotals));
+            intervalWidths[interval] = Math.max((intervalTotals[interval] / total) * (width - margin.left - margin.right), minIntervalWidth);
+            totalUsedWidth += intervalWidths[interval];
+        });
+
+        if (totalUsedWidth > (width - margin.left - margin.right)) {
+            const scaleFactor = (width - margin.left - margin.right) / totalUsedWidth;
+            currentIntervals.forEach(interval => {
+                intervalWidths[interval] *= scaleFactor;
+            });
+        }
+
+        let currentPosition = margin.left;
+        currentIntervals.forEach(interval => {
+            intervalPositions[interval] = currentPosition;
+            currentPosition += intervalWidths[interval];
+        });
+
+        console.log("Interval widths after update:", intervalWidths);
+        console.log("Interval positions after update:", intervalPositions);
+
+        // 绘制图表和 Minimap
+        d3.select("#chart").selectAll("*:not(.left)").remove();
+        d3.select("#x-axis-svg").selectAll("*").remove();
+
+        const totalHeightValue = calculateTotalHeight(data, intervalWidths, rowHeight, groupSpacing, margin);
+        if (isNaN(totalHeightValue) || totalHeightValue <= 0 || !isFinite(totalHeightValue)) {
+            console.error("Total height 计算失败，跳过绘图。");
+            return;
+        }
+
+        drawChart(intervalWidths, intervalPositions, total, totalHeightValue, filteredIds);
+        const redBox = drawMinimap(intervalPositions, totalHeightValue, intervalWidths);
+        const midIndex = Math.floor(currentIntervals.length / 2);
+        const midInterval = currentIntervals[midIndex];
+        const targetXPosition = intervalPositions[midInterval] + intervalWidths[midInterval] / 2;
+
+        redBox.attr("x", targetXPosition - redBox.attr("width") / 2);
+    }
+
+    function findMaxIntervalWithNeighbors() {
+        let maxInterval = intervals[0];
+        let maxTotal = 0;
+
+        // 找出数据最多的区间
+        intervals.forEach(interval => {
+            const intervalTotal = d3.sum(data, d => categorizePrice(d.r_price_low) === interval);
+            if (intervalTotal > maxTotal) {
+                maxTotal = intervalTotal;
+                maxInterval = interval;
             }
         });
-    }
 
-    // 計算每個區間的位置
-    let currentPosition = margin.left;
-    currentIntervals.forEach(interval => {
-        intervalPositions[interval] = currentPosition;
-        if (isNaN(intervalPositions[interval])) {
-            console.error(`Invalid interval position for interval: ${interval}`);
+        // 如果最大区间的总数仍然为 0，表示所有区间没有数据
+        if (maxTotal === 0) {
+            return null;
         }
-        currentPosition += intervalWidths[interval];
-    });
 
-    console.log("Interval widths after update:", intervalWidths); 
-    console.log("Interval positions after update:", intervalPositions);  
+        // 找到 maxInterval 的索引并包含相邻的区间
+        const maxIntervalIndex = intervals.indexOf(maxInterval);
+        let startIndex = Math.max(0, maxIntervalIndex - 1);
+        let endIndex = Math.min(intervals.length - 1, maxIntervalIndex + 1);
 
-    // 选择所有元素并过滤掉你要保留的元素，然后删除其他元素
-    d3.select("#chart")
-        .selectAll("*:not(.left)") // 使用 :not(.left) 选择所有非 .left 的元素
-        .remove();
+        // 如果 maxInterval 是最左边的区间，显示它和它右边的两个区间
+        if (maxIntervalIndex === 0) {
+            endIndex = Math.min(intervals.length - 1, maxIntervalIndex + 2);
+        }
+        // 如果 maxInterval 是最右边的区间，显示它和它左边的两个区间
+        else if (maxIntervalIndex === intervals.length - 1) {
+            startIndex = Math.max(0, maxIntervalIndex - 2);
+        }
 
-    d3.select("#x-axis-svg").selectAll("*").remove();
-
-    const totalHeightValue = calculateTotalHeight(data, intervalWidths, rowHeight, groupSpacing, margin);
-    if (isNaN(totalHeightValue) || totalHeightValue <= 0 || !isFinite(totalHeightValue)) {
-        console.error("Total height 计算失败，跳过绘图。");
-        return;
+        return intervals.slice(startIndex, endIndex + 1);
     }
 
-    drawChart(intervalWidths, intervalPositions, total, totalHeightValue, filteredIds);
-    drawMinimap(intervalPositions, totalHeightValue, intervalWidths);
-}
+    function resetToDefaultView() {
+        d3.select("#chart")
+            .selectAll("*:not(.left)")
+            .remove();
 
+        d3.select("#x-axis-svg").selectAll("*").remove();
+
+        d3.select("#chart")
+            .append("text")
+            .attr("x", width / 2)
+            .attr("y", height / 2)
+            .attr("text-anchor", "middle")
+            .style("font-size", "24px")
+            .style("fill", "#666")
+            .text("所有区间没有数据");
+    }
 
             function drawChart(intervalWidths, intervalPositions, total, totalHeight, positions = null, filteredIds = null) {
 
@@ -570,7 +624,8 @@
                     .on("error", function() {
                         console.error("Image load error: " + url); 
                     });
-            }   const colors = d3.scaleOrdinal(d3.schemeCategory10)
+            }   
+            const colors = d3.scaleOrdinal(d3.schemeCategory10)
                 .domain(sortedTimes); // 確保 domain 包含所有可能的 time 值
 
             // 預先繪製rect
@@ -591,7 +646,6 @@
 
                 // 過濾沒有positions 的數據，僅繪製 circle 相關的元素
                 const filteredPositions = positions.filter(d => d.r_photo_env1 !== undefined && d.r_photo_env1 !== null && d.r_photo_env1 !== '');
-                console.log('Filtered Positions:', filteredPositions);
                 
                 svg.append('defs');
                 filteredPositions.forEach((d, i) => {
@@ -723,7 +777,6 @@
                         const patternId = `pattern-${i}`;
                         return `url(#${patternId})`;
                     });
-                console.log('leftdata', leftData);
                 
                 const radius = 60;
                 // 確保 colorClass 是具體的顏色值
@@ -769,13 +822,11 @@
                                 ? position.r_atmosphere.split('，').map(v => v.trim()) 
                                 : [];
                             const vibeColor = restaurantVibes.includes(d.data.vibe) ? color(d.data.vibe) : '#d3d3d3';
-                            console.log(`Vibe: ${d.data.vibe}, Color: ${vibeColor}`);  // 用於調試
                             return vibeColor;
                         })
                         .attr('stroke', 'white')
                         .style('stroke-width', '1px');
                 });
-                console.log('Rendered left pie chart with leftData:', leftData);
 
                 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
                 const dayColor = d => d === 1 ? "#FFD400" : "lightgrey";  // 1為營業時間用黄色，0為不營業用灰色
@@ -830,7 +881,7 @@
                     .style("stroke-width", "1px");
 
                 // 右側文字
-                const days = ["M", "T", "W", "T", "F", "S", "S"];
+                const days = ["一", "二", "三", "四", "五", "六", "日"];
                 circles.selectAll('text.days')
                     .data(rightDataReady)
                     .enter()
@@ -845,8 +896,6 @@
                     .attr('font-size', '10px')
                     .attr('font-weight', 'bold')
                     .text((d, i) => days[i]);
-
-                console.log(rightDataReady); 
             });    
 
 
@@ -917,23 +966,6 @@
                     return map;
                 }, {});
 
-
-                // 繪製白色線條分隔線
-                svg.append("g")
-                    .selectAll(".interval-separator")
-                    .data(currentIntervals)
-                    .enter()
-                    .append("line")
-                    .attr("class", "interval-separator")
-                    .attr("x1", (d, i) => i < currentIntervals.length - 1 ? intervalPositions[d] -40 +intervalWidths[d] : null)  // 只为非最后一个区间绘制线条
-                    .attr("y1", margin.top)
-                    .attr("x2", (d, i) => i < currentIntervals.length - 1 ? intervalPositions[d] -40 + intervalWidths[d] : null)  // 只为非最后一个区间绘制线条
-                    .attr("y2", totalHeight - margin.bottom)
-                    .attr("stroke", "white")  
-                    .attr("stroke-width", 2);
-
-
-
                 svg.append("g")
                     .selectAll("text")
                     .data(positions.filter(d => d.label))
@@ -947,64 +979,143 @@
                     .attr("font-weight", "bold")
                     .attr("fill", "black") // 添加顏色以確保文本可見
                     .text(d => `用餐時間: ${d.r_time_low}`);
-                    console.log('Positions with labels:', positions.filter(d => d.label));
-                    
-                // 设置 SVG 宽度为 1200px
-                const xAxisSvg = d3.select("#x-axis-svg")
-                    .attr("width", 1200)
-                    .attr("height", 50);  // 高度可以根据需求调整
+                                    
+                // 為每個區間的右邊界繪製分隔線
+                svg.append("g")
+                    .selectAll(".interval-separator")
+                    .data(currentIntervals.filter((d, i) => i < currentIntervals.length - 1))  // 過濾掉最後一個區間
+                    .enter()
+                    .append("line")
+                    .attr("class", "interval-separator")
+                    .attr("x1", d => intervalPositions[d] + intervalWidths[d])  // 計算右邊界
+                    .attr("y1", margin.top)
+                    .attr("x2", d => intervalPositions[d] + intervalWidths[d])  // 計算右邊界
+                    .attr("y2", totalHeight - margin.bottom)
+                    .attr("stroke", "white")
+                    .attr("stroke-width", 2);
 
-                const svgWidth = 1200; // 设置目标宽度
-                const totalWidth = d3.sum(Object.values(intervalWidths)); // 计算所有区间的总宽度
+                                
+            // 设置 SVG 宽度为窗口宽度
+            const xAxisSvg = d3.select("#x-axis-svg")
+                .attr("width", window.innerWidth)
+                .attr("height", 50);  // 高度可以根据需求调整
 
-                // 使用 d3.scaleLinear() 将区间映射到 1200px 的宽度范围
-                const xScale = d3.scaleLinear()
-                    .domain([0, totalWidth])
-                    .range([0, svgWidth]);
+            // 設置 xScale，將 domain 設置為 0 到總區間寬度
+            const xScale = d3.scaleLinear()
+                .domain([0, width])  // 定義 domain 是 0 到總區間寬度
+                .range([0, width]);  // 映射到整個 SVG 寬度範圍
 
-                // 调试输出，检查 xScale 的值是否正确映射
-                const scaledPositions = currentIntervals.map(interval => ({
-                    interval: interval,
-                    originalPosition: intervalPositions[interval],
-                    scaledPosition: xScale(intervalPositions[interval])
-                }));
+            // 初始化 tickValues 数组，第一个 tickValue 为 margin.left
+            let tickValues = [margin.left];
 
-                console.log("xScale values:", scaledPositions);
+            // 累积计算 tickValues，第二个 tickValue 为第一个区间的宽度，依次累加
+            currentIntervals.reduce((accWidth, interval, i) => {
+                const intervalWidth = intervalWidths[interval];
+                const nextTickValue = accWidth + intervalWidth;
+                tickValues.push(nextTickValue);  // 将累积宽度作为下一个 tickValue
+                return nextTickValue;
+            }, margin.left);  // 初始化累积宽度为 margin.left
 
-                // 重新绘制 X 轴
-                xAxisSvg.append("g")
-                    .attr("transform", `translate(0, 0)`)
-                    .call(d3.axisBottom(xScale)
-                        .tickValues(scaledPositions.map(d => d.originalPosition))  // 使用实际的位置值
-                        .tickFormat((d, i) => {
-                            const closestInterval = scaledPositions.find(pos => pos.originalPosition === d);
-                            return closestInterval ? closestInterval.interval : '';  // 返回最近的区间标签或空字符串
-                        })
-                    );
+            // 调试输出检查 tickValues
+            console.log("Calculated tickValues:", tickValues);
 
-               // 向右移動的箭頭
-               d3.select("body").append("div")
-                    .attr("class", "arrow arrow-right")
-                    .text("▶")
-                    .on("click", () => {
-                        const nextIndex = intervals.indexOf(currentIntervals[currentIntervals.length - 1]) + 1;
-                        if (nextIndex < intervals.length) {
-                            currentIntervals = intervals.slice(nextIndex - 2, nextIndex + 1);
-                            updateIntervals();
-                        }
-                    });
+            // 使用 tickValues 来绘制 X 轴
+            xAxisSvg.append("g")
+                .attr("transform", `translate(0, 0)`)
+                .call(d3.axisBottom(xScale)
+                    .tickValues(tickValues)  // 使用计算的 tickValues
+                    .tickFormat((d, i) => {
+                        // 返回区间标签或空字符串
+                        const closestInterval = currentIntervals[i];
+                        return closestInterval ? closestInterval : '';  
+                    })
+                );
 
-                // 向左移動的箭頭
-                d3.select("body").append("div")
-                    .attr("class", "arrow arrow-left")
-                    .text("◀")
-                    .on("click", () => {
-                        const prevIndex = intervals.indexOf(currentIntervals[0]) - 1;
-                        if (prevIndex >= 0) {
-                            currentIntervals = intervals.slice(prevIndex, prevIndex + 3);
-                            updateIntervals();
-                        }        
-                    });
+            // 向左移动的箭头
+            d3.select("body").append("div")
+                .attr("class", "arrow arrow-left")
+                .text("◀")
+                .on("click", () => {
+                    const firstIndex = intervals.indexOf(currentIntervals[0]);
+
+                    if (firstIndex > 0) {
+                        // Calculate new interval set to shift left by one
+                        const prevStartIndex = Math.max(firstIndex - 1, 0);
+                        const prevEndIndex = Math.min(prevStartIndex + 2, intervals.length - 1); // 保证仍然显示三个区间
+
+                        // Update currentIntervals to ensure it always contains 3 intervals
+                        currentIntervals = intervals.slice(prevStartIndex+1 , prevEndIndex);  // +1 是为了确保包含 endIndex
+
+                        console.log("Updated intervals after left click:", currentIntervals);
+
+                        // Call update function
+                        updateIntervals();
+                    } else {
+                        console.log("已经到达第一个区间，无法继续向左移动。");
+                    }
+                });
+
+            // 向右移动的箭头
+            d3.select("body").append("div")
+                .attr("class", "arrow arrow-right")
+                .text("▶")
+                .on("click", () => {
+                    const lastIndex = intervals.indexOf(currentIntervals[currentIntervals.length - 1]);
+
+                    if (lastIndex < intervals.length - 1) {
+                        // Calculate new interval set to shift right by one 
+                        const nextStartIndex = Math.min(lastIndex, intervals.length - 2); // 移动起点，确保不超出范围
+                        const nextEndIndex = Math.min(nextStartIndex + 2, intervals.length - 1); // 确保显示三个区间
+
+                        // Update currentIntervals to ensure it always contains 3 intervals
+                        currentIntervals = intervals.slice(nextStartIndex, nextEndIndex + 1);
+
+                        console.log("Updated intervals after right click:", currentIntervals);
+                        
+                        // Call update function
+                        updateIntervals();
+                    } else {
+                        console.log("已经到达最后一个区间，无法继续向右移动。");
+                    }
+                });
+
+// 计算每个区间的中间位置
+const buttonPositions = currentIntervals.map(interval => {
+    const position = intervalPositions[interval] + intervalWidths[interval] / 2;  // 区间的中间位置
+    return { interval: interval, position: position };  // 返回区间和位置的对象
+});
+
+// 绘制每个按钮，确保 X 轴是通过 translate 来定位，Y 轴通过 CSS 控制
+const buttons = svg.selectAll(".save-button")
+    .data(buttonPositions)
+    .enter()
+    .append("g")
+    .attr("class", "save-button")
+    .attr("transform", d => `translate(${d.position}, 0)`);  // X 轴的平移使用 translate
+
+// 创建按钮外框
+buttons.append("rect")
+    .attr("width", 50)
+    .attr("height", 20)
+    .attr("fill", "lightblue")
+    .attr("rx", 5)  // 圆角矩形
+    .attr("ry", 5)
+    .on("click", (event, d) => {
+        const restaurantsInInterval = data.filter(restaurant => categorizePrice(restaurant.r_price_low) === d.interval);
+        const restaurantIds = restaurantsInInterval.map(r => r.r_id);
+        const restaurantIdsParam = restaurantIds.join(",");
+        window.location.href = `map_background.php?restaurant_ids=${restaurantIdsParam}`;
+    });
+
+// 在按钮中添加文字
+buttons.append("text")
+    .attr("x", 25)
+    .attr("y", 15)
+    .attr("text-anchor", "middle")
+    .attr("fill", "black")
+    .text("Save");
+
+
             }
 
             function calculatePositions(data, intervalWidths, rowHeight, rectSpacing, margin, intervalPositions) {
@@ -1089,6 +1200,7 @@
                                 time: time,
                                 label: false,
                                 r_name: restaurant.r_name,
+                                r_price_low :restaurant.r_price_low,
                                 r_photo_env1: restaurant.r_photo_env1,
                                 r_photo_env2: restaurant.r_photo_env2,  // 添加第二张照片的URL
                                 r_photo_env3: restaurant.r_photo_env3,  // 添加第三张照片的URL
@@ -1200,6 +1312,7 @@
                                 time: time,
                                 label: false,
                                 r_name: restaurant.r_name,
+                                r_price_low :restaurant.r_price_low,
                                 r_photo_env1: restaurant.r_photo_env1,
                                 r_photo_env2: restaurant.r_photo_env2,  // 添加第二张照片的URL
                                 r_photo_env3: restaurant.r_photo_env3,  // 添加第三张照片的URL
@@ -1299,7 +1412,6 @@
 
                 const maxYValue = d3.max(intervalData, d => d3.sum(reversedTimes.map(time => d[time])));
 
-                // 調整 scaleY 的範圍，使其從最大值到 0 映射
                 const scaleY = d3.scaleLinear()
                     .domain([maxYValue, 0])
                     .range([0, minimapHeight]);
@@ -1316,9 +1428,8 @@
                     .keys(reversedTimes);
 
                 const stackedData = stack(intervalData);
-                colors = d3.scaleOrdinal(d3.schemeCategory10)
+                const colors = d3.scaleOrdinal(d3.schemeCategory10);
 
-                // 反转层的顺序以应用反转颜色
                 stackedData.reverse().forEach((layer, layerIndex) => {
                     d3.select("#minimap").selectAll(`.bar-${layer.key}`)
                         .data(layer)
@@ -1329,16 +1440,17 @@
                         .attr("y", d => scaleY(d[1]))
                         .attr("width", scaleX.bandwidth())
                         .attr("height", d => scaleY(d[0]) - scaleY(d[1]))
-                        .attr("fill", colors(layerIndex))  // 反转后的颜色顺序
+                        .attr("fill", colors(layerIndex))
                         .attr("stroke", "black");
                 });
 
+                // 初始紅框位置
                 const currentStart = currentIntervals[0];
                 const currentEnd = currentIntervals[currentIntervals.length - 1];
                 const xPositionStart = scaleX(currentStart);
                 const xPositionEnd = scaleX(currentEnd) + scaleX.bandwidth();
 
-                d3.select("#minimap").append("rect")
+                const redBox = d3.select("#minimap").append("rect")
                     .attr("x", xPositionStart)
                     .attr("y", 0)
                     .attr("width", xPositionEnd - xPositionStart)
@@ -1358,10 +1470,12 @@
                             .attr("fill-opacity", 0.5);
                     }
                 });
-            }
 
+                return redBox;  // 返回紅框對象
+            }
             updateIntervals();
         });
+
     </script>
 </body>
 </html>

@@ -192,7 +192,7 @@ function showReviews(svg, d, blockGroup) {
   svg.selectAll(".link, .review-block, .detail-link, .detail-block").remove();
 
   const blockX = 20;
-  const blockY = 30; // 這裡可以根據需要調整Y座標 一開始高度
+  const blockY = 20; // 這裡可以根據需要調整Y座標 一開始高度
   const blockWidth = 150;
   const colors = ["#FF70AE", "#85B4FF", "#FFCE47"]; // 定義顏色陣列
 
@@ -222,21 +222,19 @@ function showReviews(svg, d, blockGroup) {
     wrapText(tempText, 130);
 
     const bbox = tempText.node().getBBox();
-    const textHeight = bbox.height - 40 + 10; // 加上適當的 padding
+    console.log("我要知道的東西", bbox.height - 10);
+    const textHeight = bbox.height - 10; // 加上適當的 padding
     tempText.remove();
 
     // 根據文本高度調整區塊高度
-    const blockHeight = Math.max(textHeight, 45); // 設置最小高度為 45，避免過小
+    const blockHeight = Math.min(Math.max(textHeight, 40), 80); // 設置最小高度為 40，最大高度為 90
     const startX = translateX - 50 + blockWidth;
     const startY = translateY + 15; //線連在同一個點上
     const endX = blockX + 120;
-    // const endY = previousEndY; // 更新endY位置
-    // const endY = blockY + i * 50 + 35; // 調整間距以容納評論細節
     const endY = previousEndY + i * 3; // 更新endY位置
 
     // 更新下一個區塊的起始位置
     previousEndY += blockHeight + 5; // 20 是區塊之間的間距
-    // previousEndY += blockHeight * 5 + 50; // 20 是區塊之間的間距
 
     // 繪製非直線曲線並添加動畫效果
     svg
@@ -469,7 +467,6 @@ function wrapText(text, width) {
         .attr("dy", dy + "em");
 
     while ((word = words.pop())) {
-      // console.log(word); // 輸出每個字符以檢查
       line.push(word);
       tspan.text(line.join(" "));
       if (tspan.node().getComputedTextLength() > width) {
