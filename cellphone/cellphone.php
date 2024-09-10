@@ -89,7 +89,7 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
         $tags = explode($delimiter, $items);
         foreach ($tags as $tag) {
             $tag = trim($tag);
-            $backgroundColor = isset($selectedItems[$r_id]) && in_array($tag, $selectedItems[$r_id]) ? 'background-color: #fff89e;' : 'background-color: #f5f5f5;';
+            $backgroundColor = isset($selectedItems[$r_id]) && in_array($tag, $selectedItems[$r_id]) ? 'background-color: #fff89e;' : 'background-color: #FFFFFF;';
             echo "<span style='padding: 5px; margin: 5px; border-radius: 5px; $backgroundColor'>" . htmlspecialchars($tag) . "</span>";
         }
     }
@@ -170,20 +170,20 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
                 }
 
                 echo "<div class='info-row'>";
-                $parkingTagClass = isset($parking[$r_id]) && $parking[$r_id] ? 'background-color: #fff89e;' : 'background-color: #f5f5f5;';
+                $parkingTagClass = isset($parking[$r_id]) && $parking[$r_id] ? 'background-color: #fff89e;' : 'background-color: #FFFFFF;';
                 if (isset($restaurant_data['r_has_parking'])) {
                     $parkingImage = $restaurant_data['r_has_parking'] == 1 ? 'parking.png' : 'no_parking.png';
                     echo "<div class='parking-tag' style='display: inline-block; $parkingTagClass'><img src='$parkingImage' alt='Parking Info' width='20px'></div>";
                 }
 
-                $diningTimeTagClass = isset($diningTime[$r_id]) && $diningTime[$r_id] ? 'background-color: #fff89e;' : 'background-color: #f5f5f5;';
+                $diningTimeTagClass = isset($diningTime[$r_id]) && $diningTime[$r_id] ? 'background-color: #fff89e;' : 'background-color: #FFFFFF;';
                 if (!empty($restaurant_data['r_time_low'])) {
                     echo "<div class='dining-time-tag' style='display: inline-block; $diningTimeTagClass'>用餐時間: " . htmlspecialchars($restaurant_data['r_time_low']) . "</div>";
                 } else {
                     echo "<div class='dining-time-tag' style='display: inline-block; $diningTimeTagClass'>無用餐時間限制</div>";
                 }
                 
-                $priceTagClass = isset($price[$r_id]) && $price[$r_id] ? 'background-color: #fff89e;' : 'background-color: #f5f5f5;';
+                $priceTagClass = isset($price[$r_id]) && $price[$r_id] ? 'background-color: #fff89e;' : 'background-color: #FFFFFF;';
                 if (!empty($restaurant_data['r_price_low']) && !empty($restaurant_data['r_price_high'])) {
                     echo "<div class='price-tag' style='$priceTagClass'>$" . htmlspecialchars($restaurant_data['r_price_low']) . " ~ $" . htmlspecialchars($restaurant_data['r_price_high']) . "</div>";
                 }
