@@ -799,31 +799,44 @@ if ($link) {
 
                         button.appendChild(img);
 
+                        // 定義一個變量來跟蹤是否被點擊
+                        let isClicked = false;
+
                         // Hover 事件同步
                         button.addEventListener('mouseenter', function() {
-                            // 找到所有相同圖片的按鈕並同步 hover 效果
-                            document.querySelectorAll(`.vis-button img[src='${buttonInfo.src}']`).forEach(otherImg => {
-                                otherImg.style.transform = 'scale(1.1)'; // 放大圖片
-                                otherImg.parentElement.style.backgroundColor = '#F4DEB3'; // 改變背景顏色
-                            });
+                            if (!isClicked) { // 如果沒有被點擊，才允許 hover 效果
+                                document.querySelectorAll(`.vis-button img[src='${buttonInfo.src}']`).forEach(otherImg => {
+                                    otherImg.style.transform = 'scale(1.1)'; // 放大圖片
+                                    otherImg.parentElement.style.backgroundColor = '#F4DEB3'; // 改變背景顏色
+                                });
+                            }
                         });
 
                         button.addEventListener('mouseleave', function() {
-                            // 恢復所有相同圖片的 hover 效果
-                            document.querySelectorAll(`.vis-button img[src='${buttonInfo.src}']`).forEach(otherImg => {
-                                otherImg.style.transform = 'scale(1)'; // 恢復圖片大小
-                                otherImg.parentElement.style.backgroundColor = '#eee'; // 恢復背景顏色
-                            });
+                            if (!isClicked) { // 如果沒有被點擊，才恢復原來的樣式
+                                document.querySelectorAll(`.vis-button img[src='${buttonInfo.src}']`).forEach(otherImg => {
+                                    otherImg.style.transform = 'scale(1)'; // 恢復圖片大小
+                                    otherImg.parentElement.style.backgroundColor = '#eee'; // 恢復背景顏色
+                                });
+                            }
                         });
 
                         // Click 事件同步
                         button.addEventListener('click', function() {
-                            // 切換選中狀態
-                            selectedItems[buttonInfo.id] = !selectedItems[buttonInfo.id];
+                            isClicked = !isClicked; // 切換選中狀態
+                            selectedItems[buttonInfo.id] = isClicked; // 更新選中狀態
 
                             // 找到所有相同圖片的按鈕並同步點擊效果
                             document.querySelectorAll(`.vis-button img[src='${buttonInfo.src}']`).forEach(otherImg => {
-                                otherImg.parentElement.style.backgroundColor = selectedItems[buttonInfo.id] ? '#F4DEB3' : '#eee'; // 根據點擊改變背景顏色
+                                if (isClicked) {
+                                    // 當被選中時，設定固定樣式，並阻止 hover 改變背景顏色
+                                    otherImg.style.transform = 'scale(1.1)';
+                                    otherImg.parentElement.style.backgroundColor = '#F4DEB3';
+                                } else {
+                                    // 當取消選中時，恢復為默認狀態，允許 hover 改變背景顏色
+                                    otherImg.style.transform = 'scale(1)';
+                                    otherImg.parentElement.style.backgroundColor = '#eee';
+                                }
                             });
                         });
 
