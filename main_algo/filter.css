@@ -1,43 +1,90 @@
-/* @font-face { 可愛字體，先不用因為載入好慢
+@font-face { 
     font-family: 'HunInn';
     src: url(https://cdn.jsdelivr.net/gh/marsnow/open-huninn-font@1.1/font/jf-openhuninn.eot); 
     src: url(https://cdn.jsdelivr.net/gh/marsnow/open-huninn-font@1.1/font/jf-openhuninn.eot?#iefix) format('embedded-opentype'), 
          url(https://cdn.jsdelivr.net/gh/marsnow/open-huninn-font@1.1/font/jf-openhuninn.woff) format('woff'), 
          url(https://cdn.jsdelivr.net/gh/marsnow/open-huninn-font@1.1/font/jf-openhuninn.ttf) format('truetype'), 
          url(https://cdn.jsdelivr.net/gh/marsnow/open-huninn-font@1.1/font/jf-openhuninn.svg#SealmemoryHeader) format('svg'); 
-} */
+}
 
-body{
+html, body {
+    height: 100%;  /* 保证整个页面的高度为100% */
+    margin: 0;     /* 移除默认的外边距 */
+    padding: 0;    /* 移除默认的内边距 */
+    overflow: hidden; /* 防止滚动条 */
     margin: 0;
     padding: 0;
     display: flex;
-    height: 100%;
     width: 100%;
-    /* font-family: 'HunInn', sans-serif; */
+    font-family: 'HunInn', sans-serif;
 }
 
-/* *{
+
+
+*{
     font-family: 'HunInn', sans-serif;
-} */
+}
 
 .index-container{
     display: flex;
     /* align-items: flex-start;
     align-items: center; */
-    height: 100%;
     width: 100%;
+    height: 100vh; 
+}
+
+.message{
+    background-color: white;
+    border-radius: 8px;
+    text-align: center;
+    border: 2px solid rgb(200, 200, 200);
+    padding-bottom: .5rem;
+    p{
+        margin: .5rem;
+        margin-left: 0;
+        margin-right: 0;
+    }
+    
+}
+
+.fade-out {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+}
+
+.message-btn {
+    display: flex;
+    justify-content: center; /* 可以根据需要调整，如 space-between, flex-start, flex-end */
+    gap: 10px; /* 控制按钮之间的间距 */
+}
+
+.all-btn, .back-btn {
+    font-size: 0.75rem;
+    padding: 5px 10px;
+    background-color: #EA9B00; /* 可以根据需要调整背景颜色 */
+    color: rgb(255, 255, 255);
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.all-btn{
+    background-color: #ffffff;
+    color: #333;
 }
 
 .left-panel{
+    /* background-color: rgba(252,184,53, .8); */
     background-color: rgba(252,184,53, .8);
     float: left;
-    width: 20vw;
+    width: 17vw;
     height: 100;
     display: flex;            
     display: -webkit-flex;            
     justify-content: center;            
     align-items: center;   
-    font-size: 1rem;
+    font-size: .8rem;
     box-sizing: border-box;
     transition: width .8s ease;
     flex-direction: column;
@@ -93,26 +140,26 @@ body{
 }
 
 .filter-container{
-    background-color: white;
+    background-color: #fff;
     border-radius: 15px;
-    width: 16vw;
-    padding: 1rem;
-    padding-top: 0.75rem;
-    margin: 0.75rem;
+    width: 14vw;
+    padding: .6rem;
+    padding-top: 0.5rem;
+    margin: 0.5rem;
     flex-grow: 1;
     overflow: hidden;
+
 }
 
-.filter-fixed{
-    margin-bottom: 0.8rem;
-}
 
 .filter-item{
     border-radius: 5px;
-    border: 0.05rem solid black;
-    background-color: rgba(247, 215, 70, 0.281);
-    margin-bottom: 0.8rem;
+    /* border: 0.05rem solid black; */
+    background-color: rgba(252, 235, 167, 0.8);
+    margin-bottom: 0.5rem;
     padding: 0.5rem;
+    /* box-shadow: 3px 3px 3px 3px rgba(0, 0, 0, .1); */
+    border: none;
 }
 
 .filter-search {
@@ -123,6 +170,7 @@ body{
     box-sizing: border-box; /* 包括內邊距和邊框在內的總寬度 */
     position: relative;
     margin-right: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 #search {
@@ -179,16 +227,16 @@ body{
     flex-direction: column;
     justify-content: center;            
     align-items: center;  
-    background-color: #FFF;
-    box-shadow: 3px 3px 3px 3px rgba(0, 0, 0, .1);
+    background-color: #f3f3f3d0;
+    /* box-shadow: 3px 3px 3px 3px rgba(0, 0, 0, .1); */
     border: none;
     opacity: .55; /* 初始透明度 */
     transition: opacity 0.2s ease; /* 平滑过渡效果 */
 }
 
 .filter-price{
-    background-color: #FFF;
-    box-shadow: 3px 3px 3px 3px rgba(0, 0, 0, .1);
+    background-color: #f3f3f3;
+    /* box-shadow: 3px 3px 3px 3px rgba(0, 0, 0, .1); */
     border: none;
     opacity: .55; /* 初始透明度 */
     transition: opacity 0.2s ease; /* 平滑过渡效果 */
@@ -225,6 +273,7 @@ input[type="range"]{
 
 .vibe{
     text-align: center;
+    margin-top: 4px;
     display: flex;
     flex-wrap: wrap;
     justify-content: center; /* 將按鈕水平置中 */
@@ -233,7 +282,7 @@ input[type="range"]{
 
 .vibe-button{
     width: 28%;
-    font-size: .9rem;
+    font-size: .8rem;
     margin: 0.2rem;
     padding: .2rem;
     background-color: #fff; /* 初始背景色 */
@@ -241,11 +290,12 @@ input[type="range"]{
     cursor: pointer;
     border-radius: 3px;
     transition: background-color 0.3s;
-    
+    box-shadow: 0 3px 3px rgba(0, 0, 0, .1);
+    border: none;
 }
 
 .vibe-button:hover{
-    background-color: #e9e9e9;
+    /* background-color: rgba(247, 215, 70, 0.281); */
 }
 
 .vibe-button.selected.color-1 { background-color: #FFDCFE; }
@@ -480,6 +530,8 @@ input[type="range"]::-moz-range-thumb{
 
 .select-btn.open ~ .list-items{
     opacity: 0;
+    width: inherit;
+    padding: 0 .7rem;
     animation-name: fadeInUp;
     -webkit-animation-name: fadeInUp;
     animation-duration: 0.4s;
@@ -490,7 +542,7 @@ input[type="range"]::-moz-range-thumb{
 
 .list-items{
     position: absolute;
-    width: 10rem;
+    width: inherit;
     margin-top: 0.2rem;
     border-radius: 8px;
     padding: 0;
@@ -511,14 +563,14 @@ input[type="range"]::-moz-range-thumb{
     height: 2rem;
     cursor: pointer;
     transition: 0.3s;
-    padding: 0.2rem 1rem;
+    padding: 0.2rem .5rem;
     border-radius: 8px;
 }
 .list-items .l-item:hover{
-    background-color: #e3f2fd;
+    /* background-color: #e3f2fd; */
 }
 .l-item .item-text{
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: #333;
 }
 .l-item .star-checkbox{
@@ -545,6 +597,8 @@ input[type="range"]::-moz-range-thumb{
     transform: scale(0);
     transition: all 0.2s ease-in-out;
 }
+
+
 
 @keyframes fadeInUp{
     from{
@@ -587,19 +641,20 @@ input[type="range"]::-moz-range-thumb{
 /* 預設的文字樣式 */
 .day-label {
     display: inline-block;
-    width: 2rem; /* 設置固定的寬度 */
-    height: 2rem; /* 設置固定的高度，確保寬高相等 */
+    width: 1.8rem; /* 設置固定的寬度 */
+    height: 1.8rem; /* 設置固定的高度，確保寬高相等 */
     line-height: 2rem; /* 設置行高，使文字垂直居中 */
     text-align: center; /* 使文字水平居中 */
     padding: 0; /* 移除 padding 以確保圓形 */
     margin-left: .2rem;
     margin-right: .2rem;
-    font-size: 14px;
+    font-size: .8rem;
     color: #333;
     cursor: pointer;
     border-radius: 50%; /* 使元素呈現圓形 */
-    background-color: #e4e4e4;
+    background-color: #ffffff;
     transition: background-color 0.3s ease-in-out;
+    box-shadow: 0 3px 3px rgba(0, 0, 0, .1);
 
 }
 
@@ -621,7 +676,7 @@ input[type="range"]::-moz-range-thumb{
     position: relative;
     padding-left: 2rem;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: .8rem;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -650,7 +705,7 @@ input[type="range"]::-moz-range-thumb{
 
 /* On mouse-over, add a grey background color */
 .parking-container:hover input ~ .checkmark {
-    background-color: #e9e9e9;
+    /* background-color: #e9e9e9; */
 }
 
 /* When the checkbox is checked, add an orange background */
@@ -684,9 +739,55 @@ input[type="range"]::-moz-range-thumb{
 
 #loading {
     display: none;
-    font-size: 16px;
+    font-size: .8rem;
     margin-top: 10px;
 }
 .fa-solid{
     cursor: pointer;
+}
+
+.filter-reset{
+    text-align: right;  /* 将内容对齐到右边 */
+    margin-top: 1rem;
+}
+
+.reset-btn {
+    display: inline-block;
+    font-size: .8rem;
+    padding: 5px 10px;
+    background-color: #EA9B00; /* 選中時的顏色 */
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;  /* 添加平滑的颜色过渡效果 */
+}
+
+.times-btn{
+    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* 將按鈕水平置中 */
+    margin-top: 0.25rem;
+}
+
+.time-button{
+    width: 28%;
+    font-size: .8rem;
+    margin: 0.2rem;
+    padding: .2rem;
+    background-color: #fff; /* 初始背景色 */
+    border: 1px solid #ccc; /* 邊框 */
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background-color 0.3s;
+    box-shadow: 0 3px 3px rgba(0, 0, 0, .1);
+    border: none;
+}
+.time-button.selected {
+    background-color: #EA9B00;
+    color: #FFF;
+}
+
+.filter-opentime{
+    padding-bottom: 0.3rem;
 }

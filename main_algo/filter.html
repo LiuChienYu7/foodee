@@ -18,29 +18,19 @@
                     <i class="fa-solid fa-times clear-search" style="display: none"></i> <!-- 叉叉图标 -->
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </div>
-                <!-- opening-hours -->
-                <div class="filter-fixed filter-opentime">
-                    <div class="filter-title">
-                        <label>營業時間</label>
-                    </div>
-                    <div class="opening-hours">
-                        <div class="weekday-row">
-                            <label class="day-label active" data-day="Monday">一</label>
-                            <label class="day-label active" data-day="Tuesday">二</label>
-                            <label class="day-label active" data-day="Wednesday">三</label>
-                            <label class="day-label active" data-day="Thursday">四</label>
-                            <label class="day-label active" data-day="Friday">五</label>
-                        </div>
-                        <div class="weekend-row">
-                            <label class="day-label active" data-day="Saturday">六</label>
-                            <label class="day-label active" data-day="Sunday">日</label>
-                        </div>
+                <div id="loading">搜尋中...</div>
+                <div class="message" id="message" style="display: none;">
+                    <p>目前沒有符合的餐廳：\</p>
+                    <p style="font-size: .7rem;">可以試試搜尋：文化中心、日式料理</p>
+                    <div class="message-btn">
+                        <div id="allBtn" class="all-btn">顯示全部餐廳</div>
+                        <div id="backBtn" class="back-btn">關閉</div>
                     </div>
                 </div>
                 <!-- price -->
                 <div class="filter-item filter-price">
                     <div class="filter-title">
-                        <label>價錢<span style="font-size: .85rem;">(最低主餐)</span></label>
+                        <label>價錢<span style="font-weight: normal;">（最低主餐）</span></label>
                     </div>
                     <div class="range-slider">
                         <span class="slider-track"></span>
@@ -69,6 +59,20 @@
                 <div class="filter-item filter-time">
                     <div class="filter-title">
                         <label>用餐時間限制</label>
+                    </div>
+                    <div class="times-btn">
+                        <button class="time-button selected">60</button>
+                        <button class="time-button selected">90</button>
+                        <button class="time-button selected">100</button>
+                        <button class="time-button selected">120</button>
+                        <button class="time-button selected">150</button>
+                        <button class="time-button selected">無限制</button>
+                    </div>
+                </div>
+                <!-- time -->
+                <div class="filter-item filter-time" style="display: none;">
+                    <div class="filter-title">
+                        <label>用餐時間限制</label>
                         <button id="no-limit-btn" class="active">無限制</button>
                     </div>
                     <div class="range-slider">
@@ -94,6 +98,25 @@
                         </div>
                     </div>
                 </div>
+                <!-- opening-hours -->
+                <div class="filter-item filter-opentime">
+                    <div class="filter-title">
+                        <label>營業時間</label>
+                    </div>
+                    <div class="opening-hours">
+                        <div class="weekday-row">
+                            <label class="day-label" data-day="Monday">一</label>
+                            <label class="day-label" data-day="Tuesday">二</label>
+                            <label class="day-label" data-day="Wednesday">三</label>
+                            <label class="day-label" data-day="Thursday">四</label>
+                            <label class="day-label" data-day="Friday">五</label>
+                        </div>
+                        <div class="weekend-row">
+                            <label class="day-label" data-day="Saturday">六</label>
+                            <label class="day-label" data-day="Sunday">日</label>
+                        </div>
+                    </div>
+                </div>
                 <!-- stars -->
                 <div class="filter-item filter-star">
                     <div class="filter-title">
@@ -109,25 +132,25 @@
                             <span class="star-checkbox">
                                 <i class="fa-solid fa-check check-icon"></i>
                             </span>
-                            <span class="item-text">3.5⭐</span>
+                            <span class="item-text">3.5</span>
                         </li>
                         <li class="l-item">
                             <span class="star-checkbox">
                                 <i class="fa-solid fa-check check-icon"></i>
                             </span>
-                            <span class="item-text">4⭐</span>
+                            <span class="item-text">4</span>
                         </li>
                         <li class="l-item">
                             <span class="star-checkbox">
                                 <i class="fa-solid fa-check check-icon"></i>
                             </span>
-                            <span class="item-text">4.5⭐</span>
+                            <span class="item-text">4.5</span>
                         </li>
                         <li class="l-item">
                             <span class="star-checkbox">
                                 <i class="fa-solid fa-check check-icon"></i>
                             </span>
-                            <span class="item-text">5⭐</span>
+                            <span class="item-text">5</span>
                         </li>
                     </ul>
                 </div>
@@ -162,6 +185,9 @@
                         </label> 
                     </div>
                 </div>
+                <div class="filter-reset">
+                    <div class="reset-btn">重置</div>
+                </div>
             </div>
         </div>
         <!-- 收起btn -->
@@ -170,7 +196,6 @@
         </div> -->
         <!-- 右邊區域 -->
         <div class="right-panel" id="right-panel">
-            <div id="loading">搜尋中...</div>
             <div id="results"></div>
             <iframe id="scale-iframe" src="scale2.html" style="width:100%; height:800px;"></iframe>
         </div>

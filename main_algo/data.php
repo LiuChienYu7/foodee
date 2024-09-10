@@ -34,8 +34,8 @@ JOIN
 WHERE 1=1
 ";
 
-// 新增篩選條件 - 根據 r_ids
-if (isset($_GET['r_ids'])) {
+
+if (isset($_GET['r_ids']) && !empty($_GET['r_ids'])) {  // 仅在 r_ids 参数存在且不为空时执行
     $rIds = explode(',', $_GET['r_ids']);
     $rIds = array_map('intval', $rIds); // 确保 r_id 是整数类型
     $rIdConditions = implode(',', $rIds);
@@ -50,16 +50,50 @@ if (isset($_GET['hasParking'])) {
     }
 }
 // 篩選條件 - 用餐時間
-if (isset($_GET['min_time']) && isset($_GET['max_time'])) {
-    $minTime = intval($_GET['min_time']);
-    $maxTime = intval($_GET['max_time']);
-    if (isset($_GET['no_limit']) && intval($_GET['no_limit']) === 1) {
-        $sql .= " AND (additional_.r_time_low BETWEEN $minTime AND $maxTime OR additional_.r_time_low IS NULL OR additional_.r_time_low = '')";
+
+if (isset($_GET['times'])) {
+    $timesList = explode(',', $_GET['times']);
+    
+    // 构建 SQL 条件
+    $timeConditions = array_map(function($time) use ($conn) {
+        if ($time === '無限制') {
+            // 对于"無限制"，排除时间限制
+            return "(additional_.r_time_low IS NULL OR additional_.r_time_low = '')";
+        } else {
+            // 否则根据具体的时间筛选
+            return "additional_.r_time_low = " . intval($time);
+        }
+    }, $timesList);
+
+    // 将所有条件合并到 SQL 查询中
+    $sql .= " AND (" . implode(' OR ', $timeConditions) . ")";
+}
+
+// if (isset($_GET['min_time']) && isset($_GET['max_time'])) {
+//     $minTime = intval($_GET['min_time']);
+//     $maxTime = intval($_GET['max_time']);
+//     if (isset($_GET['no_limit']) && intval($_GET['no_limit']) === 1) {
+//         $sql .= " AND (additional_.r_time_low BETWEEN $minTime AND $maxTime OR additional_.r_time_low IS NULL OR additional_.r_time_low = '')";
+//     } else {
+//         $sql .= " AND additional_.r_time_low BETWEEN $minTime AND $maxTime";
+//     }
+// } else if (isset($_GET['no_limit']) && intval($_GET['no_limit']) === 1) {
+//     $sql .= " AND (additional_.r_time_low IS NULL OR additional_.r_time_low = '')";
+// }
+
+
+// 篩選條件 - 用餐時間限制
+if (isset($_GET['selected_time'])) {
+    $selectedTime = $_GET['selected_time'];
+    
+    // 如果選擇的是 "無限制"，篩選 r_time_low 為空或者為 NULL 的項目
+    if ($selectedTime === '無限制') {
+        $sql .= " AND (additional_.r_time_low IS NULL OR additional_.r_time_low = '')";
     } else {
-        $sql .= " AND additional_.r_time_low BETWEEN $minTime AND $maxTime";
+        // 如果選擇了具體的時間值，篩選該時間
+        $selectedTime = intval($selectedTime);
+        $sql .= " AND additional_.r_time_low = $selectedTime";
     }
-} else if (isset($_GET['no_limit']) && intval($_GET['no_limit']) === 1) {
-    $sql .= " AND (additional_.r_time_low IS NULL OR additional_.r_time_low = '')";
 }
 
 // 篩選條件 - 評分
@@ -83,9 +117,8 @@ if (isset($_GET['vibes'])) {
 if (isset($_GET['min_price']) && isset($_GET['max_price'])) {
     $minPrice = intval($_GET['min_price']);
     $maxPrice = intval($_GET['max_price']);
-    $sql .= " AND r_price_low BETWEEN $minPrice AND $maxPrice";
+    $sql .= " AND additional_.r_price_low BETWEEN $minPrice AND $maxPrice";
 }
-
 
 // 篩選營業時間 - 根據 day 進行篩選
 if (isset($_GET['selectedDays'])) {
