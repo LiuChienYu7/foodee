@@ -1,8 +1,3 @@
-/* 基本樣式設置 */
-body {
-    background-color: rgb(247, 215, 70, 0.1);
-}
-
 .restaurant-section {
     display: none;
 }
@@ -13,7 +8,7 @@ body {
     margin: 10px;
     padding: 10px 20px;
     background-color: #4CAF50;
-    color: white;
+    color: #E0E0E0;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -109,7 +104,7 @@ body {
     margin: 0 5px;
     padding: 5px;
     border-radius: 5px;
-    background-color: white;
+    background-color: #E0E0E0;
 }
 
 #map {
@@ -200,7 +195,7 @@ svg{
 .toggle-button {
     padding: 10px 20px;
     background-color: #4CAF50;
-    color: white;
+    color: #E0E0E0;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -238,18 +233,23 @@ svg{
     display: flex;
     justify-content: center;
     flex-direction: column;
-    align-items: center;
     flex-wrap: wrap;
 }
 .middle-section1{
-    margin: auto;
+    margin-bottom: 10px;
 }
 .middle-section2{
-    margin: 10px 0;
+    padding-left: 45px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    width: -webkit-fill-available;
 }
 .middle-section2 svg{
-    margin-left: 10px;
-    height: 250px;
+    height:260px;
+}
+.spider{
+    width:100%;
 }
 .vote {
     z-index: 1000;
