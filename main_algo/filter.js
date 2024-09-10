@@ -152,9 +152,61 @@ function setMaxTimeInput() {
     slideTimeMax();
 }
 
+
+// Function to add star SVGs based on rating
+function addStars(container, rating) {
+    const fullStarSVG = `
+        <svg height=".9rem" width=".9rem" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 47.94 47.94" xml:space="preserve">
+            <path style="fill:#ED8A19;" d="M26.285,2.486l5.407,10.956c0.376,0.762,1.103,1.29,1.944,1.412l12.091,1.757
+            c2.118,0.308,2.963,2.91,1.431,4.403l-8.749,8.528c-0.608,0.593-0.886,1.448-0.742,2.285l2.065,12.042
+            c0.362,2.109-1.852,3.717-3.746,2.722l-10.814-5.685c-0.752-0.395-1.651-0.395-2.403,0l-10.814,5.685
+            c-1.894,0.996-4.108-0.613-3.746-2.722l2.065-12.042c0.144-0.837-0.134-1.692-0.742-2.285l-8.749-8.528
+            c-1.532-1.494-0.687-4.096,1.431-4.403l12.091-1.757c0.841-0.122,1.568-0.65,1.944-1.412l5.407-10.956
+            C22.602,0.567,25.338,0.567,26.285,2.486z"/>
+        </svg>
+    `;
+
+    const halfStarSVG = `
+        <svg height=".9rem" width=".9rem" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 47.94 47.94" xml:space="preserve">
+            <defs>
+                <clipPath id="half-star">
+                    <rect x="0" y="0" width="50%" height="100%"></rect> <!-- 只顯示左半邊 -->
+                </clipPath>
+            </defs>
+            <path style="fill:#ED8A19;" d="M26.285,2.486l5.407,10.956c0.376,0.762,1.103,1.29,1.944,1.412l12.091,1.757
+            c2.118,0.308,2.963,2.91,1.431,4.403l-8.749,8.528c-0.608,0.593-0.886,1.448-0.742,2.285l2.065,12.042
+            c0.362,2.109-1.852,3.717-3.746,2.722l-10.814-5.685c-0.752-0.395-1.651-0.395-2.403,0l-10.814,5.685
+            c-1.894,0.996-4.108-0.613-3.746-2.722l2.065-12.042c0.144-0.837-0.134-1.692-0.742-2.285l-8.749-8.528
+            c-1.532-1.494-0.687-4.096,1.431-4.403l12.091-1.757c0.841-0.122,1.568-0.65,1.944-1.412l5.407-10.956
+            C22.602,0.567,25.338,0.567,26.285,2.486z" clip-path="url(#half-star)"/>
+        </svg>
+    `;
+
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+
+    let starsHTML = '';
+
+    // Add full stars
+    for (let i = 0; i < fullStars; i++) {
+        starsHTML += fullStarSVG;
+    }
+
+    // Add half star if needed
+    if (hasHalfStar) {
+        starsHTML += halfStarSVG;
+    }
+
+    // Insert stars before the rating number
+    container.innerHTML = starsHTML + container.innerHTML;
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('search');
     const clearSearchIcon = document.querySelector('.clear-search');
+    const noIdMessage = document.getElementById('message');
+    const allButton = document.querySelector('.all-btn');
+    const backButton = document.querySelector('.back-btn');
     const maxSelection = 5;
     const colors = ['color-1', 'color-2', 'color-3', 'color-4', 'color-5'];
     const vibeButtons = document.querySelectorAll('.vibe-button');
@@ -178,9 +230,24 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
     const dayLabels = document.querySelectorAll('.day-label');
+    const timeButtons = document.querySelectorAll('.time-button');
+    let selectedTimes = [];  // 存储被选中的时间
+
+    const starItems = document.querySelectorAll('.l-item .item-text');
+    starItems.forEach(item => {
+        const rating = parseFloat(item.textContent);  // 取得數字評分
+        addStars(item, rating);  // 添加對應的星星
+    });
 
     dayLabels.forEach(label => {
         label.addEventListener('click', function() {
+            label.classList.toggle('active');  // 切換選中狀態
+            applyFilters();  // 調用篩選函數
+        });
+    });
+
+    timeButtons.forEach(item => {
+        item.addEventListener('click', function() {
             label.classList.toggle('active');  // 切換選中狀態
             applyFilters();  // 調用篩選函數
         });
@@ -190,6 +257,76 @@ document.addEventListener('DOMContentLoaded', function () {
     checkboxes.forEach(checkbox => {
         checkbox.checked = true;  // 設置 checkbox 為已選擇狀態
     });
+    function resetFiltersToDefault() {
+        // 重置价格过滤器到默认状态
+        minVal.value = minVal.min;
+        maxVal.value = maxVal.max;
+        priceInputMin.value = minVal.min;
+        priceInputMax.value = maxVal.max;
+        slideMin();
+        slideMax();
+    
+        // 重置时间过滤器到默认状态
+        // minTimeVal.value = minTimeVal.min;
+        // maxTimeVal.value = maxTimeVal.max;
+        // timeInputMin.value = minTimeVal.min;
+        // timeInputMax.value = maxTimeVal.max;
+        // slideTimeMin();
+        // slideTimeMax();
+        // 重置 selectedTimes 并选中所有时间按钮
+        selectedTimes = [];  // 清空数组，确保重新选择
+        timeButtons.forEach(button => {
+            const timeValue = button.innerText.trim();
+            selectedTimes.push(timeValue);  // 将每个按钮的值添加到 selectedTimes
+            button.classList.add('selected');  // 设置为选中状态
+            button.classList.add('active'); 
+        });
+    
+        // 取消所有选中的气氛按钮
+        vibeButtons.forEach(button => {
+            button.classList.remove('selected');
+            // 重置按钮颜色等其他状态
+        });
+       selectedButtons = [];
+       availableColors = [...colors];
+
+        // 取消星星的勾选
+        items.forEach(item => {
+            item.classList.remove('checked');
+        });
+        const btnText = document.querySelector('.btn-text');
+        btnText.innerText = "選擇評分";  // 重置按钮文本
+
+        // 取消停车场的勾选
+        parkingCheckbox.checked = false;
+    
+        // 其他过滤器的重置逻辑（如星级、星期等）
+        checkboxes.forEach(checkbox => checkbox.checked = false);
+        dayLabels.forEach(label => label.classList.remove('active'));
+    
+        // 应用过滤器（显示所有餐厅）
+        restaurantIds = [];
+        applyFilters(true);
+    }
+    
+    
+    function fetchAllRestaurantIds() {
+        // 不传递任何筛选条件，获取所有餐厅
+        // 檢查 fetch 回傳的資料
+        fetch('http://localhost/food_project/filter/data.php?')
+            .then(response => response.json())
+            .then(data => {
+                console.log("Fetched data:", data);  // 輸出資料，檢查是否正確
+                if (data && data.length > 0) {
+                    restaurantIds = data.map(item => item.r_id);
+                    console.log("Restaurant IDs:", restaurantIds);  // 檢查 restaurantIds 是否正確
+                    applyFilters();
+                } else {
+                    console.error("No restaurant data found.");
+                }
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    }
     function fetchData() {
         let query = document.getElementById('search').value.trim();
         if (query === "") {
@@ -215,18 +352,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 // 2. 清空之前存储的 r_id
                 restaurantIds = [];
     
-                if (data.error|| data.length === 0) {
-                    // 只在有错误时显示错误信息
-                    console.error("Error:", data.error);
-                    // 显示提示信息
-                    d3.select("#results").html("沒有找到符合條件的餐廳");
-                    // 隐藏 iframe
-                    const iframe = document.getElementById('scale-iframe');
-                    if (iframe) {
-                        iframe.style.display = 'none'; // 隐藏 iframe
-                    }
-
-                } else {
+                if (data && (data.error || data.length === 0)) {
+                    // 只在有错误或无数据时显示错误信息
+                    console.error("Error:", data.error || "No data found");
+                    noIdMessage.classList.remove('fade-out');
+                    noIdMessage.style.display = 'block';
+                }else {
                     // 处理成功返回的数据
                     data.forEach(d => {
                         // 将 r_id 存储到数组中
@@ -248,12 +379,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('loading').style.display = 'none';
                 console.error('獲取數據錯誤:', error);
                 // d3.select("#results").html("無法取得數據，請稍後再試。");
-                d3.select("#results").html("沒有找到符合條件的餐廳");
-                // 隐藏 iframe
-                const iframe = document.getElementById('scale-iframe');
-                if (iframe) {
-                    iframe.style.display = 'none'; // 隐藏 iframe
-                }
+                noIdMessage.classList.remove('fade-out');
+                noIdMessage.style.display = 'block';
             });
     }
     // 更新篩選條件
@@ -263,7 +390,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const maxTime = maxTimeSlider.value;
         const hasParking = parkingCheckbox.checked ? 1 : 0;
         const selectedRatings = Array.from(document.querySelectorAll('.filter-star .l-item.checked .item-text'))
-            .map(el => el.innerText.replace('⭐', '').trim());
+        .map(el => el.textContent.match(/[\d\.]+/)[0]);  // 仅提取数字部分
         const selectedVibes = Array.from(vibeButtons)
             .filter(button => button.classList.contains('selected'))
             .map(button => button.innerText.trim());
@@ -273,17 +400,31 @@ document.addEventListener('DOMContentLoaded', function () {
         button.classList.add("selected");
         const selectedDays = Array.from(document.querySelectorAll('.day-label.active'))
             .map(label => label.getAttribute('data-day'));
+                // 获取选中的时间限制，作为查询参数
+        const selectedTimesQuery = selectedTimes.length > 0 
+            ? selectedTimes.map(time => encodeURIComponent(time)).join(',')
+            : '';
         usedRestaurantIds = [];
-
         // 基于 restaurantIds 进行初步筛选
-        let filteredIds = restaurantIds; // 默认使用全局的 restaurantIds
-    
+        // 如果 restaurantIds 为空，则获取所有餐厅
+        if (restaurantIds.length === 0) {
+            console.log("restaurantIds is empty, fetching all restaurants...");
+            fetchAllRestaurantIds(); // 获取所有餐厅的 ID
+            return;  // 暂停当前的过滤逻辑，等待餐厅数据获取完成后再调用 applyFilters
+        }
 
-        let url = 'http://localhost/期末丁丁/foodee-main/main_algo/data.php?';
+        let filteredIds = restaurantIds; // 使用 restaurantIds 进行过滤
+
+        let url = 'http://localhost/food_project/filter/data.php?';
+
+        // 如果有选中的时间限制，加入 URL 参数
+        if (selectedTimesQuery) {
+            url += `times=${selectedTimesQuery}&`;
+        }
     
         if (selectedVibes.length > 0) {
             const vibeQuery = selectedVibes.map(vibe => encodeURIComponent(vibe)).join(',');
-            url += `vibes=${vibeQuery}&`; // 應該使用 `vibes` 而不是 `vibe`
+            url += `vibes=${vibeQuery}&`; 
         }
 
         if (selectedRatings.length > 0) {
@@ -355,8 +496,19 @@ document.addEventListener('DOMContentLoaded', function () {
            
     }
 
+    document.querySelector('.reset-btn').addEventListener('click', function() {
+        const resetButton = this;
+        // 重置过滤器到默认状态
+        resetFiltersToDefault();
+
+        // 显示所有餐厅
+        fetchAllRestaurantIds();
+    });
+
     // 通过 JavaScript 绑定事件，而不是在 HTML 中使用 onclick
     document.querySelector('.fa-magnifying-glass').addEventListener('click', fetchData);
+
+
 
     // 监听输入框的按键事件
     document.getElementById('search').addEventListener('keypress', function (event) {
@@ -377,61 +529,82 @@ document.addEventListener('DOMContentLoaded', function () {
     clearSearchIcon.addEventListener('click', function() {
         searchInput.value = '';
         clearSearchIcon.style.display = 'none';
-        // 隐藏 iframe
-        const iframe = document.getElementById('scale-iframe');
-        if (iframe) {
-            iframe.style.display = 'block'; // 隐藏 iframe
-        }
-        d3.select("#results").html("");
+        noIdMessage.style.display = 'none';
         restaurantIds = [];
         applyFilters(); // 恢复默认状态
+    });
+
+    allButton.addEventListener('click', function(){
+        searchInput.value = '';
+        clearSearchIcon.style.display = 'none';
+        noIdMessage.classList.add('fade-out');
+        setTimeout(() => {
+            noIdMessage.style.display = 'none';
+        }, 500);
+        // 重置过滤器到默认状态
+        resetFiltersToDefault();
+
+        // 显示所有餐厅
+        fetchAllRestaurantIds();
+        
+    });
+
+    backButton.addEventListener('click', function(){
+        searchInput.value = '';
+        clearSearchIcon.style.display = 'none';
+        noIdMessage.style.display = 'none';
+        noIdMessage.classList.add('fade-out');
+        applyFilters();
+        setTimeout(() => {
+            noIdMessage.style.display = 'none';
+        }, 500);
     });
     
    // 監聽每個按鈕的點擊事件
    vibeButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        if (button.classList.contains('selected')) {
-            button.classList.remove('selected');
-            const index = selectedButtons.indexOf(button);
-            selectedButtons.splice(index, 1);
-            const colorClass = colors.find(color => button.classList.contains(color));
-            button.classList.remove(colorClass);
-            availableColors.push(colorClass);
-            availableColors.sort((a, b) => colors.indexOf(a) - colors.indexOf(b));
-        } else {
-            if (selectedButtons.length < maxSelection && availableColors.length > 0) {
-                button.classList.add('selected');
-                selectedButtons.push(button);
-                const colorClass = availableColors.shift();
-                button.classList.add(colorClass);
-                console.log(`Button selected: ${button.innerText.trim()}, Color class added: ${colorClass}`);
-            } else if (selectedButtons.length >= maxSelection) {
-                alert(`最多只能選擇 ${maxSelection} 個選項`);
+        button.addEventListener('click', () => {
+            if (button.classList.contains('selected')) {
+                button.classList.remove('selected');
+                const index = selectedButtons.indexOf(button);
+                selectedButtons.splice(index, 1);
+                const colorClass = colors.find(color => button.classList.contains(color));
+                button.classList.remove(colorClass);
+                availableColors.push(colorClass);
+                availableColors.sort((a, b) => colors.indexOf(a) - colors.indexOf(b));
+            } else {
+                if (selectedButtons.length < maxSelection && availableColors.length > 0) {
+                    button.classList.add('selected');
+                    selectedButtons.push(button);
+                    const colorClass = availableColors.shift();
+                    button.classList.add(colorClass);
+                    console.log(`Button selected: ${button.innerText.trim()}, Color class added: ${colorClass}`);
+                } else if (selectedButtons.length >= maxSelection) {
+                    alert(`最多只能選擇 ${maxSelection} 個選項`);
+                }
             }
-        }
 
-        // 收集所有選中的氛圍名稱和顏色
-        const selectedVibesWithColors = selectedButtons.map(button => ({
-            vibe: button.innerText.trim(),
-            colorClass: colors.find(color => button.classList.contains(color))
-        }));
+            // 收集所有選中的氛圍名稱和顏色
+            const selectedVibesWithColors = selectedButtons.map(button => ({
+                vibe: button.innerText.trim(),
+                colorClass: colors.find(color => button.classList.contains(color))
+            }));
 
-        console.log(`Selected Vibes with Colors:`, selectedVibesWithColors);
+            console.log(`Selected Vibes with Colors:`, selectedVibesWithColors);
 
-        // 將選中的氛圍名稱和顏色傳遞到主頁面
-        const iframe = document.getElementById('scale-iframe');
-        if (iframe && iframe.contentWindow) {
-            // 创建消息对象，并将 selectedVibesWithColors 作为数据发送
-            const message = {
-                type: 'vibesWithColors',  // 指定消息类型
-                data: selectedVibesWithColors  // 传递整个对象数组，而不是单一的颜色
-            };
-            iframe.contentWindow.postMessage(message, '*');
-        }
+            // 將選中的氛圍名稱和顏色傳遞到主頁面
+            const iframe = document.getElementById('scale-iframe');
+            if (iframe && iframe.contentWindow) {
+                // 创建消息对象，并将 selectedVibesWithColors 作为数据发送
+                const message = {
+                    type: 'vibesWithColors',  // 指定消息类型
+                    data: selectedVibesWithColors  // 传递整个对象数组，而不是单一的颜色
+                };
+                iframe.contentWindow.postMessage(message, '*');
+            }
 
-        applyFilters();
+            applyFilters();
+        });
     });
-});
 
 
 
@@ -465,31 +638,21 @@ document.addEventListener('DOMContentLoaded', function () {
         applyFilters();
     });
 
-    // 監聽滑桿和輸入框變化
-    minTimeSlider.addEventListener('input', function() {
-        filterItemTime.style.opacity = 1;
-        applyFilters();
-    });
-    maxTimeSlider.addEventListener('input', function() {
-        filterItemTime.style.opacity = 1;
-        applyFilters();
-    });
-    minTimeInput.addEventListener('change', function() {
-        filterItemTime.style.opacity = 1;
-        applyFilters();
-    });
-    maxTimeInput.addEventListener('change', function() {
-        filterItemTime.style.opacity = 1;
-        applyFilters();
+    // 为每个 timeButton 添加事件监听器
+    timeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            filterItemTime.style.opacity = 1;
+        });
     });
 
+
     // 當「無限制」按鈕被點擊時
-    noLimitBtn.addEventListener('click', function () {
-        isNoLimitActive = !isNoLimitActive;
-        noLimitBtn.classList.toggle('active', isNoLimitActive);
-        filterItemTime.style.opacity = 1;
-        applyFilters();
-    });
+    // noLimitBtn.addEventListener('click', function () {
+    //     isNoLimitActive = !isNoLimitActive;
+    //     noLimitBtn.classList.toggle('active', isNoLimitActive);
+    //     filterItemTime.style.opacity = 1;
+    //     applyFilters();
+    // });
 
     function updateTimeSliders() {
         minTimeSlider.value = parseInt(minTimeInput.value, 10);
@@ -508,6 +671,7 @@ document.addEventListener('DOMContentLoaded', function () {
         event.stopPropagation(); // 阻止事件冒泡
     });
 
+    // 处理每个评分项点击事件
     items.forEach((item) => {
         item.addEventListener("click", () => {
             item.classList.toggle("checked");
@@ -516,17 +680,43 @@ document.addEventListener('DOMContentLoaded', function () {
                 btnText = document.querySelector(".btn-text");
 
             if (checkedItems && checkedItems.length > 0) {
-                // 獲取所有選中的星等
-                let selectedText = Array.from(checkedItems).map(itemTextElement => itemTextElement.innerText.replace('⭐', '')).join('、');
-                btnText.innerText = `${selectedText}⭐`;
+                // 获取所有选中的评分，仅显示数字部分
+                let selectedText = Array.from(checkedItems).map(itemTextElement => itemTextElement.textContent.match(/[\d\.]+/)[0]).join('、');
+                btnText.innerText = selectedText;  // 仅显示数字
             } else {
-                btnText.innerText = "選擇評分";
+                btnText.innerText = "選擇評分";  // 没有选择时的默认文本
             }
 
-            // 调用 applyFilters 函数
-            applyFilters();
+        // 调用 applyFilters 函数
+        applyFilters();
         });
     });
+
+// 初始化并监听每个时间按钮的点击事件
+timeButtons.forEach(button => {
+    // 初始状态下，如果有按钮带有 active 类，加入 selectedTimes 数组
+    if (button.classList.contains('selected')) {
+        selectedTimes.push(button.innerText.trim());  // 将初始激活的按钮值加入 selectedTimes
+    }
+
+    // 监听每个时间按钮的点击事件
+    button.addEventListener('click', () => {
+        const timeValue = button.innerText.trim();  // 获取按钮中的时间值
+
+        // 如果已经是 selected 状态，则取消选中
+        if (button.classList.contains('selected')) {
+            button.classList.remove('selected');  // 移除选中状态
+            selectedTimes = selectedTimes.filter(time => time !== timeValue);  // 从数组中移除
+        } else {
+            button.classList.add('selected');  // 添加选中状态
+            selectedTimes.push(timeValue);  // 加入数组
+        }
+
+        // 调用 applyFilters 更新筛选
+        applyFilters();
+    });
+});
+    
     // 初始化時顯示滑桿和輸入框的值
     updateTimeSliders();
     applyFilters();
