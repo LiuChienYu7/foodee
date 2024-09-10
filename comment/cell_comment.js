@@ -1,4 +1,3 @@
-// 確保這個變數已經在前面PHP中定義了
 if (typeof reviewData !== "undefined") {
 } else {
   console.error("reviewData is not defined.");
@@ -6,21 +5,17 @@ if (typeof reviewData !== "undefined") {
 
 initializeReviews(reviewData);
 
-// 在点击“评论”时再调取这个函数
+// 點擊「評論」後調用這個函數
 d3.select(".comment_comment").on("click", function () {
-  // 对现有内容执行淡出动画
-  d3.selectAll(".upper-section svg")
-    .style("opacity", 0) // 设置动画目标样式
-    .remove(); // 在动画结束后移除元素
-
-  initializeReviews(reviewData);
+  d3.selectAll(".upper-section svg").remove(); // 移除現有的 SVG
+  initializeReviews(reviewData); // 重新初始化
 });
 
 function initializeReviews(reviewData) {
   const data = [
     {
       id: 1,
-      text: "食物總評",
+      text: "食物",
       reviews: reviewData.map((d) => d.food_comment_sum),
       details: reviewData.map((d) => [
         d.food_review1,
@@ -30,7 +25,7 @@ function initializeReviews(reviewData) {
     },
     {
       id: 2,
-      text: "服務總評",
+      text: "服務",
       reviews: reviewData.map((d) => d.service_comment_sum),
       details: reviewData.map((d) => [
         d.service_review1,
@@ -40,7 +35,7 @@ function initializeReviews(reviewData) {
     },
     {
       id: 3,
-      text: "划算總評",
+      text: "划算",
       reviews: reviewData.map((d) => d.value_comment_sum),
       details: reviewData.map((d) => [
         d.value_review1,
@@ -50,7 +45,7 @@ function initializeReviews(reviewData) {
     },
     {
       id: 4,
-      text: "環境總評",
+      text: "環境",
       reviews: reviewData.map((d) => d.atmosphere_comment_sum),
       details: reviewData.map((d) => [
         d.atmosphere_review1,
@@ -60,235 +55,191 @@ function initializeReviews(reviewData) {
     },
   ];
 
-  console.log(data);
-
-  d3.select(".comment_comment")
-    .on("mouseover", null)
-    .on("mouseout", null);
-
+  const pageWidth = window.innerWidth; // 獲取頁面寬度
+  const blockWidth = (pageWidth - 100) / 4; // 計算總評區塊的寬度，確保不會超出頁面寬度
   const svg = d3
     .select(".upper-section")
     .append("svg")
-    .attr("width", 600)
-    .attr("height", 220);
+    .attr("width", pageWidth)
+    //.attr("height", 300); // 設置 SVG 的寬度和高度
 
-  let Fixed = false;
+  let Fixed = null; // 記錄當前選中的總評狀態
+
   const groups = svg
     .selectAll(".block-group")
     .data(data)
     .enter()
     .append("g")
     .attr("class", "block-group")
-    .attr("transform", (d, i) => `translate(0, ${i * 45})`)
+    .attr("transform", (d, i) => `translate(${i * blockWidth}, 0)`) // 水平排列總評區塊
     .on("mouseover", function () {
-      // 设置鼠标指针为点击手型
       d3.select(this).style("cursor", "pointer");
     })
     .on("click", function (event, d) {
-      // 點擊時鎖定顯示評論細節
-      if (Fixed) {
-        // 全部標籤變正常
-        d3.selectAll(".block-group").select("rect").attr("fill", "#F8EDE3"); // 恢復原背景顏色
-        d3.selectAll(".block-group")
-          .select("text")
-          .attr("fill", "black") // 恢復原文字顏色
-          .attr("font-weight", "normal");
-
-        // 當取消固定時，隱藏所有評論細節
-        svg.selectAll(".link, .review-group").remove();
-        Fixed = false; // 切換固定狀態
-      } else {
-        // 點擊時保留已顯示的評論細節
-        showReviews(svg, d, this);
-        Fixed = true;
-      }
+      // 呼叫顯示評論的函數
+      handleButtonClick(this, svg, d, blockWidth);
     });
 
-  groups
-    .append("rect")
-    .attr("class", "block")
-    .attr("width", 100)
-    .attr("height", 30)
-    .attr("rx", 15) // 圓角矩形的半徑
-    .attr("ry", 15)
-    .attr("fill", "#F8EDE3"); // 正確設定背景顏色
-
+  // 繪製區塊中的文字
   groups
     .append("text")
     .attr("class", "block-text")
-    .attr("x", 50)
-    .attr("y", 18)
+    .attr("x", 40)
+    .attr("y", 35)
     .attr("text-anchor", "middle")
     .attr("dominant-baseline", "middle")
     .attr("fill", "black")
-    .text((d) => d.text);
+    .text((d) => d.text)
+    .each(function (d) {
+      const textElement = d3.select(this);
+      const bbox = textElement.node().getBBox();
 
-  const colors = ["#FF70AE", "#85B4FF", "#FFCE47"]; // 定義顏色陣列
+      // 繪製根據文字大小調整的總評區塊
+      d3.select(this.parentNode)
+        .insert("rect", "text") // 在 text 前插入 rect
+        .attr("class", "block")
+        .attr("width", bbox.width + 20) // 根據文字的寬度來設置 rect 寬度
+        .attr("height", bbox.height + 10) // 根據文字的高度來設置 rect 高度
+        .attr("x", bbox.x - 10) // 調整 rect 的 x 位置
+        .attr("y", bbox.y - 5) // 調整 rect 的 y 位置
+        .attr("rx", 15) // 設置圓角
+        .attr("ry", 15)
+        .attr("fill", "#F8EDE3"); // 預設背景顏色
+    });
 
-  // 一開始就顯示第一個類別的總評和第一家餐廳的評論細節
+  // 預設顯示第一個類別（食物）的總評和評論細節
   const firstCategory = data[0];
-  console.log("spider", firstCategory);
-  showReviews(svg, firstCategory, groups.nodes()[0]); // 顯示第一個類別的總評
+  const firstGroup = groups.nodes()[0]; // 獲取第一個按鈕
+  handleButtonClick(firstGroup, svg, firstCategory, blockWidth); // 模擬點擊第一個按鈕
 }
 
+// 點擊按鈕後處理顯示評論的函數
+function handleButtonClick(button, svg, category, blockWidth) {
+  d3.selectAll(".block-group").select("rect").attr("fill", "#F8EDE3"); // 恢復預設背景顏色
+  d3.selectAll(".block-group").select("text").attr("fill", "black").attr("font-weight", "normal");
 
-function showReviews(svg, d, blockGroup) {
-  console.log("Data passed to showReviews:", d); // 检查传入的数据
-  if (!d.reviews || !Array.isArray(d.reviews)) {
-    console.error("Reviews data is missing or not an array:", d.reviews);
-    return;
-  }
-  // 清除之前的线条和区块
-  svg.selectAll(".link, .review-block, .detail-link, .detail-block").remove();
+  // 選中當前的總評並改變顏色
+  d3.select(button).select("rect").attr("fill", "#FFD700"); // 選中總評變為亮色
+  d3.select(button).select("text").attr("fill", "white").attr("font-weight", "bold");
 
-  const blockX = 20;
-  const blockY = 30; // 这里可以根据需要调整Y坐标 一开始高度
-  const blockWidth = 150;
-  const colors = ["#FF70AE", "#85B4FF", "#FFCE47"]; // 定义颜色数组
+  showReviews(svg, category, button, blockWidth); // 顯示評論
+}
 
-  // 获取总评区块的位置，作为连线的起点
-  const blockTransform = d3.select(blockGroup).attr("transform");
-  const [translateX, translateY] = blockTransform
-    .match(/translate\(([^,]+),([^)]+)\)/)
-    .slice(1)
-    .map(Number);
+function showReviews(svg, d, blockGroup, blockWidth) {
+  // 清除之前的评论区块
+  svg.selectAll(".review-group").remove();
 
-  let previousEndY = blockY + 20; // 初始Y位置
+  let previousEndY = 60; // 初始化Y位置，確保從適當位置開始，調整為 50px 向下移動 10px
+  const colors = ["#FF70AE", "#85B4FF", "#FFCE47"]; // 顏色陣列
+  const fixedXPosition = 20; // 固定左邊距離，確保所有評論位置一致
 
   d.reviews.forEach((review, i) => {
-    // 计算文本高度
     const tempText = svg
       .append("text")
       .attr("class", "temp-text")
-      .attr("x", 0) // 放在视图外，避免影响布局
-      .attr("y", 0)
-      .attr("text-anchor", "start")
-      .attr("dominant-baseline", "hanging")
+      .attr("x", fixedXPosition) // 固定X軸位置
+      .attr("y", 20)
       .attr("visibility", "hidden")
-      .attr("width", 130) // 根据区块宽度设置文本宽度
       .text(review);
 
-    wrapText(tempText, 130); // 自动换行
+    // 根據矩形宽度進行換行處理
+    wrapText(tempText, blockWidth - 40);
 
     const bbox = tempText.node().getBBox();
-    const textHeight = bbox.height + 10; // 加上适当的 padding
-    tempText.remove();
+    const textHeight = bbox.height + 15; // 加上 padding
+    const textWidth = bbox.width + 20; // 加上 padding
+    tempText.remove(); // 移除臨時元素
 
-    // 根据文本高度调整区块高度
-    const blockHeight = Math.max(textHeight, 45); // 设置最小高度为 45，避免过小
-    const startX = translateX - 50 + blockWidth;
-    const startY = translateY + 15; //线连在同一个点上
-    const endX = blockX + 120;
-    const endY = previousEndY + i * 3; // 更新endY位置
-
-    // 更新下一个区块的起始位置
-    previousEndY += blockHeight + 5; // 20 是区块之间的间距
-
-    // 绘制非直线曲线并添加动画效果
-    svg
-      .append("path")
-      .attr("class", "link")
-      .attr("fill", "none")
-      .attr("stroke", colors[i]) // 使用颜色数组中的颜色
-      .attr("stroke-width", 2)
-      .attr(
-        "d",
-        d3
-          .linkHorizontal()
-          .x((d) => d[0])
-          .y((d) => d[1])({
-          source: [startX, startY],
-          target: [startX, startY], // 动画起始点在源点
-        })
-      )
-      .transition() // 动画过渡
-      .duration(300) // 持续时间300ms
-      .attr(
-        "d",
-        d3
-          .linkHorizontal()
-          .x((d) => d[0])
-          .y((d) => d[1])({
-          source: [startX, startY],
-          target: [endX - 20, endY - 10],
-        })
-      );
+    const blockHeight = Math.max(textHeight, 50); // 設定區塊的最小高度
 
     const reviewGroup = svg
       .append("g")
       .attr("class", `review-group review-${i + 1}`)
-      .attr(
-        "transform",
-        `translate(${endX + 10}, ${endY - 40})`
-      ) //调整区块间距
-      .datum(d);
+      .attr("transform", `translate(${fixedXPosition}, ${previousEndY})`); // 使用固定的X位置
 
-    // 添加区块
+    previousEndY += blockHeight + 20; // 每個區塊之間的間距增加為 20
+
     reviewGroup
       .append("rect")
-      .attr("width", 0) // 动画起始宽度为0
-      .attr("height", blockHeight)
+      .attr("width", textWidth) // 根據計算出的文字寬度設定矩形寬度
+      .attr("height", blockHeight) // 設定矩形高度為文本高度
       .attr("rx", 10)
       .attr("ry", 10)
-      .attr("fill", colors[i]) // 使用颜色数组中的颜色作为背景
-      .attr("fill-opacity", 0.5)
-      .attr("transform", "translate(-30, 0)") // 向左移动区块20像素
-      .transition() // 动画过渡
-      .duration(300) // 持续时间300ms
-      .attr("width", 190) // 最终宽度为190
-      .attr("height", blockHeight);
+      .attr("fill", colors[i])
+      .attr("fill-opacity", 0.5);
 
-    // 添加文字
     reviewGroup
       .append("text")
-      .attr("class", "block-text")
-      .attr("x", -20)
-      .attr("y", 20)
+      .attr("x", 10) // 保持左對齊
+      .attr("y", 0)
       .attr("text-anchor", "start")
       .attr("dominant-baseline", "middle")
+      .attr("opacity", 0)
       .text(review)
-      .transition() // 动画过渡
-      .duration(300) // 持续时间300ms
-      .call(wrapText, 180) // 自动换行
-      .attr("opacity", 1); // 最终不透明度为1
+      .call(wrapText, blockWidth - 40) // 自动换行处理
+      .transition()
+      .duration(500)
+      .attr("opacity", 1); // 淡入动画
+  });
+
+  // 動態調整 SVG 的高度，以包裹所有評論
+  svg.attr("height", previousEndY + 10); // 增加10px padding
+}
+
+// 文字換行函數
+function wrapText(text, blockWidth) {
+  text.each(function () {
+    const textElement = d3.select(this);
+
+    // 先按句號和逗號進行分割
+    const sentences = textElement.text().split(/(?<=。|，)/).filter(Boolean); // 按句號和逗號分割文本
+    let y = parseFloat(textElement.attr("y")),
+      x = textElement.attr("x"),
+      lineNumber = 0,
+      lineHeight = 10; // 設置行間距為 10px
+
+    textElement.text(null); // 清空文本内容，準備進行逐句插入
+
+    sentences.forEach((sentence) => {
+      let tspan = textElement.append("tspan")
+        .attr("x", x)
+        .attr("y", y + lineNumber * lineHeight)
+        .attr("text-anchor", "start"); // 確保左對齊
+      tspan.text(sentence);
+
+      // 如果当前行的寬度超過了區塊寬度，進行換行處理
+      if (tspan.node().getComputedTextLength() > blockWidth) {
+        wrapSentenceInTspans(tspan, blockWidth, x, ++lineNumber * lineHeight + y);
+      }
+      lineNumber++; // 每次新句子的 y 位置增加 5px
+    });
   });
 }
 
-// 自动换行函数
-function wrapText(text, width) {
-  text.each(function () {
-    const text = d3.select(this);
-    const words = text.text().split(/(?=。)/).reverse(); // 根据句号进行分割
-    let word,
-      line = [],
-      lineNumber = 0,
-      lineHeight = 1.1, // ems
-      y = text.attr("y"),
-      x = text.attr("x"),
-      dy = parseFloat(text.attr("dy") || 0),
-      tspan = text
-        .text(null)
+function wrapSentenceInTspans(tspan, blockWidth, x, y) {
+  const words = tspan.text().split(/\s+/).reverse(); // 將句子分割成單詞
+  let word,
+    line = [],
+    lineNumber = 0,
+    lineHeight = 10; // 設定行高為 5px
+
+  tspan.text(null); // 清空當前 tspan 的內容，準備換行
+
+  while ((word = words.pop())) {
+    line.push(word);
+    tspan.text(line.join(" ")); // 更新當前行的內容
+
+    // 如果當前行的長度超過 blockWidth，將最後一個單詞移至下一行
+    if (tspan.node().getComputedTextLength() > blockWidth) {
+      line.pop(); // 移除超過寬度的單詞
+      tspan.text(line.join(" ")); // 還原到上一次狀態
+      line = [word]; // 將超出寬度的單詞移至新行
+      tspan = tspan // 創建新的 tspan 來換行
         .append("tspan")
-        .attr("x", x)
-        .attr("y", y)
-        .attr("dy", dy + "em");
-
-    while ((word = words.pop())) {
-      line.push(word);
-      tspan.text(line.join(""));
-
-      // 检查是否达到换行宽度或者遇到句号，并且确保句号不是文本的最后一个
-      if (tspan.node().getComputedTextLength() > width || (word.includes("。") && words.length > 0)) {
-        line.pop(); // 移除最后一个字符，让它移到下一行
-        tspan.text(line.join(""));
-        line = [word];
-        tspan = text
-          .append("tspan")
-          .attr("x", x)
-          .attr("y", y)
-          .attr("dy", ++lineNumber * lineHeight + dy + "em")
-          .text(word);
-      }
+        .attr("x", x) // 確保新行左對齊
+        .attr("y", y + ++lineNumber * lineHeight)
+        .attr("text-anchor", "start") // 左對齊
+        .text(word);
     }
-  });
+  }
 }
