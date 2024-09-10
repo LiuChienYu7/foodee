@@ -89,7 +89,7 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
         $tags = explode($delimiter, $items);
         foreach ($tags as $tag) {
             $tag = trim($tag);
-            $backgroundColor = isset($selectedItems[$r_id]) && in_array($tag, $selectedItems[$r_id]) ? 'background-color: #fff89e;' : 'background-color: #FFFFFF;';
+            $backgroundColor = isset($selectedItems[$r_id]) && in_array($tag, $selectedItems[$r_id]) ? 'background-color: rgba(252, 235, 167, 0.8);' : 'background-color: rgba(224,224,224,0.3);';
             echo "<span style='padding: 5px; margin: 5px; border-radius: 5px; $backgroundColor'>" . htmlspecialchars($tag) . "</span>";
         }
     }
@@ -170,20 +170,20 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
                 }
 
                 echo "<div class='info-row'>";
-                $parkingTagClass = isset($parking[$r_id]) && $parking[$r_id] ? 'background-color: #fff89e;' : 'background-color: #FFFFFF;';
+                $parkingTagClass = isset($parking[$r_id]) && $parking[$r_id] ? 'background-color: rgba(252, 235, 167, 0.8);' : 'background-color: rgba(224,224,224,0.3);';
                 if (isset($restaurant_data['r_has_parking'])) {
                     $parkingImage = $restaurant_data['r_has_parking'] == 1 ? 'parking.png' : 'no_parking.png';
                     echo "<div class='parking-tag' style='display: inline-block; $parkingTagClass'><img src='$parkingImage' alt='Parking Info' width='20px'></div>";
                 }
 
-                $diningTimeTagClass = isset($diningTime[$r_id]) && $diningTime[$r_id] ? 'background-color: #fff89e;' : 'background-color: #FFFFFF;';
+                $diningTimeTagClass = isset($diningTime[$r_id]) && $diningTime[$r_id] ? 'background-color: rgba(252, 235, 167, 0.8);' : 'background-color: rgba(224,224,224,0.3);';
                 if (!empty($restaurant_data['r_time_low'])) {
                     echo "<div class='dining-time-tag' style='display: inline-block; $diningTimeTagClass'>用餐時間: " . htmlspecialchars($restaurant_data['r_time_low']) . "</div>";
                 } else {
                     echo "<div class='dining-time-tag' style='display: inline-block; $diningTimeTagClass'>無用餐時間限制</div>";
                 }
                 
-                $priceTagClass = isset($price[$r_id]) && $price[$r_id] ? 'background-color: #fff89e;' : 'background-color: #FFFFFF;';
+                $priceTagClass = isset($price[$r_id]) && $price[$r_id] ? 'background-color: rgba(252, 235, 167, 0.8);' : 'background-color: #FFFFFF;';
                 if (!empty($restaurant_data['r_price_low']) && !empty($restaurant_data['r_price_high'])) {
                     echo "<div class='price-tag' style='$priceTagClass'>$" . htmlspecialchars($restaurant_data['r_price_low']) . " ~ $" . htmlspecialchars($restaurant_data['r_price_high']) . "</div>";
                 }
@@ -537,7 +537,7 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
                     // 检查 receivedVibe 和 receivedFood 中是否有对应的标签
                     if ((receivedVibe[restaurantId] && receivedVibe[restaurantId].includes(tagText)) ||
                         (receivedFood[restaurantId] && receivedFood[restaurantId].includes(tagText))) {
-                        tagElement.style.backgroundColor = '#fff89e';
+                        tagElement.style.backgroundColor = 'rgba(252, 235, 167, 0.8)';
                     }
                 });
 
@@ -546,7 +546,7 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
                     if (receivedPrice[restaurantId]) {
                         const priceTag = document.querySelector(`#restaurant-${restaurantId} .price-tag`);
                         if (priceTag) {
-                            priceTag.style.backgroundColor = '#fff89e';
+                            priceTag.style.backgroundColor = 'rgba(252, 235, 167, 0.8)';
                         }
                     }
                 });
@@ -556,7 +556,7 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
                     if (receivedDiningTime[restaurantId]) {
                         const diningTimeTag = document.querySelector(`#restaurant-${restaurantId} .dining-time-tag`);
                         if (diningTimeTag) {
-                            diningTimeTag.style.backgroundColor = '#fff89e';
+                            diningTimeTag.style.backgroundColor = 'rgba(252, 235, 167, 0.8)';
                         }
                     }
                 });
@@ -566,7 +566,7 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
                     if (receivedParking[restaurantId]) {
                         const parkingTag = document.querySelector(`#restaurant-${restaurantId} .parking-tag`);
                         if (parkingTag) {
-                            parkingTag.style.backgroundColor = '#fff89e';
+                            parkingTag.style.backgroundColor = 'rgba(252, 235, 167, 0.8)';
                         }
                     }
                 });
