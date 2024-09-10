@@ -4,15 +4,19 @@ console.log("detail", restaurant_data_detail);
 const firstRestaurant = restaurant_data_detail[0];
 const r_lat = firstRestaurant.r_latitude;
 const r_long = firstRestaurant.r_longitude;
-
+// console.log("中心位置在哪裡呢?",firstRestaurant);
 // 設置地圖的初始視圖，以第一家餐廳為中心
 const map = L.map("map").setView([r_lat, r_long], 13);
 // const map = L.map("map").setView(id1Coordinates, 13);
 
-const tiles = L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-  maxZoom: 19,
-  attribution: '&copy; <a href="https://carto.com/">CartoDB</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
+const tiles = L.tileLayer(
+  "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+  {
+    maxZoom: 19,
+    attribution:
+      '&copy; <a href="https://carto.com/">CartoDB</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  }
+).addTo(map);
 
 // // 只顯示頁面上的三家餐廳資訊
 // restaurant_data_detail.forEach(function (restaurant) {
@@ -27,13 +31,13 @@ const tiles = L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{
 const colors = ["#FF70AE", "#85B4FF", "#FFCE47"]; // 定義顏色陣列
 
 restaurant_data_detail.forEach(function (restaurant, index) {
-    const colorIndex = index % colors.length; // 確保顏色索引在顏色數組範圍內循環
-    const fillColor = colors[colorIndex]; // 為每個標記設置顏色
+  const colorIndex = index % colors.length; // 確保顏色索引在顏色數組範圍內循環
+  const fillColor = colors[colorIndex]; // 為每個標記設置顏色
 
-    // 使用內嵌 SVG 創建自定義圖標
-    const markerIcon = L.divIcon({
-        className: 'map_marker',
-        html: `
+  // 使用內嵌 SVG 創建自定義圖標
+  const markerIcon = L.divIcon({
+    className: "map_marker",
+    html: `
             <svg width="30" height="40" viewBox="-4 0 36 36" xmlns="http://www.w3.org/2000/svg">
                 <g id="Vivid.JS" stroke="none" stroke-width="0" fill="none" fill-rule="evenodd">
                     <g id="Vivid-Icons" transform="translate(-125.000000, -643.000000)">
@@ -49,19 +53,27 @@ restaurant_data_detail.forEach(function (restaurant, index) {
                 </g>
             </svg>
         `,
-        iconSize: [30, 40], // 將SVG的寬度和高度設定為圖標的大小
-        iconAnchor: [15, 40] // 錨點為圖標的底部中心
-    });
+    iconSize: [30, 40], // 將SVG的寬度和高度設定為圖標的大小
+    iconAnchor: [15, 40], // 錨點為圖標的底部中心
+  });
 
-    var marker = L.marker([restaurant.r_latitude, restaurant.r_longitude], {
-        icon: markerIcon, // 使用自定義圖標
-        isRestaurant: true // 設置 isRestaurant 屬性 讓edgeMarker辨別是餐廳
-    }).addTo(map);
+  var marker = L.marker([restaurant.r_latitude, restaurant.r_longitude], {
+    icon: markerIcon, // 使用自定義圖標
+    isRestaurant: true, // 設置 isRestaurant 屬性 讓edgeMarker辨別是餐廳
+  }).addTo(map);
 
-    // 顯示餐廳名稱
-    marker.bindPopup("name: " + restaurant.r_name).openPopup();
+  // 使用 HTML 結構組合彈出窗口內容
+  const popupContent = `
+        <div class="popup-content">
+            <h3 class="restaurant-name" style='padding: 10px 10px 0px 0px;'>${restaurant.r_name}</h3>
+            <p class="restaurant-address">地址：${restaurant.r_address}</p>
+            <p class="restaurant-phone">電話：+${restaurant.r_phone}</p>
+        </div>
+    `;
+
+  // 顯示彈出窗口內容
+  marker.bindPopup(popupContent);
 });
-
 
 //加上捷運輕軌
 fetch("../connect_sql/get_data_map_json.php")
@@ -129,7 +141,7 @@ fetch("../connect_sql/get_data_map_json.php")
         ).addTo(map);
       }
 
-      circle.bindPopup("name: " + transportation.name).openPopup();
+      circle.bindPopup(transportation.name).openPopup();
     });
   })
   .catch((error) => console.error("Error loading restaurant data:", error));
