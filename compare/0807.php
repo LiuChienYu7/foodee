@@ -120,9 +120,9 @@ if ($link) {
                 $backgroundColor = hexToRgba($colors[$colorIndex], 0.5); // Convert HEX to RGBA with 0.5 opacity
                 // 记录颜色索引
                 $restaurantColorIndices[$r_id] = $colorIndex;
-                
+
                 echo "<div class='gallery-section'>";
-                
+
                 // 餐廳名稱部分
                 echo "<div class='restaurant-name' style='background-color: {$backgroundColor}; display: flex; align-items: start;'>";
                 echo "<input type='checkbox' class='restaurant-checkbox' data-id='{$r_id}' style='margin-right: 10px; cursor: pointer;' onchange='handleCheckboxChange(this)'>";
@@ -134,14 +134,14 @@ if ($link) {
                 echo "<div style = 'cursor: default;'> - 投票次數: " . htmlspecialchars($vote_count) . "</div>";
 
                 echo "</div>";
-                
+
                 // 顯示投票數，移動到餐廳名稱的下方
                 $vote_count = isset($restaurant_data['vote']) ? $restaurant_data['vote'] : 0;
                 echo "<div class='vote-count' style='cursor: default; margin-top: 5px;'>投票數: " . htmlspecialchars($vote_count) . "</div>";
-                
+
                 // 更新計數器
                 $counter++;
-                
+
                 // 環境圖片部分
                 if ($isFirst) {
                     echo "<h3 style='cursor: default;'>環境</h3>";
@@ -156,7 +156,7 @@ if ($link) {
                     }
                 }
                 echo "</div>";
-                
+
                 // 環境圖片
                 echo "<div class='image-container'>";
                 foreach (['r_photo_env1', 'r_photo_env2', 'r_photo_env3', 'r_photo_door'] as $index => $field) {
@@ -944,20 +944,29 @@ if ($link) {
                     const imageContainer = document.createElement('div');
                     imageContainer.className = 'image-container-share';
                     imageContainer.innerHTML = `<span class="nav-arrow prev" onclick="changeImage(this, -1, ${index})">‹</span>
-                                                <img src="default.jpg" class="displayed-img displayed-img-${index}" style="object-fit: cover;">
-                                                <span class="nav-arrow next" onclick="changeImage(this, 1, ${index})">›</span>`;
+                            <img src="default.jpg" class="displayed-img displayed-img-${index}" style="object-fit: cover;">
+                            <span class="nav-arrow next" onclick="changeImage(this, 1, ${index})">›</span>`;
+
                     const cornerSvgContainer = document.createElement('div');
                     cornerSvgContainer.className = 'corner-svg';
                     cornerSvgContainer.innerHTML = addSvg;
+
+
+                    setTimeout(() => {
+                        updateImage('環境', restaurantData, index);
+                    }, 100); // 延遲 100 毫秒更新圖片
+
+
 
                     const imageToggleButtons = ['環境', '食物', '菜單', '地圖'].map(category => {
                         const button = document.createElement('button');
                         button.className = 'image-toggle-button';
                         button.textContent = category;
 
+                        // 一开始直接加载 '环境' 类别的图片
                         if (category === selectedCategory) {
                             button.classList.add('selected');
-                            updateImage(selectedCategory, restaurantData, index); // 默认加载环境图片
+                            updateImage('環境', restaurantData, index); // 默认加载环境图片
                             cornerSvgContainer.innerHTML = buttonSvgState[category].isSvgToggled ? deletSvg : addSvg;
                         }
 
@@ -976,6 +985,8 @@ if ($link) {
 
                         return button;
                     });
+
+                    // 將圖像按鈕組與圖像容器添加到佈局
                     rightColumn.appendChild(imageButtonGroup);
                     imageToggleButtons.forEach(button => imageButtonGroup.appendChild(button));
                     imageContainer.appendChild(cornerSvgContainer);
@@ -1078,10 +1089,11 @@ if ($link) {
                     images = [restaurantData.r_photo_menu1, restaurantData.r_photo_menu2, restaurantData.r_photo_menu3];
                     break;
                 case '地圖':
-                    images = ['map_placeholder.jpg']; // 假设您有一个地图图片的占位符
+                    images = ['map.jpg']; // 假设您有一个地图图片的占位符
                     break;
             }
             const displayedImg = document.querySelector(`.displayed-img-${index}`);
+            console.log('displayedImg:', displayedImg); // 確認是否找到正確的元素
 
             if (displayedImg) { // 检查元素是否存在
                 displayedImg.src = images[0] || 'spider.png';
