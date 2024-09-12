@@ -1,1 +1,33 @@
+一定要下載的檔案：
+data.php
+filter.html
+filter.css
+filter.js
+final.html：首頁視覺化的檔案
+final.css
+drag.css
+define.js：演算法(計算高度、寬度、個數等等)
+
+不一定要下載的檔案(有用到功能再下載就好)：
+search.php：搜尋
+change_photo.js：切換圈圈照片
+drag.js：拖曳
+hide.js：隱藏外圈
+jumpToDiningTime.js：用餐時間跳轉按鈕
+minimap.js：右上方的長條圖
+rating.js：popup content中畫評分的星星
+
+資料路徑記得改！！！
+
+
+
+
+
+
+
+
+
+
+
+
 
