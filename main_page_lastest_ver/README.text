@@ -15,7 +15,7 @@ drag.js：拖曳
 hide.js：隱藏外圈
 jumpToDiningTime.js：用餐時間跳轉按鈕
 minimap.js：右上方的長條圖
-rating.js：popup content中畫評分的星星
+rating.js：用來畫popup content中的星星
 
 資料路徑記得改！！！
 
