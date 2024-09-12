@@ -17,7 +17,7 @@ jumpToDiningTime.js：用餐時間跳轉按鈕
 minimap.js：右上方的長條圖
 rating.js：用來畫popup content中的星星
 
-資料路徑記得改！！！
+資料路徑記得改！！！(因為有好幾個路徑需要修改，所以直接從vscode中搜尋所有包含 data.php 的檔案比較不會漏掉)
 最後開啟filter.html即可
 
 
