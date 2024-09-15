@@ -137,6 +137,7 @@ function initializeReviews(reviewData) {
       if (Fixed) {
         //要收起來時
         //全部標籤變正常
+        svg.selectAll(`.detail-group`).remove();
         d3.selectAll(".block-group").select("rect").attr("fill", "#F8EDE3"); // 恢復原背景顏色
         d3.selectAll(".block-group")
           .select("text")
@@ -227,7 +228,7 @@ function showReviews(svg, d, blockGroup) {
     tempText.remove();
 
     // 根據文本高度調整區塊高度
-    const blockHeight = Math.min(Math.max(textHeight, 40), 80); // 設置最小高度為 40，最大高度為 90
+    const blockHeight = Math.min(Math.max(textHeight, 40), 90); // 設置最小高度為 40，最大高度為 90
     const startX = translateX - 50 + blockWidth;
     const startY = translateY + 15; //線連在同一個點上
     const endX = blockX + 120;

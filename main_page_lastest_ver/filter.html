@@ -214,7 +214,7 @@
             .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
         // Read data
-        d3.json('http://localhost/foodee/data.php').then(function (data) {
+        d3.json('http://localhost/foodee/connect_sql/index2.php').then(function (data) {
             console.log(data); // Check if data is received and structured correctly
 
             // Add text elements for each restaurant
