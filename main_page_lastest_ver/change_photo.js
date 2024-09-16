@@ -15,12 +15,11 @@ function updatePatterns(buttonId, data, svg) {
 
 
 // Add event listeners for both buttons
-/*
-document.getElementById("environment").addEventListener("click", function () {
-    updatePatterns("environment"); // Pass the ID of the clicked button
-});
 
-document.getElementById("food").addEventListener("click", function () {
-    updatePatterns("food"); // Pass the ID of the clicked button
-});
-*/
+// document.getElementById("environment").addEventListener("click", function () {
+//     updatePatterns("environment", data, svg); // Pass the ID of the clicked button
+// });
+
+// document.getElementById("food").addEventListener("click", function () {
+//     updatePatterns("food", data, svg); // Pass the ID of the clicked button
+// });
