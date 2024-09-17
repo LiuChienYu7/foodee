@@ -14,10 +14,11 @@ body, html {
 }
 
 .gallery-container {
-    width: 58%;  /*左右大小調整*/
+    width: 58%;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    margin-left: 1%;
 }
 .gallery-section {
     width: 32%;
@@ -99,7 +100,7 @@ body, html {
 .info-container {
     width: 40%;
     padding-left: 20px;
-    box-sizing: border-box;
+    /*box-sizing: border-box;*/
 }
 .upper-section {
     text-align: left; /* 確保上層容器內的內容靠左 */
