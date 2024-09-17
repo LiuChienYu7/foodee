@@ -9,7 +9,8 @@ body, html {
     height: 100vh;
     max-width: 1366px;
     margin-left: 10px;
-    padding-top: 20px;
+    padding-top: 10px;
+    align-items: flex-start;
 }
 
 .gallery-container {
@@ -719,5 +720,9 @@ button {
 .image-toggle-button:hover {
     background-color: #ccc;
 }
-
+.button_container{
+    margin-top: 5px;
+    display: flex;
+    justify-content: flex-end;
+}
 

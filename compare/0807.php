@@ -123,19 +123,24 @@ if ($link) {
 
                 echo "<div class='gallery-section'>";
 
-                // 餐廳名稱部分
-                echo "<div class='restaurant-name' style='background-color: {$backgroundColor}; display: flex; align-items: start;'>";
-                echo "<input type='checkbox' class='restaurant-checkbox' data-id='{$r_id}' style='margin-right: 10px; cursor: pointer;' onchange='handleCheckboxChange(this)'>";
-                echo "<div style = 'cursor: default;'>" . htmlspecialchars($restaurant_data['r_name']) . "</div>";
+                // 餐廳名稱和投票次數部分
                 // 獲取投票次數
                 $vote_count = isset($restaurant_data['vote']) ? $restaurant_data['vote'] : 0;
 
-                // 顯示餐廳的投票次數
-                echo "<div style = 'cursor: default;'> - 投票次數: " . htmlspecialchars($vote_count) . "</div>";
-
+                // 餐廳名稱和投票次數部分
+                echo "<div class='restaurant-container' style='background-color: {$backgroundColor}; padding: 10px; border-radius: 10px; margin-right: 10px; display: inline-block; width: 200px;'>"; // 整個區塊背景和設計
+                echo "<div style='display: flex; align-items: center;'>"; // 使用flex排列名稱和勾選框
+                echo "<input type='checkbox' class='restaurant-checkbox' data-id='{$r_id}' style='margin-right: 10px; cursor: pointer; width: 20px; height: 20px;' onchange='handleCheckboxChange(this)'>";
+                echo "<div style='cursor: default;'>" . htmlspecialchars($restaurant_data['r_name']) . "</div>"; // 餐廳名稱在勾選框右邊
+                echo "</div>";
+                // 投票次數換行顯示
+                echo "<div style='cursor: default;'>投票次數: " . htmlspecialchars($vote_count) . "</div>";
                 echo "</div>";
 
+
                 // 顯示投票數，移動到餐廳名稱的下方
+                //$vote_count = isset($restaurant_data['vote']) ? $restaurant_data['vote'] : 0;
+                //echo "<div class='vote-count' style='cursor: default; margin-top: 5px;'>投票數: " . htmlspecialchars($vote_count) . "</div>";
                 // $vote_count = isset($restaurant_data['vote']) ? $restaurant_data['vote'] : 0;
                 // echo "<div class='vote-count' style='cursor: default; margin-top: 5px;'>投票數: " . htmlspecialchars($vote_count) . "</div>";
 
@@ -151,10 +156,13 @@ if ($link) {
                 echo "<div class='vibe-tags'>";
                 if (!empty($restaurant_data['r_vibe'])) {
                     $vibes = explode('，', $restaurant_data['r_vibe']);
+                    $count = 0; // 初始化計數器
                     foreach ($vibes as $vibe) {
+                        if ($count >= 5) break; // 當顯示了四個標籤時停止
                         echo "<div class='restaurant-tag' style='cursor: default;'>" . htmlspecialchars(trim($vibe)) . "</div>";
+                        $count++; // 增加計數器
                     }
-                }
+                }                
                 echo "</div>";
 
                 // 環境圖片
@@ -178,10 +186,13 @@ if ($link) {
                 echo "<div class='food-tags'>";
                 if (!empty($restaurant_data['r_food_dishes'])) {
                     $dishes = explode('、', $restaurant_data['r_food_dishes']);
+                    $count = 0; // 初始化計數器
                     foreach ($dishes as $dish) {
+                        if ($count >= 4) break; // 當顯示了四個標籤時停止
                         echo "<div class='restaurant-tag' style='cursor: default;'>" . htmlspecialchars(trim($dish)) . "</div>";
+                        $count++; // 增加計數器
                     }
-                }
+                }                
                 echo "</div>";
 
                 // 食物圖片
