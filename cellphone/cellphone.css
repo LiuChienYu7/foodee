@@ -265,9 +265,11 @@ svg{
     width: -webkit-fill-available;
     border: 2px solid #555; /* 完整的边框语法 */
     align-items: center;
+    justify-content: center;
+    flex-direction: column-reverse
 }
 .vote button{
-    width: 25%;
+    /*width: 25%;*/
     margin: 2px 5px;
     /* width: 50px; 默认宽度 */
     padding: 5px;
@@ -282,6 +284,8 @@ svg{
     text-overflow: ellipsis;
     position: relative;
     font-size: large;  
+    display: flex;
+    flex-direction: column;
 }
 #voteForm{
     margin:auto 0;
@@ -295,4 +299,9 @@ svg{
     border: 2px solid #ccc;
     border-radius: 5px;
 }
-
+#toggleVoteButton{
+    display: flex;
+    /* text-align: justify; */
+    width: 70px;
+    align-items: center;
+}

@@ -389,37 +389,54 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
             </div>
         </div>
         <div class="vote">
-            <?php
-            if (!empty($restaurant_names)) {
-                echo "<div class='vote-button'>";
-                $colors = [
-                    "rgba(255, 112, 174, 0.2)",  // #FF70AE with 20% opacity
-                    "rgba(133, 180, 255, 0.2)",  // #85B4FF with 20% opacity
-                    "rgba(255, 206, 71, 0.2)"    // #FFCE47 with 20% opacity
-                ];
-                $index = 0;
+            <button id="toggleVoteButton" onclick="toggleVoteList()">去投票</button>
+            <div id="voteList" style="display: none;"> <!-- 默认隐藏 -->
+                <?php
+                if (!empty($restaurant_names)) {
+                    echo "<div class='vote-button'>";
+                    $colors = [
+                        "rgba(255, 112, 174, 0.2)",  // #FF70AE with 20% opacity
+                        "rgba(133, 180, 255, 0.2)",  // #85B4FF with 20% opacity
+                        "rgba(255, 206, 71, 0.2)"    // #FFCE47 with 20% opacity
+                    ];
+                    $index = 0;
 
-                foreach ($restaurant_ids as $r_id) {
-                    if (isset($restaurant_names[$r_id])) {
-                        $color = $colors[$index % count($colors)]; // 根据索引选择颜色
-                        echo "<button class='restaurant-button' style='background-color: $color;' onclick='changeButtonState(this, $r_id)' data-selected='false'>" . htmlspecialchars($restaurant_names[$r_id]) . "</button>";
-                        $index++;
+                    foreach ($restaurant_ids as $r_id) {
+                        if (isset($restaurant_names[$r_id])) {
+                            $color = $colors[$index % count($colors)]; // 根据索引选择颜色
+                            echo "<button class='restaurant-button' style='background-color: $color;' onclick='changeButtonState(this, $r_id)' data-selected='false'>" . htmlspecialchars($restaurant_names[$r_id]) . "</button>";
+                            $index++;
+                        }
                     }
+
+                    echo "</div>";
+                } else {
+                    echo "没有餐廳资料可顯示。";
                 }
-
-                echo "</div>";
-            } else {
-                echo "没有餐廳资料可顯示。";
-            }
-            ?>
-            <form id="voteForm">
-                <input type="hidden" id="votedRestaurants" name="votedRestaurants" value="">
-                <button type="button" style="width: auto;" onclick="submitVote()">投票</button>
-            </form>
-            <div id="voteMessage"></div> <!-- 显示确认信息 -->
+                ?>
+                <form id="voteForm">
+                    <input type="hidden" id="votedRestaurants" name="votedRestaurants" value="">
+                    <button type="button" style="width: auto;" onclick="submitVote()">投票</button>
+                </form>
+                <div id="voteMessage"></div> <!-- 显示确认信息 -->
+            </div>
         </div>
-
         <script>
+        function toggleVoteList() {
+            const voteList = document.getElementById('voteList');
+            const toggleButton = document.getElementById('toggleVoteButton');
+
+            if (voteList.style.display === 'none') {
+                // 展开餐廳名稱和投票按鈕
+                voteList.style.display = 'flex';
+                toggleButton.innerText = 'v'; // 更改按钮文字
+            } else {
+                // 隐藏餐廳名稱和投票按鈕
+                voteList.style.display = 'none';
+                toggleButton.innerText = '去投票'; // 恢复按钮文字
+            }
+        }
+
         function changeButtonState(button, r_id) {
             // 获取当前按钮的选中状态
             let isSelected = button.getAttribute('data-selected') === 'true';
