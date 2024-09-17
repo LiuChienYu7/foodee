@@ -29,7 +29,7 @@ if ($link) {
                    a.r_photo_door, a.r_photo_menu1, a.r_photo_menu2, a.r_photo_menu3,
                    a.special_comment_sum, a.notice_comment_sum, 
                    v.vote
-            FROM additional_ a
+            FROM additional a
             LEFT JOIN vote v ON a.r_id = v.r_id
             WHERE a.r_id = $r_id";
 

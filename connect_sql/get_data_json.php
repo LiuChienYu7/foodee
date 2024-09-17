@@ -7,7 +7,7 @@
     $sql = "
         SELECT *
         FROM 
-            additional_ a
+            additional a
         JOIN 
             detail d ON a.r_id = d.r_id
         JOIN 
