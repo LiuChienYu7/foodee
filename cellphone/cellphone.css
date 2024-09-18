@@ -4,6 +4,11 @@
 .active-restaurant {
     display: block;
 }
+#restaurant-info{
+    padding: 5px;
+    border-radius:15px;
+    background-color: rgba(240, 240, 240, 0.4);
+}
 .nav-button {
     margin: 10px;
     padding: 10px 20px;
@@ -228,6 +233,8 @@ svg{
 }
 .upper-section{
     margin: 10px 0;
+    border-radius:15px;
+    background-color: #f0f0f0;
 }
 .middle-section{
     display: flex;
@@ -237,12 +244,15 @@ svg{
 }
 .middle-section1{
     margin-bottom: 10px;
+    border-radius:15px;
+    background-color: #f0f0f0;
 }
 .middle-section2{
+    border-radius:15px;
+    background-color: #f0f0f0;
     padding-left: 45px;
     margin-bottom: 10px;
     display: flex;
-    justify-content: center;
     width: -webkit-fill-available;
 }
 .middle-section2 svg{

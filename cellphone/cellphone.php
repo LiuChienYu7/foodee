@@ -89,7 +89,7 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
         $tags = explode($delimiter, $items);
         foreach ($tags as $tag) {
             $tag = trim($tag);
-            $backgroundColor = isset($selectedItems[$r_id]) && in_array($tag, $selectedItems[$r_id]) ? 'background-color: rgba(252, 235, 167, 0.8);' : 'background-color: rgba(224,224,224,0.3);';
+            $backgroundColor = isset($selectedItems[$r_id]) && in_array($tag, $selectedItems[$r_id]) ? 'background-color: rgba(252, 235, 167, 0.8);' : 'background-color: rgba(224,224,224,0.4);';
             echo "<span style='padding: 5px; margin: 5px; border-radius: 5px; $backgroundColor'>" . htmlspecialchars($tag) . "</span>";
         }
     }
@@ -170,20 +170,20 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
                 }
 
                 echo "<div class='info-row'>";
-                $parkingTagClass = isset($parking[$r_id]) && $parking[$r_id] ? 'background-color: rgba(252, 235, 167, 0.8);' : 'background-color: rgba(224,224,224,0.3);';
+                $parkingTagClass = isset($parking[$r_id]) && $parking[$r_id] ? 'background-color: rgba(252, 235, 167, 0.8);' : 'background-color: rgba(224,224,224,0.4);';
                 if (isset($restaurant_data['r_has_parking'])) {
                     $parkingImage = $restaurant_data['r_has_parking'] == 1 ? 'parking.png' : 'no_parking.png';
                     echo "<div class='parking-tag' style='display: inline-block; $parkingTagClass'><img src='$parkingImage' alt='Parking Info' width='20px'></div>";
                 }
 
-                $diningTimeTagClass = isset($diningTime[$r_id]) && $diningTime[$r_id] ? 'background-color: rgba(252, 235, 167, 0.8);' : 'background-color: rgba(224,224,224,0.3);';
+                $diningTimeTagClass = isset($diningTime[$r_id]) && $diningTime[$r_id] ? 'background-color: rgba(252, 235, 167, 0.8);' : 'background-color: rgba(224,224,224,0.4);';
                 if (!empty($restaurant_data['r_time_low'])) {
                     echo "<div class='dining-time-tag' style='display: inline-block; $diningTimeTagClass'>用餐時間: " . htmlspecialchars($restaurant_data['r_time_low']) . "</div>";
                 } else {
                     echo "<div class='dining-time-tag' style='display: inline-block; $diningTimeTagClass'>無用餐時間限制</div>";
                 }
                 
-                $priceTagClass = isset($price[$r_id]) && $price[$r_id] ? 'background-color: rgba(252, 235, 167, 0.8);' : 'background-color: #FFFFFF;';
+                $priceTagClass = isset($price[$r_id]) && $price[$r_id] ? 'background-color: rgba(252, 235, 167, 0.8);' : 'background-color:rgba(224, 224, 224, 0.4);';
                 if (!empty($restaurant_data['r_price_low']) && !empty($restaurant_data['r_price_high'])) {
                     echo "<div class='price-tag' style='$priceTagClass'>$" . htmlspecialchars($restaurant_data['r_price_low']) . " ~ $" . htmlspecialchars($restaurant_data['r_price_high']) . "</div>";
                 }
@@ -429,7 +429,7 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
             if (voteList.style.display === 'none') {
                 // 展开餐廳名稱和投票按鈕
                 voteList.style.display = 'flex';
-                toggleButton.innerText = 'v'; // 更改按钮文字
+                toggleButton.innerText = '﹀'; // 更改按钮文字
             } else {
                 // 隐藏餐廳名稱和投票按鈕
                 voteList.style.display = 'none';
@@ -603,6 +603,9 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
             // 檢查傳過來的變數 spider 是否為 true，並亮起 middle-section1 背景
             if (receivedSpider === true) {
                 document.querySelector('.middle-section1').style.backgroundColor = 'rgba(255, 248, 158, 0.5)';
+            }
+            if (receivedComment === true) {
+                document.querySelector('.upper-section').style.backgroundColor = 'rgba(255, 248, 158, 0.5)';
             }
             if (receivedOpenTime === true) {
                 document.querySelector('.middle-section2').style.backgroundColor = 'rgba(255, 248, 158, 0.5)';
