@@ -926,7 +926,7 @@
                         const restaurantsInInterval = data.filter(restaurant => categorizePrice(restaurant.r_price_low) === d.interval);
                         const restaurantIds = restaurantsInInterval.map(r => r.r_id);
                         const restaurantIdsParam = restaurantIds.join(",");
-                        window.location.href = `../_main_algo/map_background.php?restaurant_ids=${restaurantIdsParam}`;
+                        window.location.href = `../main_algo/map_background.php?restaurant_ids=${restaurantIdsParam}`;
                     });
 
                 // 在按钮中添加文字

@@ -67,18 +67,18 @@ try {
 
 $sql = "
     SELECT 
-        additional_.*, 
+        additional.*, 
         detail.*, 
         photos.*, 
         review.*
     FROM 
-        additional_
+        additional
     JOIN 
-        detail ON additional_.r_id = detail.r_id
+        detail ON additional.r_id = detail.r_id
     JOIN 
-        photos ON additional_.r_id = photos.r_id
+        photos ON additional.r_id = photos.r_id
     JOIN 
-        review ON additional_.r_id = review.r_id
+        review ON additional.r_id = review.r_id
     WHERE 1=1
 ";
 
@@ -90,7 +90,7 @@ if (isset($_GET['restaurant_ids'])) {
     $placeholders = implode(',', array_fill(0, count($restaurant_ids), '?'));
 
     // 将条件附加到现有查询中
-    $sql .= " AND additional_.r_id IN ($placeholders)";
+    $sql .= " AND additional.r_id IN ($placeholders)";
 
     // 準備 SQL 查詢
     $stmt = $pdo->prepare($sql);
