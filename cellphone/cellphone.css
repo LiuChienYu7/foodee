@@ -7,7 +7,7 @@
 #restaurant-info{
     padding: 5px;
     border-radius:15px;
-    background-color: rgba(240, 240, 240, 0.4);
+    background-color: rgba(240, 240, 240, 0.6);
 }
 .nav-button {
     margin: 10px;
@@ -159,7 +159,7 @@ svg{
 }
 
 .button-container button {
-    width: 20%;
+    max-width:30%;
     margin: 2px 5px;
     /* width: 50px; 默认宽度 */
     padding: 5px;
@@ -280,7 +280,7 @@ svg{
 }
 .vote button{
     /*width: 25%;*/
-    margin: 2px 5px;
+    margin: 5px;
     /* width: 50px; 默认宽度 */
     padding: 5px;
     background-color: #f0f0f0;
@@ -314,4 +314,12 @@ svg{
     /* text-align: justify; */
     width: 70px;
     align-items: center;
+}
+/* 增加 CSS 過渡效果 */
+#voteList {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.5s ease-out;
+    display: flex;
+    flex-direction: column;
 }
