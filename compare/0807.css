@@ -17,7 +17,7 @@ body, html {
     width: 58%;
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: space-around;
     margin-left: 1%;
 }
 .gallery-section {

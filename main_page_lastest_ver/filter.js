@@ -282,13 +282,21 @@ document.addEventListener('DOMContentLoaded', function () {
             button.classList.add('active'); 
         });
     
-        // 取消所有选中的气氛按钮
-        vibeButtons.forEach(button => {
+        // 取消氣氛
+        selectedButtons.forEach(button => {
+            const colorClass = colors.find(color => button.classList.contains(color));
+            if (colorClass) {
+                availableColors.push(colorClass);
+            }
             button.classList.remove('selected');
-            // 重置按钮颜色等其他状态
+    
+            // 重置顏色
+            colors.forEach(color => button.classList.remove(color));
         });
-       selectedButtons = [];
-       availableColors = [...colors];
+    
+        // 清空已選按鈕並重置 availableColors
+        selectedButtons = [];
+        availableColors = [...colors];
 
         // 取消星星的勾选
         items.forEach(item => {

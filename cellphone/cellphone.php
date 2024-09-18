@@ -89,7 +89,7 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
         $tags = explode($delimiter, $items);
         foreach ($tags as $tag) {
             $tag = trim($tag);
-            $backgroundColor = isset($selectedItems[$r_id]) && in_array($tag, $selectedItems[$r_id]) ? 'background-color: rgba(252, 235, 167, 0.8);' : 'background-color: rgba(224,224,224,0.3);';
+            $backgroundColor = isset($selectedItems[$r_id]) && in_array($tag, $selectedItems[$r_id]) ? 'background-color: rgba(252, 235, 167, 0.8);' : 'background-color: rgba(224,224,224,0.5);';
             echo "<span style='padding: 5px; margin: 5px; border-radius: 5px; $backgroundColor'>" . htmlspecialchars($tag) . "</span>";
         }
     }
@@ -170,20 +170,20 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
                 }
 
                 echo "<div class='info-row'>";
-                $parkingTagClass = isset($parking[$r_id]) && $parking[$r_id] ? 'background-color: rgba(252, 235, 167, 0.8);' : 'background-color: rgba(224,224,224,0.3);';
+                $parkingTagClass = isset($parking[$r_id]) && $parking[$r_id] ? 'background-color: rgba(252, 235, 167, 0.8);' : 'background-color: rgba(224,224,224,0.5);';
                 if (isset($restaurant_data['r_has_parking'])) {
                     $parkingImage = $restaurant_data['r_has_parking'] == 1 ? 'parking.png' : 'no_parking.png';
                     echo "<div class='parking-tag' style='display: inline-block; $parkingTagClass'><img src='$parkingImage' alt='Parking Info' width='20px'></div>";
                 }
 
-                $diningTimeTagClass = isset($diningTime[$r_id]) && $diningTime[$r_id] ? 'background-color: rgba(252, 235, 167, 0.8);' : 'background-color: rgba(224,224,224,0.3);';
+                $diningTimeTagClass = isset($diningTime[$r_id]) && $diningTime[$r_id] ? 'background-color: rgba(252, 235, 167, 0.8);' : 'background-color: rgba(224,224,224,0.5);';
                 if (!empty($restaurant_data['r_time_low'])) {
                     echo "<div class='dining-time-tag' style='display: inline-block; $diningTimeTagClass'>用餐時間: " . htmlspecialchars($restaurant_data['r_time_low']) . "</div>";
                 } else {
                     echo "<div class='dining-time-tag' style='display: inline-block; $diningTimeTagClass'>無用餐時間限制</div>";
                 }
                 
-                $priceTagClass = isset($price[$r_id]) && $price[$r_id] ? 'background-color: rgba(252, 235, 167, 0.8);' : 'background-color: #FFFFFF;';
+                $priceTagClass = isset($price[$r_id]) && $price[$r_id] ? 'background-color: rgba(252, 235, 167, 0.8);' : 'background-color:rgba(224, 224, 224, 0.5);';
                 if (!empty($restaurant_data['r_price_low']) && !empty($restaurant_data['r_price_high'])) {
                     echo "<div class='price-tag' style='$priceTagClass'>$" . htmlspecialchars($restaurant_data['r_price_low']) . " ~ $" . htmlspecialchars($restaurant_data['r_price_high']) . "</div>";
                 }
@@ -390,7 +390,8 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
         </div>
         <div class="vote">
             <button id="toggleVoteButton" onclick="toggleVoteList()">去投票</button>
-            <div id="voteList" style="display: none;"> <!-- 默认隐藏 -->
+            <div id="voteList" style="display: none;flex-direction: row;"> <!-- 默认隐藏 -->
+                
                 <?php
                 if (!empty($restaurant_names)) {
                     echo "<div class='vote-button'>";
@@ -414,6 +415,7 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
                     echo "没有餐廳资料可顯示。";
                 }
                 ?>
+
                 <form id="voteForm">
                     <input type="hidden" id="votedRestaurants" name="votedRestaurants" value="">
                     <button type="button" style="width: auto;" onclick="submitVote()">投票</button>
@@ -421,45 +423,40 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
                 <div id="voteMessage"></div> <!-- 显示确认信息 -->
             </div>
         </div>
+
         <script>
         function toggleVoteList() {
             const voteList = document.getElementById('voteList');
             const toggleButton = document.getElementById('toggleVoteButton');
 
-            if (voteList.style.display === 'none') {
-                // 展开餐廳名稱和投票按鈕
-                voteList.style.display = 'flex';
-                toggleButton.innerText = 'v'; // 更改按钮文字
+            if (voteList.style.display === 'none' || voteList.style.display === '') {
+                voteList.style.display = 'flex'; // 顯示餐廳選項
+                voteList.style.maxHeight = voteList.scrollHeight + 'px'; // 設定為實際高度
+                toggleButton.innerText = '﹀'; // 更改按鈕文字
             } else {
-                // 隐藏餐廳名稱和投票按鈕
-                voteList.style.display = 'none';
-                toggleButton.innerText = '去投票'; // 恢复按钮文字
+                voteList.style.maxHeight = '0px'; // 收回至0高度
+                setTimeout(() => {
+                    voteList.style.display = 'none'; // 延遲收回後隱藏
+                }, 500); // 動畫結束後隱藏
+                toggleButton.innerText = '去投票'; // 恢復按鈕文字
             }
         }
 
+
         function changeButtonState(button, r_id) {
-            // 获取当前按钮的选中状态
             let isSelected = button.getAttribute('data-selected') === 'true';
 
             if (isSelected) {
-                // 如果已选中，则将状态设为未选中，并恢复背景颜色
                 button.setAttribute('data-selected', 'false');
                 button.style.backgroundColor = button.getAttribute('data-initial-color');
                 removeRestaurantFromVote(r_id);
-                console.log(`餐厅ID ${r_id} 已取消选择`);
             } else {
-                // 如果未选中，则将状态设为选中，并将背景颜色设置为黄色透明度0.7
                 button.setAttribute('data-selected', 'true');
                 button.setAttribute('data-initial-color', button.style.backgroundColor);
                 button.style.backgroundColor = 'rgba(255, 255, 0, 0.7)';
                 addRestaurantToVote(r_id);
-                console.log(`餐厅ID ${r_id} 已选择`);
             }
-
-            // 打印当前按钮的状态
-            console.log(`按钮状态: ${button.getAttribute('data-selected')}`);
         }
-
 
         function addRestaurantToVote(r_id) {
             let votedRestaurants = document.getElementById('votedRestaurants').value;
@@ -481,36 +478,37 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
         }
 
         function submitVote() {
-    // 收集所有选中的餐厅 r_id
-    const votedRestaurants = [];
-    document.querySelectorAll('.restaurant-button').forEach(button => {
-        if (button.getAttribute('data-selected') === 'true') {
-            const r_id = button.getAttribute('onclick').match(/\d+/)[0]; // 从onclick中提取r_id
-            votedRestaurants.push(r_id);
-        }
-    });
+            // 收集所有选中的餐厅 r_id
+            const votedRestaurants = [];
+            document.querySelectorAll('.restaurant-button').forEach(button => {
+                if (button.getAttribute('data-selected') === 'true') {
+                    const r_id = button.getAttribute('onclick').match(/\d+/)[0]; // 修改這行
+                    votedRestaurants.push(r_id);
+                }
+            });
 
-    // 如果有选中的餐厅，发送数据到服务器
-    if (votedRestaurants.length > 0) {
-        const xhr = new XMLHttpRequest();
-        const formData = new FormData();
-        formData.append('votedRestaurants', votedRestaurants.join(',')); // 传递r_id而不是名称
+            // 如果有选中的餐厅，发送数据到服务器
+            if (votedRestaurants.length > 0) {
+                const xhr = new XMLHttpRequest();
+                const formData = new FormData();
+                formData.append('votedRestaurants', votedRestaurants.join(',')); // 传递r_id而不是名称
 
-        xhr.open("POST", "../cellphone/vote_processor.php", true);
+                xhr.open("POST", "../cellphone/vote_processor.php", true);
 
-        xhr.onload = function () {
-            if (xhr.status === 200) {
-                document.getElementById('voteMessage').innerText = '投票成功！';
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        document.getElementById('voteMessage').innerText = '投票成功！';
+                    } else {
+                        document.getElementById('voteMessage').innerText = '投票失败，请重试。';
+                    }
+                };
+
+                xhr.send(formData);
             } else {
-                document.getElementById('voteMessage').innerText = '投票失败，请重试。';
+                document.getElementById('voteMessage').innerText = '至少選一個:/';
             }
-        };
+        }
 
-        xhr.send(formData);
-    } else {
-        document.getElementById('voteMessage').innerText = '至少選一個:/';
-    }
-}
 
     </script>
 
@@ -603,6 +601,9 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
             // 檢查傳過來的變數 spider 是否為 true，並亮起 middle-section1 背景
             if (receivedSpider === true) {
                 document.querySelector('.middle-section1').style.backgroundColor = 'rgba(255, 248, 158, 0.5)';
+            }
+            if (receivedComment === true) {
+                document.querySelector('.upper-section').style.backgroundColor = 'rgba(255, 248, 158, 0.5)';
             }
             if (receivedOpenTime === true) {
                 document.querySelector('.middle-section2').style.backgroundColor = 'rgba(255, 248, 158, 0.5)';
