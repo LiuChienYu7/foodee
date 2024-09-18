@@ -8,7 +8,7 @@ header('Content-Type: application/json');
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "foodee2";
+$dbname = "foodee";
 
 // 建立連接
 $conn = new mysqli($servername, $username, $password, $dbname);

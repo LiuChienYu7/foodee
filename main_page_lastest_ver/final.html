@@ -92,7 +92,7 @@
     <!-- <script src="filterVibe.js"></script> -->
     <!-- minimap -->
     <script src="minimap.js"></script>
-    <script src="test.js"></script>
+    <!-- <script src="test.js"></script> -->
     <script src="rating.js"></script>
     <script src="drag.js"></script>
     <script src="hide.js"></script>
@@ -106,7 +106,7 @@
         let filteredIds;
         let filteredPositions2 = [];
 
-        d3.json('http://localhost/foodee/connect_sql/index2.php?').then(function (data) {
+        d3.json('../connect_sql/index.php?').then(function (data) {
             console.log('Loaded data:', data);  // 查看加载的数据
             loaded = data;
             newPositions2 = data;

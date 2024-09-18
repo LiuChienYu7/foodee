@@ -21,18 +21,18 @@ if ($conn->connect_error) {
 // 使用 JOIN 查詢多個表格
 $sql = "
 SELECT 
-    additional_.*, 
+    additional.*, 
     detail.*, 
     photos.*, 
     review.*
 FROM 
-    additional_
+    additional
 JOIN 
-    detail ON additional_.r_id = detail.r_id
+    detail ON additional.r_id = detail.r_id
 JOIN 
-    photos ON additional_.r_id = photos.r_id
+    photos ON additional.r_id = photos.r_id
 JOIN 
-    review ON additional_.r_id = review.r_id;
+    review ON additional.r_id = review.r_id;
 ";
 
 $result = $conn->query($sql);
