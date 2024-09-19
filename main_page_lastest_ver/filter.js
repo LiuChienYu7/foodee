@@ -321,7 +321,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function fetchAllRestaurantIds() {
         // 不传递任何筛选条件，获取所有餐厅
         // 檢查 fetch 回傳的資料
-        fetch('http://localhost/foodee/data.php?')
+        fetch('./data.php?')
             .then(response => response.json())
             .then(data => {
                 console.log("Fetched data:", data);  // 輸出資料，檢查是否正確
@@ -423,7 +423,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         let filteredIds = restaurantIds; // 使用 restaurantIds 进行过滤
 
-        let url = 'http://localhost/foodee/data.php?';
+        let url = './data.php?';
 
         // 如果有选中的时间限制，加入 URL 参数
         if (selectedTimesQuery) {

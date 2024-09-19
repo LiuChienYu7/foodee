@@ -29,7 +29,7 @@ if ($link) {
     // 查詢餐廳名稱
     if ($restaurant_ids) {
         $ids = implode(",", $restaurant_ids);
-        $query = "SELECT r_id, r_name FROM detail2 WHERE r_id IN ($ids)";
+        $query = "SELECT r_id, r_name FROM detail WHERE r_id IN ($ids)";
         $result = mysqli_query($link, $query);
 
         if ($result) {

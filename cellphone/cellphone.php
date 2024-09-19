@@ -26,7 +26,7 @@ if ($link) {
             $restaurant_ids[] = $r_id;
             $r_ids[] = $r_id;
 
-            $query_name = "SELECT r_name FROM detail2 WHERE r_id = $r_id";
+            $query_name = "SELECT r_name FROM detail WHERE r_id = $r_id";
             $result_name = mysqli_query($link, $query_name);
 
             if ($result_name) {
@@ -291,7 +291,7 @@ function renderTags($items, $selectedItems, $r_id, $delimiter) {
         // 構建SQL查詢
         if (!empty($r_ids)) {
             $ids = implode("','", $r_ids); // 將數組中的ID轉換為SQL字符串格式
-            $sql = "SELECT * FROM detail2 WHERE r_id IN ('$ids')";
+            $sql = "SELECT * FROM detail WHERE r_id IN ('$ids')";
 
             $result = $conn->query($sql);
 
