@@ -234,7 +234,7 @@ svg{
 .upper-section{
     margin: 10px 0;
     border-radius:15px;
-    background-color: #f0f0f0;
+    background-color: rgba(240, 240, 240, 0.6);
 }
 .middle-section{
     display: flex;
@@ -245,11 +245,11 @@ svg{
 .middle-section1{
     margin-bottom: 10px;
     border-radius:15px;
-    background-color: #f0f0f0;
+    background-color: rgba(240, 240, 240, 0.6);
 }
 .middle-section2{
     border-radius:15px;
-    background-color: #f0f0f0;
+    background-color: rgba(240, 240, 240, 0.6);
     padding-left: 45px;
     margin-bottom: 10px;
     display: flex;
