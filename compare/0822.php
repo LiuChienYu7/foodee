@@ -2,9 +2,10 @@
 $host = 'localhost';
 $dbuser = 'root';
 $dbpassword = '';
-$dbname = 'foodee2';
+$dbname = 'foodee';
 $link = mysqli_connect($host, $dbuser, $dbpassword, $dbname);
 
+// 初始化變數
 // 初始化變數
 $all_restaurant_data = [];
 
@@ -19,12 +20,19 @@ if ($link) {
         }
     }
 
-    // Fetch images, names, vibes, dishes, and prices for each restaurant
+    // Fetch images, names, vibes, dishes, prices, and votes for each restaurant
     foreach ($r_ids as $r_id) {
-        $query = "SELECT r_name, r_vibe, r_food_dishes, r_price_low, r_price_high, r_photo_env1, r_photo_env2, r_photo_env3, r_photo_food1, r_photo_food2, r_photo_food3, r_photo_food4, r_photo_food5, r_photo_door, r_photo_menu1, r_photo_menu2, r_photo_menu3,
-                         special_comment_sum, notice_comment_sum
-                  FROM additional 
-                  WHERE r_id = $r_id";
+        $query = "
+            SELECT a.r_name, a.r_vibe, a.r_food_dishes, a.r_price_low, a.r_price_high, 
+                   a.r_photo_env1, a.r_photo_env2, a.r_photo_env3, 
+                   a.r_photo_food1, a.r_photo_food2, a.r_photo_food3, a.r_photo_food4, a.r_photo_food5, 
+                   a.r_photo_door, a.r_photo_menu1, a.r_photo_menu2, a.r_photo_menu3,
+                   a.special_comment_sum, a.notice_comment_sum, 
+                   v.vote
+            FROM additional a
+            LEFT JOIN vote v ON a.r_id = v.r_id
+            WHERE a.r_id = $r_id";
+
         $result = mysqli_query($link, $query);
 
         if ($result) {
@@ -38,6 +46,7 @@ if ($link) {
 } else {
     echo "Failed to connect to the database: " . mysqli_connect_error();
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -45,7 +54,7 @@ if ($link) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="0822.css">
+    <link rel="stylesheet" href="../compare/0822.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <!-- <link rel="stylesheet" href="../word_tree/word_tree.css"> -->
 
@@ -111,28 +120,52 @@ if ($link) {
                 $backgroundColor = hexToRgba($colors[$colorIndex], 0.5); // Convert HEX to RGBA with 0.5 opacity
                 // 记录颜色索引
                 $restaurantColorIndices[$r_id] = $colorIndex;
+
                 echo "<div class='gallery-section'>";
-                echo "<div class='restaurant-name' style='background-color: {$backgroundColor}; display: flex; align-items: start;'>";
-                echo "<input type='checkbox' class='restaurant-checkbox' data-id='{$r_id}' style='margin-right: 10px; cursor: pointer;' onchange='handleCheckboxChange(this)'>";
-                echo "<div style = 'cursor: default;'>" . htmlspecialchars($restaurant_data['r_name']) . "</div>";
+
+                // 餐廳名稱和投票次數部分
+                // 獲取投票次數
+                $vote_count = isset($restaurant_data['vote']) ? $restaurant_data['vote'] : 0;
+
+                // 餐廳名稱和投票次數部分
+                echo "<div class='restaurant-container' style='background-color: {$backgroundColor}; padding: 10px; border-radius: 10px; margin-right: 10px; display: inline-block; width: 200px;'>"; // 整個區塊背景和設計
+                echo "<div style='display: flex; align-items: center;'>"; // 使用flex排列名稱和勾選框
+                echo "<input type='checkbox' class='restaurant-checkbox' data-id='{$r_id}' style='margin-right: 10px; cursor: pointer; width: 20px; height: 20px;' onchange='handleCheckboxChange(this)'>";
+                echo "<div style='cursor: default;'>" . htmlspecialchars($restaurant_data['r_name']) . "</div>"; // 餐廳名稱在勾選框右邊
                 echo "</div>";
+                // 投票次數換行顯示
+                echo "<div style='cursor: default;'>投票次數: " . htmlspecialchars($vote_count) . "</div>";
+                echo "</div>";
+
+
+                // 顯示投票數，移動到餐廳名稱的下方
+                //$vote_count = isset($restaurant_data['vote']) ? $restaurant_data['vote'] : 0;
+                //echo "<div class='vote-count' style='cursor: default; margin-top: 5px;'>投票數: " . htmlspecialchars($vote_count) . "</div>";
+                // $vote_count = isset($restaurant_data['vote']) ? $restaurant_data['vote'] : 0;
+                // echo "<div class='vote-count' style='cursor: default; margin-top: 5px;'>投票數: " . htmlspecialchars($vote_count) . "</div>";
 
                 // 更新計數器
                 $counter++;
-                // Display environment images
+
+                // 環境圖片部分
                 if ($isFirst) {
                     echo "<h3 style='cursor: default;'>環境</h3>";
                 } else {
-                    echo "<h3 style='color: white; cursor: default;'> 我 </h3>";
+                    echo "<h3 style='color: white; cursor: default;'>我</h3>";
                 }
                 echo "<div class='vibe-tags'>";
                 if (!empty($restaurant_data['r_vibe'])) {
                     $vibes = explode('，', $restaurant_data['r_vibe']);
+                    $count = 0; // 初始化計數器
                     foreach ($vibes as $vibe) {
+                        if ($count >= 5) break; // 當顯示了四個標籤時停止
                         echo "<div class='restaurant-tag' style='cursor: default;'>" . htmlspecialchars(trim($vibe)) . "</div>";
+                        $count++; // 增加計數器
                     }
-                }
+                }                
                 echo "</div>";
+
+                // 環境圖片
                 echo "<div class='image-container'>";
                 foreach (['r_photo_env1', 'r_photo_env2', 'r_photo_env3', 'r_photo_door'] as $index => $field) {
                     if (!empty($restaurant_data[$field])) {
@@ -144,20 +177,25 @@ if ($link) {
                 echo "<span class='nav-arrow next' onclick='changeImage(this, 1)'>›</span>";
                 echo "</div>";
 
-                // Display food images
+                // 食物圖片部分
                 if ($isFirst) {
                     echo "<h3 style='cursor: default;'>食物</h3>";
                 } else {
-                    echo "<h3 style='color: white; cursor: default;'> 我 </h3>";
+                    echo "<h3 style='color: white; cursor: default;'>我</h3>";
                 }
                 echo "<div class='food-tags'>";
                 if (!empty($restaurant_data['r_food_dishes'])) {
                     $dishes = explode('、', $restaurant_data['r_food_dishes']);
+                    $count = 0; // 初始化計數器
                     foreach ($dishes as $dish) {
+                        if ($count >= 4) break; // 當顯示了四個標籤時停止
                         echo "<div class='restaurant-tag' style='cursor: default;'>" . htmlspecialchars(trim($dish)) . "</div>";
+                        $count++; // 增加計數器
                     }
-                }
+                }                
                 echo "</div>";
+
+                // 食物圖片
                 echo "<div class='image-container'>";
                 foreach (['r_photo_food1', 'r_photo_food2', 'r_photo_food3', 'r_photo_food4', 'r_photo_food5'] as $index => $field) {
                     if (!empty($restaurant_data[$field])) {
@@ -169,17 +207,19 @@ if ($link) {
                 echo "<span class='nav-arrow next' onclick='changeImage(this, 1)'>›</span>";
                 echo "</div>";
 
-                // Display price range
+                // 菜單圖片部分
                 if ($isFirst) {
                     echo "<h3 style='cursor: default;'>菜單</h3>";
                 } else {
-                    echo "<h3 style='color: white; cursor: default;'> 我 </h3>";
+                    echo "<h3 style='color: white; cursor: default;'>我</h3>";
                 }
                 echo "<div class='vibe-tags'>";
                 if (!empty($restaurant_data['r_price_low']) && !empty($restaurant_data['r_price_high'])) {
                     echo "<div class='price-tag' style='cursor: default;'>價錢: $" . htmlspecialchars($restaurant_data['r_price_low']) . " ~ $" . htmlspecialchars($restaurant_data['r_price_high']) . "</div>";
                 }
                 echo "</div>";
+
+                // 菜單圖片
                 echo "<div class='image-container'>";
                 foreach (['r_photo_menu1', 'r_photo_menu2', 'r_photo_menu3'] as $index => $field) {
                     if (!empty($restaurant_data[$field])) {
@@ -191,7 +231,7 @@ if ($link) {
                 echo "<span class='nav-arrow next' onclick='changeImage(this, 1)'>›</span>";
                 echo "</div>";
 
-                // Display collapsible comments
+                // 可折叠的評論部分
                 echo "<div class='collapsible-comments'>";
                 echo "<button type='button' class='comments-button' onclick='toggleComments(this)'>特色 & 注意事項 <img src='up.png' style='width:12px; height:12px; vertical-align:middle;' /></button> ";
                 echo "<div class='content'>";
@@ -214,6 +254,7 @@ if ($link) {
 
                 echo "</div>";
             }
+
 
             if ($all_restaurant_data) {
                 $isFirst = true; // 初始化标志位
@@ -241,7 +282,7 @@ if ($link) {
         }
 
         // 连接数据库并查询数据
-        $conn = new mysqli('localhost', 'root', '', 'foodee2');
+        $conn = new mysqli('localhost', 'root', '', 'foodee');
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
         }
@@ -314,7 +355,7 @@ if ($link) {
         }
 
         // 连接数据库并查询数据
-        $conn = new mysqli('localhost', 'root', '', 'foodee2');
+        $conn = new mysqli('localhost', 'root', '', 'foodee');
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
         }
@@ -322,7 +363,7 @@ if ($link) {
         // 構建SQL查詢
         if (!empty($r_ids)) {
             $ids = implode("','", $r_ids); // 將數組中的ID轉換為SQL字符串格式
-            $sql = "SELECT * FROM detail WHERE r_id IN ('$ids')";
+            $sql = "SELECT * FROM detail2 WHERE r_id IN ('$ids')";
 
             $result = $conn->query($sql);
 
@@ -414,11 +455,11 @@ if ($link) {
                 import '../map/compare_map.js'
             </script>
         </div>
-    </div>
+    
 
     <!-- 新增的分享面板 -->
-    <div id="sharePanel">
-        <h2>分享給朋友：</h2>
+    <div id="sharePanel" style="display: none;">
+        <h2 style='margin-bottom: 10px; margin-top: 0px'>分享給朋友：</h2>
         <div id="share-content">
             <!-- 动态生成餐厅信息 -->
         </div>
@@ -574,23 +615,6 @@ if ($link) {
             // 您可以在這裡將選擇的餐廳ID保存到後端或做其他處理
         }
 
-        // // share panel
-        // document.getElementById("shareButton").addEventListener("click", function() {
-        //     // 顯示分享面板
-        //     document.getElementById("sharePanel").style.display = "block";
-
-        //     // 將 container 內的內容模糊，排除 sharePanel
-        //     document.querySelector(".container").classList.add("blur-background");
-        //     document.getElementById("sharePanel").style.zIndex = "1001"; // 確保面板在模糊效果上方
-        // });
-
-        // document.getElementById("closePanelButton").addEventListener("click", function() {
-        //     // 隱藏分享面板
-        //     document.getElementById("sharePanel").style.display = "none";
-
-        //     // 移除 container 內的模糊效果
-        //     document.querySelector(".container").classList.remove("blur-background");
-        // });
         // 名稱背景opacity0.5 
         function hexToRgba(hex, opacity) {
             // 去掉 '#' 符号
@@ -626,7 +650,7 @@ if ($link) {
         const all_restaurant_data = <?php echo json_encode($all_restaurant_data); ?>;
         const restaurantColorIndices = <?php echo json_encode($restaurantColorIndices); ?>;
         console.log('all_restaurant_data', all_restaurant_data);
-
+        //分享版面樣示
         document.getElementById("shareButton").addEventListener("click", function() {
             const shareContent = document.getElementById('share-content');
             shareContent.innerHTML = ''; // 清空之前的內容
@@ -670,12 +694,12 @@ if ($link) {
                     const nameSpan = document.createElement('span');
                     nameSpan.textContent = restaurantData.r_name;
 
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.placeholder = '想說ㄉ話...';
+                    //const input = document.createElement('input');
+                    //input.type = 'text';
+                    //input.placeholder = '想說ㄉ話...';
 
                     titleDiv.appendChild(nameSpan);
-                    titleDiv.appendChild(input);
+                    //titleDiv.appendChild(input);
 
                     const leftColumn = document.createElement('div');
                     leftColumn.className = 'left-column';
@@ -746,26 +770,27 @@ if ($link) {
                     const visPicDiv = document.createElement('div');
                     visPicDiv.className = 'vis-pic';
 
-                    const visualButtons = [
-                        {
-                            id: 'comment',
-                            src: 'comment.png', 
-                            label: 'Comment',
-                            width: '140px',
-                            height: '100px'
-                        },{
+                    // 使用 SVG 或 PNG 图像创建按钮
+                    const visualButtons = [{
                             id: 'spider',
-                            src: 'spider.png', 
+                            src: 'spider.png', // 替换为SVG或PNG的实际路径
                             label: 'Spider',
-                            width: '100px',
-                            height: '100px'
+                            width: '100px', // 设置Spider图像的宽度
+                            height: '100px' // 设置Spider图像的高度
                         },
                         {
-                            id: 'openTime',
-                            src: 'openTime.png', 
+                            id: 'comment',
+                            src: 'comment.png', // 替换为SVG或PNG的实际路径
+                            label: 'Comment',
+                            width: '140px', // 设置Comment图像的宽度
+                            height: '100px' // 设置Comment图像的高度
+                        },
+                        {
+                            id: 'opentime',
+                            src: 'openTime.png', // 替换为SVG或PNG的实际路径
                             label: 'Open Time',
-                            width: '100px',
-                            height: '100px'
+                            width: '100px', // 设置Open Time图像的宽度
+                            height: '100px' // 设置Open Time图像的高度
                         }
                     ];
 
@@ -774,33 +799,60 @@ if ($link) {
                         button.className = 'vis-button';
                         button.id = buttonInfo.id;
 
+                        // 创建图像元素
                         const img = document.createElement('img');
                         img.src = buttonInfo.src;
                         img.alt = buttonInfo.label;
 
-                        img.style.width = buttonInfo.width;
-                        img.style.height = buttonInfo.height;
+                        // 根据配置设置图像大小
+                        img.style.width = buttonInfo.width; // 设置图像宽度
+                        img.style.height = buttonInfo.height; // 设置图像高度
 
                         button.appendChild(img);
 
+                        // 定義一個變量來跟蹤是否被點擊
+                        let isClicked = false;
+
+                        // Hover 事件同步
+                        button.addEventListener('mouseenter', function() {
+                            if (!isClicked) { // 如果沒有被點擊，才允許 hover 效果
+                                document.querySelectorAll(`.vis-button img[src='${buttonInfo.src}']`).forEach(otherImg => {
+                                    otherImg.style.transform = 'scale(1.1)'; // 放大圖片
+                                    otherImg.parentElement.style.backgroundColor = '#F4DEB3'; // 改變背景顏色
+                                });
+                            }
+                        });
+
+                        button.addEventListener('mouseleave', function() {
+                            if (!isClicked) { // 如果沒有被點擊，才恢復原來的樣式
+                                document.querySelectorAll(`.vis-button img[src='${buttonInfo.src}']`).forEach(otherImg => {
+                                    otherImg.style.transform = 'scale(1)'; // 恢復圖片大小
+                                    otherImg.parentElement.style.backgroundColor = '#eee'; // 恢復背景顏色
+                                });
+                            }
+                        });
+
+                        // Click 事件同步
                         button.addEventListener('click', function() {
-                            // 确保 selectedItems 的每个属性都被初始化
-                            if (!selectedItems[buttonInfo.id]) {
-                                selectedItems[buttonInfo.id] = {};
-                            }
+                            isClicked = !isClicked; // 切換選中狀態
+                            selectedItems[buttonInfo.id] = isClicked; // 更新選中狀態
 
-                            // 确保 selectedItems[buttonInfo.id][id] 被初始化为布尔值
-                            if (typeof selectedItems[buttonInfo.id][id] === 'undefined') {
-                                selectedItems[buttonInfo.id][id] = false;
-                            }
-
-                            selectedItems[buttonInfo.id][id] = !selectedItems[buttonInfo.id][id];
-                            button.style.backgroundColor = selectedItems[buttonInfo.id][id] ? '#F4DEB3' : '';
+                            // 找到所有相同圖片的按鈕並同步點擊效果
+                            document.querySelectorAll(`.vis-button img[src='${buttonInfo.src}']`).forEach(otherImg => {
+                                if (isClicked) {
+                                    // 當被選中時，設定固定樣式，並阻止 hover 改變背景顏色
+                                    otherImg.style.transform = 'scale(1.1)';
+                                    otherImg.parentElement.style.backgroundColor = '#F4DEB3';
+                                } else {
+                                    // 當取消選中時，恢復為默認狀態，允許 hover 改變背景顏色
+                                    otherImg.style.transform = 'scale(1)';
+                                    otherImg.parentElement.style.backgroundColor = '#eee';
+                                }
+                            });
                         });
 
                         visPicDiv.appendChild(button);
                     });
-
 
                     const vibeTagsDiv = document.createElement('div');
                     vibeTagsDiv.className = 'vibe-tags-share';
@@ -810,17 +862,17 @@ if ($link) {
                             const button = document.createElement('button');
                             button.className = 'restaurant-tag-share';
                             button.textContent = vibe.trim();
-                            
+
                             button.addEventListener('click', function() {
                                 if (!selectedItems.vibe[id]) {
-                                    selectedItems.vibe[id] = []; // 初始化为数组
+                                    selectedItems.vibe[id] = [];
                                 }
-                                
+
                                 const index = selectedItems.vibe[id].indexOf(vibe);
                                 if (index > -1) {
-                                    selectedItems.vibe[id].splice(index, 1); // 移除已选中的标签
+                                    selectedItems.vibe[id].splice(index, 1);
                                 } else {
-                                    selectedItems.vibe[id].push(vibe); // 添加新标签
+                                    selectedItems.vibe[id].push(vibe);
                                 }
 
                                 button.style.backgroundColor = selectedItems.vibe[id].includes(vibe) ? '#F4DEB3' : '';
@@ -843,17 +895,17 @@ if ($link) {
                             const button = document.createElement('button');
                             button.className = 'restaurant-tag-share';
                             button.textContent = dish.trim();
-                            
+
                             button.addEventListener('click', function() {
                                 if (!selectedItems.food[id]) {
-                                    selectedItems.food[id] = []; // 初始化为数组
+                                    selectedItems.food[id] = [];
                                 }
-                                
+
                                 const index = selectedItems.food[id].indexOf(dish);
                                 if (index > -1) {
-                                    selectedItems.food[id].splice(index, 1); // 移除已选中的标签
+                                    selectedItems.food[id].splice(index, 1);
                                 } else {
-                                    selectedItems.food[id].push(dish); // 添加新标签
+                                    selectedItems.food[id].push(dish);
                                 }
 
                                 button.style.backgroundColor = selectedItems.food[id].includes(dish) ? '#F4DEB3' : '';
@@ -869,26 +921,46 @@ if ($link) {
 
                     let selectedCategory = '環境';
 
-                    const imageToggleButtons = ['環境', '食物', '菜單', '地圖'].map(category => {
-                        const button = document.createElement('button');
-                        button.className = 'image-toggle-button';
-                        button.textContent = category;
+                    // 定义 SVG 图标
+                    const addSvg = `
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="256" height="256" viewBox="0 0 256 256" xml:space="preserve">
+                        <defs>
+                        </defs>
+                        <g style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;" transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)">
+                            <path d="M 45 90 C 20.187 90 0 69.813 0 45 C 0 20.187 20.187 0 45 0 c 24.813 0 45 20.187 45 45 C 90 69.813 69.813 90 45 90 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: #C5705D; fill-rule: nonzero; opacity: 1;" transform="matrix(1 0 0 1 0 0)" stroke-linecap="round" />
+                            <path d="M 45 70.454 c -2.761 0 -5 -2.238 -5 -5 V 24.545 c 0 -2.761 2.239 -5 5 -5 c 2.762 0 5 2.239 5 5 v 40.909 C 50 68.216 47.762 70.454 45 70.454 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: #fff; fill-rule: nonzero; opacity: 1;" transform="matrix(1 0 0 1 0 0)" stroke-linecap="round" />
+                            <path d="M 65.454 50 H 24.545 c -2.761 0 -5 -2.238 -5 -5 c 0 -2.761 2.239 -5 5 -5 h 40.909 c 2.762 0 5 2.239 5 5 C 70.454 47.762 68.216 50 65.454 50 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: #fff; fill-rule: nonzero; opacity: 1;" transform="matrix(1 0 0 1 0 0)" stroke-linecap="round" />
+                        </g>
+                    </svg>`;
 
-                        if (category === selectedCategory) {
-                            button.classList.add('selected');
-                            updateImage(selectedCategory, restaurantData, index);
+
+                    const deletSvg = `
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="256" height="256" viewBox="0 0 256 256" xml:space="preserve">
+                        <defs>
+                        </defs>
+                        <g style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;" transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)" >
+                            <circle cx="45" cy="45" r="45" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: #3C3D37; fill-rule: nonzero; opacity: 1;" transform="  matrix(1 0 0 1 0 0) "/>
+                            <path d="M 65.592 29.574 h -5.395 h -3.776 v -3.481 c 0 -3.635 -2.957 -6.593 -6.593 -6.593 h -9.656 c -3.635 0 -6.593 2.958 -6.593 6.593 v 3.481 h -3.777 h -5.394 c -1.104 0 -2 0.896 -2 2 s 0.896 2 2 2 h 3.394 V 60.41 c 0 5.563 4.526 10.09 10.09 10.09 h 14.215 c 5.563 0 10.09 -4.526 10.09 -10.09 V 33.574 h 3.395 c 1.104 0 2 -0.896 2 -2 S 66.696 29.574 65.592 29.574 z M 37.579 26.093 c 0 -1.43 1.163 -2.593 2.593 -2.593 h 9.656 c 1.43 0 2.593 1.163 2.593 2.593 v 3.481 H 37.579 V 26.093 z M 58.197 60.41 c 0 3.358 -2.731 6.09 -6.09 6.09 H 37.892 c -3.358 0 -6.09 -2.731 -6.09 -6.09 V 33.574 h 3.777 h 18.842 h 3.776 V 60.41 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
+                            <path d="M 40.3 39.566 c -1.104 0 -2 0.896 -2 2 V 56.78 c 0 1.104 0.896 2 2 2 s 2 -0.896 2 -2 V 41.566 C 42.3 40.462 41.404 39.566 40.3 39.566 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
+                            <path d="M 49.7 39.566 c -1.104 0 -2 0.896 -2 2 V 56.78 c 0 1.104 0.896 2 2 2 s 2 -0.896 2 -2 V 41.566 C 51.7 40.462 50.805 39.566 49.7 39.566 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
+                        </g>
+                    </svg> `;
+
+                    // 记录各个按钮和 SVG 状态的对象
+                    const buttonSvgState = {
+                        環境: {
+                            isSvgToggled: false
+                        },
+                        食物: {
+                            isSvgToggled: false
+                        },
+                        菜單: {
+                            isSvgToggled: false
+                        },
+                        地圖: {
+                            isSvgToggled: false
                         }
-
-                        button.addEventListener('click', function() {
-                            document.querySelectorAll('.image-toggle-button').forEach(btn => btn.classList.remove('selected'));
-                            button.classList.add('selected');
-                            updateImage(category, restaurantData, index);
-                        });
-                        return button;
-                    });
-
-                    imageToggleButtons.forEach(button => imageButtonGroup.appendChild(button));
-                    rightColumn.appendChild(imageButtonGroup);
+                    };
 
                     const imageDisplayContainer = document.createElement('div');
                     imageDisplayContainer.className = 'image-display-container';
@@ -896,27 +968,87 @@ if ($link) {
                     const imageContainer = document.createElement('div');
                     imageContainer.className = 'image-container-share';
                     imageContainer.innerHTML = `<span class="nav-arrow prev" onclick="changeImage(this, -1, ${index})">‹</span>
-                                                <img src="default.jpg" class="displayed-img displayed-img-${index}">
-                                                <span class="nav-arrow next" onclick="changeImage(this, 1, ${index})">›</span>`;
-                    rightColumn.appendChild(imageDisplayContainer);
+                            <img src="default.jpg" class="displayed-img displayed-img-${index}" style="object-fit: cover;">
+                            <span class="nav-arrow next" onclick="changeImage(this, 1, ${index})">›</span>`;
+
+                    const cornerSvgContainer = document.createElement('div');
+                    cornerSvgContainer.className = 'corner-svg';
+                    cornerSvgContainer.innerHTML = addSvg;
+
+
+                    setTimeout(() => {
+                        updateImage('環境', restaurantData, index);
+                    }, 100); // 延遲 100 毫秒更新圖片
+
+
+
+                    const imageToggleButtons = ['環境', '食物', '菜單', '地圖'].map(category => {
+                        const button = document.createElement('button');
+                        button.className = 'image-toggle-button';
+                        button.textContent = category;
+
+                        // 一开始直接加载 '环境' 类别的图片
+                        if (category === selectedCategory) {
+                            button.classList.add('selected');
+                            updateImage('環境', restaurantData, index); // 默认加载环境图片
+                            cornerSvgContainer.innerHTML = buttonSvgState[category].isSvgToggled ? deletSvg : addSvg;
+                        }
+
+                        button.addEventListener('click', function() {
+                            // 切换选中的按钮
+                            document.querySelectorAll('.image-toggle-button').forEach(btn => btn.classList.remove('selected'));
+                            button.classList.add('selected');
+
+                            // 更新图片
+                            updateImage(category, restaurantData, index);
+
+                            // 更新角标 SVG 和按钮背景颜色
+                            cornerSvgContainer.innerHTML = buttonSvgState[category].isSvgToggled ? deletSvg : addSvg;
+                            button.style.backgroundColor = buttonSvgState[category].isSvgToggled ? '#F4DEB3' : '';
+                        });
+
+                        return button;
+                    });
+
+                    // 將圖像按鈕組與圖像容器添加到佈局
+                    rightColumn.appendChild(imageButtonGroup);
+                    imageToggleButtons.forEach(button => imageButtonGroup.appendChild(button));
+                    imageContainer.appendChild(cornerSvgContainer);
                     imageDisplayContainer.appendChild(imageContainer);
+                    rightColumn.appendChild(imageDisplayContainer);
 
-                    buttonGroup.appendChild(priceButton);
-                    buttonGroup.appendChild(diningTimeButton);
-                    buttonGroup.appendChild(parkingButton);
+                    // 处理角标 SVG 点击事件
+                    cornerSvgContainer.addEventListener('click', function() {
+                        const selectedButton = document.querySelector('.image-toggle-button.selected');
+                        if (selectedButton) {
+                            const category = selectedButton.textContent;
+                            buttonSvgState[category].isSvgToggled = !buttonSvgState[category].isSvgToggled;
+                            cornerSvgContainer.innerHTML = buttonSvgState[category].isSvgToggled ? deletSvg : addSvg;
+                            selectedButton.style.backgroundColor = buttonSvgState[category].isSvgToggled ? '#F4DEB3' : '';
+                        }
+                    });
 
+
+                    buttonGroup.appendChild(priceButton); // 添加价钱按钮
+                    buttonGroup.appendChild(diningTimeButton); // 添加用餐时间按钮
+                    buttonGroup.appendChild(parkingButton); // 添加停车场按钮
                     leftColumn.appendChild(buttonGroup);
 
                     middleColumn.appendChild(vibeTitle);
                     middleColumn.appendChild(foodTitle);
                     middleColumn.appendChild(visPicDiv);
 
+                    // 将元素加入到餐厅条目中     
                     restaurantTitle.appendChild(titleDiv);
                     restaurantTitle.appendChild(restaurantItem);
                     restaurantItem.appendChild(leftColumn);
                     restaurantItem.appendChild(middleColumn);
                     restaurantItem.appendChild(rightColumn);
 
+                    console.log('Environment Images:', restaurantData.r_photo_env1, restaurantData.r_photo_env2, restaurantData.r_photo_env3);
+                    console.log('Food Images:', restaurantData.r_photo_food1, restaurantData.r_photo_food2, restaurantData.r_photo_food3);
+
+                    // 添加到分享内容容器中
                     shareContent.appendChild(restaurantTitle);
                 }
             });
@@ -939,9 +1071,8 @@ if ($link) {
             console.log('Selected Restaurants:', selectedItems);
 
             // 重定向用户到生成的 URL
-            window.location.href = shareLink;
+            window.open(shareLink, '_blank');
         });
-
 
         function generateShareLink(selectedItems, selectedRestaurants) {
             let queryString = '';
@@ -969,7 +1100,6 @@ if ($link) {
             return `../cellphone/cellphone.php?${queryString}`;
         }
 
-
         function updateImage(category, restaurantData, index) {
             let images = [];
             switch (category) {
@@ -983,13 +1113,14 @@ if ($link) {
                     images = [restaurantData.r_photo_menu1, restaurantData.r_photo_menu2, restaurantData.r_photo_menu3];
                     break;
                 case '地圖':
-                    images = ['map_placeholder.jpg']; // 假设您有一个地图图片的占位符
+                    images = ['map.jpg']; // 假设您有一个地图图片的占位符
                     break;
             }
             const displayedImg = document.querySelector(`.displayed-img-${index}`);
+            console.log('displayedImg:', displayedImg); // 確認是否找到正確的元素
 
             if (displayedImg) { // 检查元素是否存在
-                displayedImg.src = images[0] || 'default.jpg';
+                displayedImg.src = images[0] || 'spider.png';
                 displayedImg.dataset.images = JSON.stringify(images);
                 displayedImg.dataset.index = 0;
             }
