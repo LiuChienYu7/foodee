@@ -109,7 +109,7 @@ if (isset($_GET['restaurant_ids'])) {
 
     ?>
     <!-- 返回按鈕 -->
-    <button id="backButton" onclick="goBack()">返回</button>
+    <button id="backButton">返回</button>
     <!-- 地圖區域 -->
     <div id="map"></div>
     <!-- Minimap區域 -->
@@ -131,8 +131,9 @@ if (isset($_GET['restaurant_ids'])) {
     }).addTo(map);
     
     document.getElementById('backButton').addEventListener('click', function() {
-    window.location.href = 'scale2.html'; // 跳转到scale2.html
+    window.location.href = 'final.html'; // 跳转到scale2.html
 });
+
 
         // 更新餐厅图标的大小
 function updateIconSize(marker, zoomLevel) {
