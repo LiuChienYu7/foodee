@@ -121,8 +121,9 @@ if (isset($_GET['restaurant_ids'])) {
         // 顏色映射
         let filterRestaurants=[]
         const sortedTimes = ['60', '90', '100', '120', '150', ''];
-        const colors = d3.scaleOrdinal(d3.schemeCategory10)
-                .domain(sortedTimes);
+        const colors = d3.scaleOrdinal()
+                .domain(sortedTimes)
+                .range(['#d6af99', '#a2cdab', '#7ea1dd', '#fdc85e', '#e67575', '#b295ab']);
         // 初始化地圖
     const map = L.map('map').setView([22.631386, 120.301951], 13);
     L.tileLayer('https://api.maptiler.com/maps/dataviz/{z}/{x}/{y}.png?key=nVkGoaPMkOqdVRLChAnz', {
@@ -489,9 +490,9 @@ function drawMinimap(data) {
             svg.append("circle")
                 .attr("cx", 30)  // 设为 SVG 的中心
                 .attr("cy", 30)
-                .attr("r", 25)   // 半径比实际标记圆圈大一些
+                .attr("r", 28)   // 半径比实际标记圆圈大一些
                 .attr("fill", backgroundColor)
-                .attr("opacity", 0.7);  // 半透明效果
+                .attr("opacity", 1);  // 半透明效果
 
             // 定义圆形遮罩
             svg.append("defs").append("clipPath")

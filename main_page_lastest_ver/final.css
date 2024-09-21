@@ -48,9 +48,16 @@ html, body {
     justify-content: center;
     /* 让内部的按钮和minimap在水平上集中 */
     z-index: 1000;
+    /* background-color: #ffaf6d; */
     background-color:rgba(252,184,53, .8);
     padding: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.btn-container{
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
 }
 
 .jump-buttons {
@@ -64,9 +71,10 @@ html, body {
     margin: 5px;
     padding: 5px 10px;
     cursor: pointer;
-    border: 2px solid white;
+    border: 2px solid #fff;
     border-radius: 5px;
-    background-color: rgba(252, 235, 167, 0.8);
+    background-color: #f7e9ce;
+    /* background-color: rgba(252, 235, 167, 0.8); */
     font-size: 12px;
     width: auto;
     /* 自动适应文字长度 */
@@ -87,8 +95,9 @@ html, body {
     padding: 8px 20px;
     cursor: pointer;
     font-size: 12px;
-    background-color: rgba(252, 235, 167, 0.8);
-    border: 2px solid white;
+    background-color: #f7e9ce;
+    /* background-color: rgba(252, 235, 167, 0.8); */
+    border: 2px solid #fff;
     border-radius: 5px;
 }
 
@@ -103,7 +112,7 @@ html, body {
 
 .minimap-container {
     width: 200px;
-    height: 100px;
+    height: 85px;
     border: 1px solid #000;
     background-color: #f9f9f9;
 }
