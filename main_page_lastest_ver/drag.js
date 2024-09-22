@@ -1,8 +1,3 @@
-// async function fetchDataAndInitDrag() {
-//   const data = await fetchData(); // 假設 fetchData() 是你取得餐廳資料的函數
-//   dragElement(circles, data); // 在資料加載完成後初始化拖動功能
-// }
-
 let currentPage = 1;
 const restaurantsPerPage = 3;
 // 記錄選中的餐廳ID
@@ -10,8 +5,7 @@ let selectedRestaurantIds = [];
 
 function dragElement(circles, circleRadius, x, y) {
   circles.call(
-    d3
-      .drag()
+    d3.drag()
       .on("start", function (event, d) {
         // save the starting position of the element
         d.originalX = event.x;
@@ -37,8 +31,7 @@ function dragElement(circles, circleRadius, x, y) {
           circleBounds.bottom > box4Rect.top &&
           circleBounds.top < box4Rect.bottom
         ) {
-
-          /*box4.classList.add("expanded");*/
+          box4.classList.add("expanded");
           defaultText.style.display = "none";
 
           const restaurant = document.createElement("div");
@@ -52,7 +45,7 @@ function dragElement(circles, circleRadius, x, y) {
           restaurantName.className = "drag-name";
           restaurantName.textContent = d.r_name;
           upperBlock.appendChild(restaurantName);
-          console.log(d);
+
           //add star
           const star = document.createElement("div");
           star.className = "drag-star";
@@ -89,7 +82,7 @@ function dragElement(circles, circleRadius, x, y) {
 
           // Create and append the restaurant image
           // 變數來追蹤當前顯示的圖片類型（environment 或 food）和當前圖片索引
-          let currentImageType = "environment"; // 一開始設定為環境圖片
+          let currentImageType = "food";
           let currentImageIndex = 0;
 
           // 照片數組
@@ -106,8 +99,14 @@ function dragElement(circles, circleRadius, x, y) {
             d.r_photo_food4,
             d.r_photo_food5,
           ];
-          console.log("環境照片", d.r_photo_env1);
-          console.log("食物照片", d.r_photo_food1);
+          
+          // for (let i = 0; i < foodPhotos.length; i++) {
+          //   if (foodPhotos[i]) {
+          //     console.log(`Image ${i + 1} URL: `, foodPhotos[i]);
+          //   } else {
+          //     console.log(`Image ${i + 1} is missing or undefined`);
+          //   }
+          // }
 
           // 創建和附加餐廳圖片
           const DragImageContainer = document.createElement("div");
@@ -121,7 +120,7 @@ function dragElement(circles, circleRadius, x, y) {
 
           const restaurantImage = document.createElement("img");
           restaurantImage.className = "drag-image";
-          restaurantImage.src = environmentPhotos[currentImageIndex]; // 一開始顯示環境類型的第一張圖片
+          restaurantImage.src = foodPhotos[currentImageIndex]; // 預設顯示 food 類型的第一張圖片
           restaurantImage.alt = d.r_name;
           restaurantImage.style.width = "320px";
           restaurantImage.style.height = "200px";
@@ -212,8 +211,8 @@ function dragElement(circles, circleRadius, x, y) {
           vibeTagsDiv.appendChild(vibeTitle);
 
           // 從 r_vibe 分割出來的標籤
-          if (d.r_vibe) {
-            const vibes = d.r_vibe.split("，");
+          if (d.r_atmosphere) {
+            const vibes = d.r_atmosphere.split("，");
             vibes.forEach((vibe) => {
               const tagDiv = document.createElement("div");
               tagDiv.className = "drag-restaurant-tag";
@@ -251,8 +250,8 @@ function dragElement(circles, circleRadius, x, y) {
           priceAndDiningTime.className = "price-diningTime";
 
           const diningTimeElement = document.createElement("div");
-          diningTimeElement.className = "drag-dingingTime";
-          const diningTime = d.r_time_low ? `${d.r_time_low} 分鐘` : "未限時";
+          diningTimeElement.className = 'drag-dingingTime';
+          const diningTime = d.time ? `${d.time} 分鐘` : "未限時";
           diningTimeElement.innerHTML = `
             <svg fill="#ED8A19" width="20px" height="20px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path d="M20,3a1,1,0,0,0,0-2H4A1,1,0,0,0,4,3H5.049c.146,1.836.743,5.75,3.194,8-2.585,2.511-3.111,7.734-3.216,10H4a1,1,0,0,0,0,2H20a1,1,0,0,0,0-2H18.973c-.105-2.264-.631-7.487-3.216-10,2.451-2.252,3.048-6.166,3.194-8Zm-6.42,7.126a1,1,0,0,0,.035,1.767c2.437,1.228,3.2,6.311,3.355,9.107H7.03c.151-2.8.918-7.879,3.355-9.107a1,1,0,0,0,.035-1.767C7.881,8.717,7.227,4.844,7.058,3h9.884C16.773,4.844,16.119,8.717,13.58,10.126ZM12,13s3,2.4,3,3.6V20H9V16.6C9,15.4,12,13,12,13Z"/>
@@ -351,7 +350,7 @@ function dragElement(circles, circleRadius, x, y) {
           }
 
           // 照片功能
-          // 照片切換邏輯
+          // 切換圖片邏輯
           function updateImage() {
             const photoArray =
               currentImageType === "environment"
@@ -381,10 +380,14 @@ function dragElement(circles, circleRadius, x, y) {
           });
 
           // 監聽外部按鈕切換圖片類型
+
+          const element = document.getElementById("environment");
+              console.log(element);  // 如果是 null，表示元素不存在
           document
             .getElementById("environment")
             .addEventListener("click", function () {
               currentImageType = "environment";
+            
               currentImageIndex = 0; // 切換到 environment 類型時顯示第一張圖片
               updateImage();
             });
@@ -415,10 +418,8 @@ function dragElement(circles, circleRadius, x, y) {
             });
         }
 
-        d3.select(this).attr(
-          "transform",
-          (d) => `translate(${d.x + circleRadius}, ${d.y + circleRadius})`
-        );
+        d3.select(this)
+          .attr("transform", d => `translate(${d.x + circleRadius}, ${d.y + circleRadius})`);
         // 全部清除功能
         // 設置 clear-btn 的點擊事件來清除所有餐廳
         document
@@ -440,11 +441,7 @@ function dragElement(circles, circleRadius, x, y) {
             circles.each(function (d) {
               d3.select(this)
                 .style("visibility", "visible") // 恢復圓圈的可見性
-                .attr(
-                  "transform",
-                  (d) =>
-                    `translate(${d.x + circleRadius}, ${d.y + circleRadius})`
-                ); // 回到原始位置
+                .attr("transform", d => `translate(${d.x + circleRadius}, ${d.y + circleRadius})`); // 回到原始位置
             });
 
             // 清空 selectedRestaurantIds 陣列
@@ -521,7 +518,7 @@ function dragElement(circles, circleRadius, x, y) {
 
             // 設置點擊事件，跳轉到比較頁面
             compareBtn.onclick = function () {
-              const url = `http://localhost/foodee/compare/0807.php?r_id1=${selectedRestaurantIds[0]}&r_id2=${selectedRestaurantIds[1]}&r_id3=${selectedRestaurantIds[2]}`;
+              const url = `http://localhost/my_foodee/compare/0807.php?r_id1=${selectedRestaurantIds[0]}&r_id2=${selectedRestaurantIds[1]}&r_id3=${selectedRestaurantIds[2]}`;
               window.location.href = url;
             };
           } else {

@@ -15,12 +15,12 @@
             <div class="button-title">
                 <label>照片切換</label>
             </div>
-            <div class="btn-container">
-                <div class="btn">
-                    <button id="environment">環境</button>
-                    <button id="food">食物</button>
-                    <button id="hide">隱藏外圈</button>
-                </div>
+            <div class="btn">
+                <button id="environment">環境</button>
+                <button id="food">食物</button>
+            </div>
+            <div class="btn">
+                <button id="hide">隱藏外圈</button>
             </div>
         </div>
         <div class="jump-buttons">
@@ -92,7 +92,7 @@
     <!-- <script src="filterVibe.js"></script> -->
     <!-- minimap -->
     <script src="minimap.js"></script>
-    <!-- <script src="test.js"></script> -->
+    <script src="test.js"></script>
     <script src="rating.js"></script>
     <script src="drag.js"></script>
     <script src="hide.js"></script>
@@ -106,7 +106,7 @@
         let filteredIds;
         let filteredPositions2 = [];
 
-        d3.json('../connect_sql/index.php?').then(function (data) {
+        d3.json('http://localhost/期末丁丁/foodee-main/main_algo/data.php?').then(function (data) {
             console.log('Loaded data:', data);  // 查看加载的数据
             loaded = data;
             newPositions2 = data;
@@ -168,8 +168,7 @@
             const sortedTimes = ['60', '90', '100', '120', '150', ''];
             const color = d3.scaleOrdinal()
                 .domain(sortedTimes)
-                .range(['#d6af99', '#a2cdab', '#7ea1dd', '#fdc85e', '#e67575', '#b295ab']);
-            // .range(['#F3BEBE', '#FFD8B6', '#A8D6A8', '#ADD8E6', '#80B1D3', '#B48CC8']);
+                .range(['#F3BEBE', '#FFD8B6', '#A8D6A8', '#ADD8E6', '#80B1D3', '#B48CC8']);
 
             const x = d3.scaleBand()
                 .domain(intervals)
@@ -212,6 +211,7 @@
 
                 console.log("Chart updated successfully after sorting by rating.");
             });
+
             let selectedRestaurantIds = [];  // 用于存储接收到的餐厅ID
             let selectedVibesWithColors = [];  // 用于存储接收到的氛围按钮数据
 
@@ -285,91 +285,122 @@
                 drawChart(intervalWidths, intervalPositions, total, totalHeightValue, newPositions2);
             }
 
-            function updateIntervals() {
-                const minIntervalWidth = 65;
-                currentIntervals = Array.from(new Set(currentIntervals));
+           function updateIntervals() {
+    const minIntervalWidth = 65;
+    
+    // 移除重複的區間
+    currentIntervals = Array.from(new Set(currentIntervals));
+    console.log("Current intervals after deduplication:", currentIntervals);
 
-                console.log("Current intervals after deduplication:", currentIntervals);
+    if (!currentIntervals || currentIntervals.length === 0) {
+    console.warn("currentIntervals 为空或未定义，跳过更新。");
+    const maxIntervalSet = findMaxIntervalWithNeighbors();  // 找到最多餐廳的區間集
+    if (!maxIntervalSet) {
+        console.log("所有区间没有数据，重置视图。");
+        resetToDefaultView();
+        return;
+    }
+    currentIntervals = maxIntervalSet;
+} else {
+    // 計算當前區間的餐廳總數
+    const intervalTotals = getCurrentIntervalTotals(currentIntervals, circleRadius, data, width, margin, intervalWidths);
+    const total = d3.sum(Object.values(intervalTotals));
 
-                if (!currentIntervals || currentIntervals.length === 0) {
-                    console.warn("currentIntervals 为空或未定义，跳过更新。");
-                    const maxIntervalSet = findMaxIntervalWithNeighbors();
-                    if (!maxIntervalSet) {
-                        console.log("所有区间没有数据，重置视图。");
-                        resetToDefaultView();
-                        return;
-                    }
-                    currentIntervals = maxIntervalSet;
-                } else {
-                    const intervalTotals = getCurrentIntervalTotals(currentIntervals, circleRadius, data, width, margin, intervalWidths);
-                    const total = d3.sum(Object.values(intervalTotals));
+    if (isNaN(total) || total === 0) {
+        console.warn("Total 餐厅数为 NaN 或 0，跳过更新。");
+        resetToDefaultView();
+        return;
+    }
 
-                    if (isNaN(total) || total === 0) {
-                        console.warn("Total 餐厅数为 NaN 或 0，跳过更新。");
-                        resetToDefaultView();
-                        return;
-                    }
+    // 獲取當前篩選條件的最左側區間
+    const firstInterval = currentIntervals[0];
+    const firstIntervalIndex = intervals.indexOf(firstInterval);
 
-                    // Ensure only one interval is moved, and always display 3 intervals
-                    const maxInterval = currentIntervals.reduce((a, b) => (intervalTotals[a] > intervalTotals[b] ? a : b));
-                    const maxIntervalIndex = intervals.indexOf(maxInterval);
+    // 檢查當前篩選條件下是否有餐廳數量
+    const hasData = currentIntervals.some(interval => intervalTotals[interval] > 10);
 
-                    // Adjust to show 3 intervals while moving only one interval at a time
-                    let startIndex = maxIntervalIndex > 0 ? maxIntervalIndex - 1 : 0;
-                    let endIndex = startIndex + 2;
+    // 如果當前區間篩選結果沒有餐廳，將 startIndex 設置為最多餐廳的區間
+    if (!hasData) {
+        const maxInterval = currentIntervals.reduce((a, b) => (intervalTotals[a] > intervalTotals[b] ? a : b));
+        const maxIntervalIndex = intervals.indexOf(maxInterval);
 
-                    // Ensure endIndex doesn't exceed array length
-                    if (endIndex >= intervals.length) {
-                        endIndex = intervals.length - 1;
-                        startIndex = Math.max(0, endIndex - 2);  // Adjust startIndex to ensure 3 intervals if possible
-                    }
+        // 顯示最多餐廳的區間作為新的 `startIndex`
+        let startIndex = Math.max(maxIntervalIndex - 1, 0);  // 向左顯示最多餐廳的前一個區間
+        let endIndex = startIndex + 2;  // 保證顯示三個區間
 
-                    currentIntervals = intervals.slice(startIndex, endIndex + 1);
-                }
+        if (endIndex >= intervals.length) {
+            endIndex = intervals.length - 1;  // 確保不超過總長度
+            startIndex = Math.max(0, endIndex - 2);  // 保證顯示三個區間
+        }
 
-                let totalUsedWidth = 0;
+        currentIntervals = intervals.slice(startIndex, endIndex + 1);  // 更新 currentIntervals 顯示最多餐廳的區間
+    } else {
+        // 當篩選結果有餐廳時，使用當前篩選條件的最左側區間作為 `startIndex`
+        let startIndex = firstIntervalIndex;  // 從最左側區間開始
+        if (startIndex < 0) {
+            startIndex = 0;
+        }
 
-                currentIntervals.forEach(interval => {
-                    const intervalTotals = getCurrentIntervalTotals(currentIntervals, circleRadius, data, width, margin, intervalWidths);
-                    const total = d3.sum(Object.values(intervalTotals));
-                    intervalWidths[interval] = Math.max((intervalTotals[interval] / total) * (width - margin.left - margin.right), minIntervalWidth);
-                    totalUsedWidth += intervalWidths[interval];
-                });
+        let endIndex = startIndex + 2;  // 保證顯示三個區間
+        if (endIndex >= intervals.length) {
+            endIndex = intervals.length - 1;
+            startIndex = Math.max(0, endIndex - 2);
+        }
 
-                if (totalUsedWidth > (width - margin.left - margin.right)) {
-                    const scaleFactor = (width - margin.left - margin.right) / totalUsedWidth;
-                    currentIntervals.forEach(interval => {
-                        intervalWidths[interval] *= scaleFactor;
-                    });
-                }
+        currentIntervals = intervals.slice(startIndex, endIndex + 1);  // 更新 currentIntervals 顯示當
+        }
+    }
 
-                let currentPosition = margin.left;
-                currentIntervals.forEach(interval => {
-                    intervalPositions[interval] = currentPosition;
-                    currentPosition += intervalWidths[interval];
-                });
+    console.log("Interval widths before update:", currentIntervals);
+    let totalUsedWidth = 0;
 
-                console.log("Interval widths after update:", intervalWidths);
-                console.log("Interval positions after update:", intervalPositions);
+    // 計算每個區間的寬度
+    currentIntervals.forEach(interval => {
+        const intervalTotals = getCurrentIntervalTotals(currentIntervals, circleRadius, data, width, margin, intervalWidths);
+        const total = d3.sum(Object.values(intervalTotals));
+        
+        // 使用比例計算區間寬度，確保不小於最小寬度
+        intervalWidths[interval] = Math.max((intervalTotals[interval] / total) * (width - margin.left - margin.right), minIntervalWidth);
+        totalUsedWidth += intervalWidths[interval];
+    });
 
-                // 绘制图表和 Minimap
-                d3.select("#chart").selectAll("*:not(.left)").remove();
-                d3.select("#x-axis-svg").selectAll("*").remove();
+    // 確保總寬度不超過畫布寬度
+    if (totalUsedWidth > (width - margin.left - margin.right)) {
+        const scaleFactor = (width - margin.left - margin.right) / totalUsedWidth;
+        currentIntervals.forEach(interval => {
+            intervalWidths[interval] *= scaleFactor;
+        });
+    }
 
-                const totalHeightValue = calculateTotalHeight(data, intervalWidths, rowHeight, groupSpacing, margin, sortedTimes, currentIntervals, circleRadius, rectSpacing);
-                if (isNaN(totalHeightValue) || totalHeightValue <= 0 || !isFinite(totalHeightValue)) {
-                    console.error("Total height 计算失败，跳过绘图。");
-                    return;
-                }
+    // 計算每個區間的x位置
+    let currentPosition = margin.left;
+    currentIntervals.forEach(interval => {
+        intervalPositions[interval] = currentPosition;
+        currentPosition += intervalWidths[interval];
+    });
 
-                drawChart(intervalWidths, intervalPositions, total, totalHeightValue, filteredIds);
-                const redBox = drawMinimap(intervalPositions, totalHeightValue, intervalWidths, intervals, sortedTimes, data, currentIntervals);
-                const midIndex = Math.floor(currentIntervals.length / 2);
-                const midInterval = currentIntervals[midIndex];
-                const targetXPosition = intervalPositions[midInterval] + intervalWidths[midInterval] / 2;
+    console.log("Interval widths after update:", intervalWidths);
+    console.log("Interval positions after update:", intervalPositions);
 
-                redBox.attr("x", targetXPosition - redBox.attr("width") / 2);
-            }
+    // 清空當前顯示，重繪圖表和 Minimap
+    d3.select("#chart").selectAll("*:not(.left)").remove();
+    d3.select("#x-axis-svg").selectAll("*").remove();
+
+    const totalHeightValue = calculateTotalHeight(data, intervalWidths, rowHeight, groupSpacing, margin, sortedTimes, currentIntervals, circleRadius, rectSpacing);
+    
+    if (isNaN(totalHeightValue) || totalHeightValue <= 0 || !isFinite(totalHeightValue)) {
+        console.error("Total height 计算失败，跳过绘图。");
+        return;
+    }
+
+    drawChart(intervalWidths, intervalPositions, total, totalHeightValue, filteredIds);
+    
+    const redBox = drawMinimap(intervalPositions, totalHeightValue, intervalWidths, intervals, sortedTimes, data, currentIntervals);
+    const midIndex = Math.floor(currentIntervals.length / 2);
+    const midInterval = currentIntervals[midIndex];
+    const targetXPosition = intervalPositions[midInterval] + intervalWidths[midInterval] / 2;
+}
+
 
             function resetToDefaultView() {
                 d3.select("#chart")
@@ -439,8 +470,7 @@
 
                 const colors = d3.scaleOrdinal()
                     .domain(sortedTimes)
-                    .range(['#d6af99', '#a2cdab', '#7ea1dd', '#fdc85e', '#e67575', '#b295ab']);
-                // .range(['#F3BEBE', '#FFD8B6', '#A8D6A8', '#ADD8E6', '#80B1D3', '#B48CC8']);
+                    .range(['#F3BEBE', '#FFD8B6', '#A8D6A8', '#ADD8E6', '#80B1D3', '#B48CC8']);
 
                 // 預先繪製rect
                 svg.append("g")
@@ -455,7 +485,7 @@
                     .attr("fill", d => colors(d.time) || "#ccc")
                     .attr("stroke", d => colors(d.time) || "#ccc")
                     .attr("stroke-width", 6)
-                    .attr("opacity", 0.5);
+                    .attr("opacity", 0.6);
 
 
                 // 過濾沒有positions 的數據，僅繪製 circle 相關的元素
@@ -470,11 +500,12 @@
                 const tooltip = d3.select("#tooltip");
                 const circles = svg.append('g')
                     .selectAll("g.circle-group")
-                    .data(filteredPositions)
+                    .data(filteredPositions)  // 確保 filteredPositions 是通過 calculatePositions 計算得來
                     .enter()
                     .append("g")
                     .attr("class", "circle-group")
-                    .attr("transform", d => `translate(${d.x + circleRadius}, ${d.y + circleRadius})`);
+                    .attr("transform", d => `translate(${d.x + circleRadius}, ${d.y + circleRadius})`);  // 使用 calculatePositions 的 x 和 y
+
 
 
                 let intervalId;
@@ -611,96 +642,97 @@
                     }));
 
                 const arc = d3.arc()
-                    .innerRadius(innerRadius)
-                    .outerRadius(radius)
-                    .cornerRadius(2);
+                        .innerRadius(innerRadius)
+                        .outerRadius(radius) 
+                        .cornerRadius(2);
 
-                const leftPie = d3.pie()
-                    .startAngle(-Math.PI)
-                    .endAngle(0)
-                    .value(d => 1);
-
-                const leftDataReady = leftPie(leftData);
-
+                 // 创建圆圈和左右 path
                 filteredPositions.forEach(position => {
-                    circles.append('g')
-                        .attr("transform", `translate(${position.x + circleRadius}, ${position.y + circleRadius})`);
+                    // 每个 position 对应的 <g> 元素，这个组将包含所有的子元素（圆圈和路径）
+                    const circleGroup = circles.filter(d => d === position)
+                        .append('g');
 
-                    circles.selectAll('path.left')
-                        .data(leftDataReady)
+                    // 创建专属的 leftPie 数据
+                    const leftPie = d3.pie()
+                        .startAngle(-Math.PI)
+                        .endAngle(0)
+                        .value(() => 1);
+                        
+                    const leftDataForThisPosition = leftPie(leftData); // 每个 position 都有专属的 leftData
+
+                    // 在 circleGroup 内添加左侧 path
+                    const leftPaths = circleGroup.selectAll('path.left')
+                        .data(leftDataForThisPosition)
                         .enter()
                         .append('path')
                         .attr('class', 'left')
                         .attr('d', arc)
                         .attr('fill', d => {
                             const restaurantVibes = (position.r_atmosphere && typeof position.r_atmosphere === 'string')
-                                ? position.r_atmosphere.split('，').map(v => v.trim())
+                                ? position.r_atmosphere.split('，').map(v => v.trim()) // 拆分气氛为数组
                                 : [];
-                            const vibeColor = restaurantVibes.includes(d.data.vibe) ? color(d.data.vibe) : '#d3d3d3';
+
+                            const vibeColor = restaurantVibes.some(vibe => vibe === d.data.vibe) ? color(d.data.vibe) : '#d3d3d3';
                             return vibeColor;
                         })
                         .attr('stroke', 'white')
                         .style('stroke-width', '1px');
-
+                    
                 });
+
 
                 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
                 const dayColor = d => d === 1 ? "#FFD400" : "lightgrey";  // 1為營業時間用黄色，0為不營業用灰色
 
-                filteredPositions.forEach(d => {
-                    // 初始化 rightData 為 0
-                    let rightData = daysOfWeek.map(() => 0);
+                // 針對每個餐廳計算 rightData 和繪製 path-right
+                filteredPositions.forEach(position => {
+                    // 創建一個獨立的 circleGroup，來包含此餐廳的 path-right
+                    const circleGroup = circles.filter(d => d === position)
+                                        .append('g');
 
-                    // 轉換成有用字串
+                    // 解析餐廳的營業時間資料 r_days
                     let r_hours_weekday = [];
                     try {
-                        const correctedString = d.r_days.replace(/'/g, '"');  // 将单引号替换为双引号
-                        r_hours_weekday = JSON.parse(correctedString);
+                        const correctedString = position.r_days.replace(/'/g, '"');  // 替換單引號
+                        r_hours_weekday = JSON.parse(correctedString);               // 解析 JSON
                     } catch (e) {
-                        console.error("Failed to parse r_days:", d.r_days, e);
+                        console.error("Failed to parse r_days:", position.r_days, e);
                     }
 
-                    // 對每一天檢查，如果有營業時間關鍵字，則設為 1
-                    rightData = daysOfWeek.map(day => {
+                    // 將餐廳的營業日對應到 rightData (0 或 1 表示是否營業)
+                    const rightData = daysOfWeek.map(day => {
                         return r_hours_weekday.some(entry => entry.includes(day)) ? 1 : 0;
                     });
 
-                    // console.log("rightData for", d.r_name, rightData); 
-
+                    // 為該餐廳的 rightData 準備 pie layout
                     const rightPie = d3.pie()
                         .startAngle(0)
                         .endAngle(Math.PI)
                         .value(() => 1);  // 每一天都有相同寬度
 
-                    const rightDataReady = rightPie(rightData);
+                    const rightDataReady = rightPie(rightData);  // 為該餐廳計算的 pie layout
 
-                    circles.append('g')
-                        .selectAll("g")
-                        .data([d])
-                        .enter()
-                        .append("g")
-                        .attr("transform", d => `translate(${d.x + circleRadius}, ${d.y + circleRadius})`);
-
-                    circles.selectAll('path.right')
+                    // 在 circleGroup 內繪製每個 path-right，並根據 rightData 著色
+                    circleGroup.selectAll('path.right')
                         .data(rightDataReady)
                         .enter()
                         .append('path')
                         .attr('class', 'right')
                         .attr('d', arc)
-                        .attr('fill', (d, i) => dayColor(rightData[i]))  // 顏色根據資料顯示顏色
-                        .attr("stroke", "white")
-                        .style("stroke-width", "1px");
+                        .attr('fill', (d, i) => dayColor(rightData[i]))  // 根據 rightData 著色
+                        .attr('stroke', 'white')
+                        .style('stroke-width', '1px');
 
-                    // 右側文字
-                    const days = ["一", "二", "三", "四", "五", "六", "日"];
-                    circles.selectAll('text.days')
+                    // 添加對應的每週文字 (一、二、三...)
+                    const days = ["一", "二", "三", "四", "五", "六", "七"];
+                    circleGroup.selectAll('text.days')
                         .data(rightDataReady)
                         .enter()
                         .append('text')
                         .attr('class', 'days')
                         .attr('transform', d => {
                             const pos = arc.centroid(d);
-                            return `translate(${pos[0]},${pos[1]})`;
+                            return `translate(${pos[0]}, ${pos[1]})`;
                         })
                         .attr('text-anchor', 'middle')
                         .attr('dy', '0.35em')
@@ -801,9 +833,7 @@
                     .attr("stroke-width", 2);
 
 
-
-
-                svg.append("g")
+                    svg.append("g")
                     .selectAll("text")
                     .data(positions.filter(d => d.label))
                     .enter()
@@ -815,7 +845,8 @@
                     .attr("font-size", "12px")
                     .attr("font-weight", "bold")
                     .attr("fill", "black") // 添加顏色以確保文本可見
-                    .text(d => `用餐時間: ${d.r_time_low}`);
+                    .text(d => `用餐時間: ${d.r_time_low === '' ? '無限制' : d.r_time_low}`);
+
 
 
                 // 设置 SVG 宽度为窗口宽度
@@ -856,43 +887,43 @@
 
 
                 // 向左移动的箭头
-                d3.select("body").append("div")
-                    .attr("class", "arrow arrow-left")
-                    .text("◀")
-                    .on("click", () => {
-                        const firstIndex = intervals.indexOf(currentIntervals[0]);
+            d3.select("body").append("div")
+                .attr("class", "arrow arrow-left")
+                .text("◀")
+                .on("click", () => {
+                    const firstIndex = intervals.indexOf(currentIntervals[0]);
 
-                        if (firstIndex > 0) {
-                            // Calculate new interval set to shift left by one
-                            const prevStartIndex = Math.max(firstIndex - 1, 0);
-                            const prevEndIndex = Math.min(prevStartIndex + 2, intervals.length - 1); // 保证仍然显示三个区间
+                    if (firstIndex > 0) {
+                        // Calculate new interval set to shift left by one
+                        const prevStartIndex = Math.max(firstIndex - 1, 0) - 1;
+                        const prevEndIndex = Math.min(prevStartIndex + 2, intervals.length - 1); // 保证仍然显示三个区间
 
-                            // Update currentIntervals to ensure it always contains 3 intervals
-                            currentIntervals = intervals.slice(prevStartIndex + 1, prevEndIndex);  // +1 是为了确保包含 endIndex
+                        // Update currentIntervals to ensure it always contains 3 intervals
+                        currentIntervals = intervals.slice(prevStartIndex+1 , prevEndIndex);  // +1 是为了确保包含 endIndex
 
-                            console.log("Updated intervals after left click:", currentIntervals);
+                        console.log("Updated intervals after left click:", currentIntervals);
 
-                            // Call update function
-                            updateIntervals();
-                        } else {
-                            console.log("已经到达第一个区间，无法继续向左移动。");
-                        }
-                    });
+                        // Call update function
+                        updateIntervals();
+                    } else {
+                        console.log("已经到达第一个区间，无法继续向左移动。");
+                    }
+                });
 
                 // 向右移动的箭头
                 d3.select("body").append("div")
                     .attr("class", "arrow arrow-right")
                     .text("▶")
                     .on("click", () => {
-                        const lastIndex = intervals.indexOf(currentIntervals[currentIntervals.length - 1]);
+                        const lastIndex = intervals.indexOf(currentIntervals[currentIntervals.length - 2 ]);
 
                         if (lastIndex < intervals.length - 1) {
                             // Calculate new interval set to shift right by one 
                             const nextStartIndex = Math.min(lastIndex, intervals.length - 2); // 移动起点，确保不超出范围
-                            const nextEndIndex = Math.min(nextStartIndex + 2, intervals.length - 1); // 确保显示三个区间
+                            const nextEndIndex = Math.min(nextStartIndex + 1, intervals.length - 1) + 1; // 确保显示三个区间
 
                             // Update currentIntervals to ensure it always contains 3 intervals
-                            currentIntervals = intervals.slice(nextStartIndex, nextEndIndex + 1);
+                            currentIntervals = intervals.slice(nextStartIndex, nextEndIndex);
 
                             console.log("Updated intervals after right click:", currentIntervals);
 
@@ -928,7 +959,7 @@
                         const restaurantsInInterval = data.filter(restaurant => categorizePrice(restaurant.r_price_low) === d.interval);
                         const restaurantIds = restaurantsInInterval.map(r => r.r_id);
                         const restaurantIdsParam = restaurantIds.join(",");
-                        window.location.href = `./map.php?restaurant_ids=${restaurantIdsParam}`;
+                        window.location.href = `map_background.php?restaurant_ids=${restaurantIdsParam}`;
                     });
 
                 // 在按钮中添加文字

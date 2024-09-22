@@ -11,7 +11,7 @@ function categorizePrice(price) {
 // 依照餐廳數計算區間寬度
 function getCurrentIntervalTotals(intervals, circleRadius, data, width, margin, intervalWidths) {
     const intervalTotals = {};
-    const minWidth = circleRadius * 2; // 最小寬度為一個圓圈
+    const minWidth = circleRadius * 2 + 20; // 最小寬度為一個圓圈
 
     intervals.forEach(interval => {
         intervalTotals[interval] = d3.sum(data, d => categorizePrice(d.r_price_low) === interval);
@@ -172,7 +172,9 @@ function calculateSortedPositions(data, intervalWidths, rowHeight, rectSpacing, 
                     r_rating_food: restaurant.r_rating_food,// 添加食物评分
                     r_days: restaurant.r_hours_weekday,
                     r_atmosphere: restaurant.r_vibe,
-                    r_id: restaurant.r_id
+                    r_id: restaurant.r_id,
+                    r_price_high: restaurant.r_price_high,
+                    r_price_low: restaurant.r_price_low
                 });
 
 
@@ -317,7 +319,9 @@ function calculatePositions(data, intervalWidths, rowHeight, rectSpacing, margin
                     r_rating_food: restaurant.r_rating_food, // 添加食物评分
                     r_days: restaurant.r_hours_weekday,
                     r_atmosphere: restaurant.r_vibe,
-                    r_id: restaurant.r_id
+                    r_id: restaurant.r_id,
+                    r_price_low: restaurant.r_price_low,
+                    r_price_high: restaurant.r_price_high
                 });
 
 
