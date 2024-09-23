@@ -48,7 +48,7 @@ function toggleCircles(innerRadius, circleRadius) {
             button.textContent = "隱藏外圈";
         } else {
             button.classList.add("hidden");
-            button.style.backgroundColor = "#FFD700";  // 改變按鈕背景色
+            button.style.backgroundColor = "rgb(255, 240, 179)";  // 改變按鈕背景色
             button.textContent = "顯示外圈";
         }
     });

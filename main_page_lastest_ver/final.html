@@ -13,12 +13,12 @@
     <div class="top-container">
         <div class="box2">
             <div class="button-title">
-                <label>照片切換</label>
+                <label style="font-weight: bold;">照片切換</label>
             </div>
             <div class="btn-container">
                 <div class="btn">
-                    <button id="environment">環境</button>
-                    <button id="food">食物</button>
+                    <button id="environment" class="color-button active-color">環境</button>
+                    <button id="food" class="color-button">食物</button>
                     <button id="hide">隱藏外圈</button>
                 </div>
             </div>
@@ -755,7 +755,7 @@
                     .attr('cy', d => Math.sin(-Math.PI / 5) * iconOffset)
                     .attr('r', smallCircleRadius)
                     .attr('fill', 'white')
-                    .attr('stroke', 'black')
+                    .attr('stroke', '#fff')
                     .attr('stroke-width', '1px');
 
                 circles.append("text")
@@ -792,7 +792,7 @@
                     .attr('cy', Math.sin(-Math.PI / 4 + 0.5) * iconOffset)
                     .attr('r', smallCircleRadius)
                     .attr('fill', 'white')
-                    .attr('stroke', 'black')
+                    .attr('stroke', 'white')
                     .attr('stroke-width', '1px');
 
                 circles.append("text")
@@ -975,15 +975,24 @@
                     .attr("fill", "black")
                     .text("地圖");
 
+                function removeAllColors() {
+                    const buttons = document.querySelectorAll('.color-button'); // 假設所有按鈕有相同的 class
+                    buttons.forEach(button => button.classList.remove('active-color')); // 移除所有按鈕的顏色
+                }  
 
+                // environment 按鈕點擊事件
                 document.getElementById("environment").addEventListener("click", function () {
-                    updatePatterns("environment", data, svg); // Pass the ID of the clicked button
+                    removeAllColors();  // 移除所有按鈕的顏色
+                    this.classList.add('active-color');  // 為當前按鈕添加顏色
+                    updatePatterns("environment", data, svg); // 傳遞當前點擊按鈕的ID
                 });
 
+                // food 按鈕點擊事件
                 document.getElementById("food").addEventListener("click", function () {
-                    updatePatterns("food", data, svg); // Pass the ID of the clicked button
+                    removeAllColors();  // 移除所有按鈕的顏色
+                    this.classList.add('active-color');  // 為當前按鈕添加顏色
+                    updatePatterns("food", data, svg); // 傳遞當前點擊按鈕的ID
                 });
-
 
             }
 

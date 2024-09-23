@@ -518,7 +518,7 @@ function dragElement(circles, circleRadius, x, y) {
 
             // 設置點擊事件，跳轉到比較頁面
             compareBtn.onclick = function () {
-              const url = `http://localhost/my_foodee/compare/0807.php?r_id1=${selectedRestaurantIds[0]}&r_id2=${selectedRestaurantIds[1]}&r_id3=${selectedRestaurantIds[2]}`;
+              const url = `http://localhost/foodee/compare/0807.php?r_id1=${selectedRestaurantIds[0]}&r_id2=${selectedRestaurantIds[1]}&r_id3=${selectedRestaurantIds[2]}`;
               window.location.href = url;
             };
           } else {

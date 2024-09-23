@@ -49,15 +49,25 @@ html, body {
     /* 让内部的按钮和minimap在水平上集中 */
     z-index: 1000;
     /* background-color: #ffaf6d; */
-    background-color:rgba(252,184,53, .8);
+    background-color:rgba(251, 177, 41, 0.716);
     padding: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    div{
+        font-size: .9rem
+    }
 }
 
 .btn-container{
     display: flex;
     align-items: center;
     margin-right: 10px;
+}
+
+.btn button{
+    background-color: #ffffff;
+    border: none;
+    padding: .3rem .6rem;
+    font-size: .9rem;
 }
 
 .jump-buttons {
@@ -67,13 +77,25 @@ html, body {
     margin-right: 20px;
 }
 
+#food, #environment, #hide{
+    transition: background-color 0.2s ease-in-out;
+}
+
+#environment.active-color{
+    background-color: rgb(255, 240, 179);
+}
+#food.active-color{
+    background-color: rgb(255, 240, 179);
+}
+
 .jump-button {
     margin: 5px;
-    padding: 5px 10px;
+    padding: 6px 12px;
     cursor: pointer;
-    border: 2px solid #fff;
+    border: none;
     border-radius: 5px;
-    background-color: #f7e9ce;
+    background-color: #fff;
+    box-shadow: 0 3px 3px rgba(0, 0, 0, .1);
     /* background-color: rgba(252, 235, 167, 0.8); */
     font-size: 12px;
     width: auto;
@@ -89,15 +111,19 @@ html, body {
     align-items: center;
     /* 确保按钮在容器内垂直居中 */
     margin-right: 20px;
+    bottom{
+        font-size: .9rem;
+    }
 }
 
 #sort-button {
     padding: 8px 20px;
     cursor: pointer;
-    font-size: 12px;
-    background-color: #f7e9ce;
+    font-size: .9rem;
+    background-color: rgb(255, 240, 179);
+    box-shadow: 0 3px 3px rgba(0, 0, 0, .1);
     /* background-color: rgba(252, 235, 167, 0.8); */
-    border: 2px solid #fff;
+    border: none;
     border-radius: 5px;
 }
 
@@ -151,6 +177,7 @@ html, body {
     position: fixed;
     top: 50%;
     transform: translateY(-50%);
+    z-index: 100;
 }
 
 .arrow-left {

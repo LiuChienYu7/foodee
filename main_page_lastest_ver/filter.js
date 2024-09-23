@@ -655,14 +655,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-    // 當「無限制」按鈕被點擊時
-    // noLimitBtn.addEventListener('click', function () {
-    //     isNoLimitActive = !isNoLimitActive;
-    //     noLimitBtn.classList.toggle('active', isNoLimitActive);
-    //     filterItemTime.style.opacity = 1;
-    //     applyFilters();
-    // });
-
     function updateTimeSliders() {
         minTimeSlider.value = parseInt(minTimeInput.value, 10);
         maxTimeSlider.value = parseInt(maxTimeInput.value, 10);

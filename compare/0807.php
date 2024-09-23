@@ -130,7 +130,7 @@ if ($link) {
                 // 餐廳名稱和投票次數部分
                 echo "<div class='restaurant-container' style='background-color: {$backgroundColor}; padding: 10px; border-radius: 10px; margin-right: 10px; display: inline-block; width: 200px;'>"; // 整個區塊背景和設計
                 echo "<div style='display: flex; align-items: center;'>"; // 使用flex排列名稱和勾選框
-                echo "<input type='checkbox' class='restaurant-checkbox' data-id='{$r_id}' style='margin-right: 10px; cursor: pointer; width: 20px; height: 20px;' onchange='handleCheckboxChange(this)'>";
+                echo "<input type='checkbox' class='restaurant-checkbox' data-id='{$r_id}' style='margin-right: 10px; cursor: pointer; width: 18px; height: 18px;' onchange='handleCheckboxChange(this)'>";
                 echo "<div style='cursor: default;'>" . htmlspecialchars($restaurant_data['r_name']) . "</div>"; // 餐廳名稱在勾選框右邊
                 echo "</div>";
                 // 投票次數換行顯示

@@ -27,17 +27,18 @@
         /* 返回按鈕樣式 */
         #backButton {
             position: fixed;
-            top: 10px;
+            top: 17px;
             /* 與minimap頂部對齊 */
-            left: 10px;
+            left: 60px;
             /* 距離左側10px */
             z-index: 1001;
             /* 確保在minimap和地圖之上 */
-            background-color: #ddd;
-            border: 1px solid #ccc;
+            background-color: #fff;
+            border: none;
             padding: 5px 10px;
-            border-radius: 15px;
+            border-radius: 10px;
             cursor: pointer;
+            font-size:1.2rem;
         }
 
         #backButton:hover{
@@ -179,7 +180,7 @@
             }
 
             // 加载餐厅数据并使用自定义图标
-            fetch('./data.php')
+            fetch('../connect_sql/get_data_json.php')
                 .then(response => response.json())
                 .then(data => {
                     let filteredRestaurants = data;
@@ -604,7 +605,7 @@
         }
 
         // 添加捷运和轻轨线路和标记
-        fetch('./data.php')
+        fetch('../connect_sql/get_data_map_json.php')
             .then(response => response.json())
             .then(data => {
                 var LRT_points = [];
@@ -667,10 +668,10 @@
         }).addTo(map);
 
         // 餐廳和捷運輕軌連線
-        fetch('./data.php')
+        fetch('../connect_sql/get_data_map_json.php')
             .then(response => response.json())
             .then(restaurants => {
-                fetch('./data.php')
+                fetch('../connect_sql/get_data_map_json.php')
                     .then(response => response.json())
                     .then(transportations => {
                         const stationMap = {};
