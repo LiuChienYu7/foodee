@@ -19,10 +19,12 @@ html, body {
     font-family: 'HunInn', sans-serif;
 }
 
-
-
 *{
     font-family: 'HunInn', sans-serif;
+}
+
+iframe{
+    border: 0;
 }
 
 .index-container{
