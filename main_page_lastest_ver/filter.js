@@ -248,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     timeButtons.forEach(item => {
         item.addEventListener('click', function() {
-            label.classList.toggle('active');  // 切換選中狀態
+            item.classList.toggle('active');  // 切換選中狀態
             applyFilters();  // 調用篩選函數
         });
     });
