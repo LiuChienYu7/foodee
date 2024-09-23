@@ -450,7 +450,7 @@
                 }
 
 
-                function createPattern(svg, id, url) {
+                function createPattern(defs, id, url) {
                     return svg.select('defs').append('pattern')
                         .attr('id', id)
                         .attr('patternUnits', 'objectBoundingBox')
@@ -491,10 +491,13 @@
                 // 過濾沒有positions 的數據，僅繪製 circle 相關的元素
                 const filteredPositions = positions.filter(d => d.r_photo_env1 !== undefined && d.r_photo_env1 !== null && d.r_photo_env1 !== '');
 
-                svg.append('defs');
+                const defs = svg.append('defs')
+                    .append('g')
+                    .attr('class', 'patternGroup');
+
                 filteredPositions.forEach((d, i) => {
                     const patternId = `pattern-${i}`;
-                    createPattern(svg, patternId, d.r_photo_env1);
+                    createPattern(defs, patternId, d.r_photo_env1);
                 });
 
                 const tooltip = d3.select("#tooltip");
@@ -811,6 +814,8 @@
                     .style("font-family", "FontAwesome"); // Ensure font-family is set
 
                 dragElement(circles, circleRadius, x, y);
+                // 呼叫函數，並傳入不同的半徑值
+                toggleCircles(innerRadius, circleRadius);
 
                 // 各個用餐區間背景顏色
                 const timeColorMap = sortedTimes.reduce((map, time, index) => {
