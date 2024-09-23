@@ -136,8 +136,9 @@
         // 顏色映射
         let filterRestaurants = []
         const sortedTimes = ['60', '90', '100', '120', '150', ''];
-        const colors = d3.scaleOrdinal(d3.schemeCategory10)
-            .domain(sortedTimes);
+        const colors = d3.scaleOrdinal()
+            .domain(sortedTimes)  // sortedTimes 是你的時間數據
+            .range(['#d6af99', '#a2cdab', '#7ea1dd', '#fdc85e', '#e67575', '#b295ab']); 
         // 初始化地圖
         const map = L.map('map').setView([22.631386, 120.301951], 13);
         L.tileLayer('https://api.maptiler.com/maps/dataviz/{z}/{x}/{y}.png?key=nVkGoaPMkOqdVRLChAnz', {
@@ -178,7 +179,7 @@
             }
 
             // 加载餐厅数据并使用自定义图标
-            fetch('../connect_sql/get_data_json.php')
+            fetch('./data.php')
                 .then(response => response.json())
                 .then(data => {
                     let filteredRestaurants = data;
@@ -603,7 +604,7 @@
         }
 
         // 添加捷运和轻轨线路和标记
-        fetch('../connect_sql/get_data_map_json.php')
+        fetch('./data.php')
             .then(response => response.json())
             .then(data => {
                 var LRT_points = [];
@@ -666,10 +667,10 @@
         }).addTo(map);
 
         // 餐廳和捷運輕軌連線
-        fetch('../connect_sql/get_data_json.php')
+        fetch('./data.php')
             .then(response => response.json())
             .then(restaurants => {
-                fetch('../connect_sql/get_data_map_json.php')
+                fetch('./data.php')
                     .then(response => response.json())
                     .then(transportations => {
                         const stationMap = {};
