@@ -11,6 +11,7 @@ function dragElement(circles, circleRadius, x, y) {
       .drag()
       .on("start", function (event, d) {
         isDragging = true;
+        d3.select(this).style("cursor", "pointer"); // 拖曳開始時設為 pointer
         // Get the current transform attribute
         const transform = d3.select(this).attr("transform");
 
