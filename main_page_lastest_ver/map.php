@@ -637,81 +637,81 @@ function drawMinimap(data) {
             layerGroup: null
         }).addTo(map);
 
-        // 餐廳和捷運輕軌連線
-        fetch('../connect_sql/get_data_json.php')
-            .then(response => response.json())
-            .then(restaurants => {
-                fetch('../connect_sql/get_data_map_json.php')
-                    .then(response => response.json())
-                    .then(transportations => {
-                        const stationMap = {};
-                        transportations.forEach(station => {
-                            stationMap[station.name] = {
-                                lat: station.latitude,
-                                lng: station.longitude
-                            };
-                        });
+        // // 餐廳和捷運輕軌連線
+        // fetch('../connect_sql/get_data_json.php')
+        //     .then(response => response.json())
+        //     .then(restaurants => {
+        //         fetch('../connect_sql/get_data_map_json.php')
+        //             .then(response => response.json())
+        //             .then(transportations => {
+        //                 const stationMap = {};
+        //                 transportations.forEach(station => {
+        //                     stationMap[station.name] = {
+        //                         lat: station.latitude,
+        //                         lng: station.longitude
+        //                     };
+        //                 });
 
-                        const lineGroup = L.layerGroup().addTo(map);
+        //                 const lineGroup = L.layerGroup().addTo(map);
 
-                        restaurants.forEach(restaurant => {
-                            const restaurantLatLng = [restaurant.r_latitude, restaurant.r_longitude];
+        //                 restaurants.forEach(restaurant => {
+        //                     const restaurantLatLng = [restaurant.r_latitude, restaurant.r_longitude];
 
-                            let shortestDistance = Infinity;
-                            let shortestLine = null;
+        //                     let shortestDistance = Infinity;
+        //                     let shortestLine = null;
 
-                            if (restaurant.r_MRT) {
-                                const mrtStationName = restaurant.r_MRT.replace('站', '');
-                                const mrtStation = stationMap[mrtStationName];
-                                if (mrtStation) {
-                                    const mrtDistance = parseFloat(restaurant.r_MRT_dist_km);
-                                    if (mrtDistance < shortestDistance) {
-                                        shortestDistance = mrtDistance;
-                                        shortestLine = L.polyline([restaurantLatLng, [mrtStation.lat, mrtStation.lng]], {
-                                            color: 'blue'
-                                        });
-                                    }
-                                }
-                            }
+        //                     if (restaurant.r_MRT) {
+        //                         const mrtStationName = restaurant.r_MRT.replace('站', '');
+        //                         const mrtStation = stationMap[mrtStationName];
+        //                         if (mrtStation) {
+        //                             const mrtDistance = parseFloat(restaurant.r_MRT_dist_km);
+        //                             if (mrtDistance < shortestDistance) {
+        //                                 shortestDistance = mrtDistance;
+        //                                 shortestLine = L.polyline([restaurantLatLng, [mrtStation.lat, mrtStation.lng]], {
+        //                                     color: 'blue'
+        //                                 });
+        //                             }
+        //                         }
+        //                     }
 
-                            if (restaurant.r_LRT) {
-                                const lrtStationName = restaurant.r_LRT;
-                                const lrtStation = stationMap[lrtStationName];
-                                if (lrtStation) {
-                                    const lrtDistance = parseFloat(restaurant.r_LRT_dist_km);
-                                    if (lrtDistance < shortestDistance) {
-                                        shortestDistance = lrtDistance;
-                                        shortestLine = L.polyline([restaurantLatLng, [lrtStation.lat, lrtStation.lng]], {
-                                            color: 'green'
-                                        });
-                                    }
-                                }
-                            }
+        //                     if (restaurant.r_LRT) {
+        //                         const lrtStationName = restaurant.r_LRT;
+        //                         const lrtStation = stationMap[lrtStationName];
+        //                         if (lrtStation) {
+        //                             const lrtDistance = parseFloat(restaurant.r_LRT_dist_km);
+        //                             if (lrtDistance < shortestDistance) {
+        //                                 shortestDistance = lrtDistance;
+        //                                 shortestLine = L.polyline([restaurantLatLng, [lrtStation.lat, lrtStation.lng]], {
+        //                                     color: 'green'
+        //                                 });
+        //                             }
+        //                         }
+        //                     }
 
-                            if (shortestLine) {
-                                lineGroup.addLayer(shortestLine);
-                            }
-                        });
+        //                     if (shortestLine) {
+        //                         lineGroup.addLayer(shortestLine);
+        //                     }
+        //                 });
 
-                        const zoomThreshold = 15;
+        //                 const zoomThreshold = 15;
 
-                        map.on('zoomend', () => {
-                            if (map.getZoom() >= zoomThreshold) {
-                                map.addLayer(lineGroup);
-                            } else {
-                                map.removeLayer(lineGroup);
-                            }
-                        });
+        //                 map.on('zoomend', () => {
+        //                     if (map.getZoom() >= zoomThreshold) {
+        //                         map.addLayer(lineGroup);
+        //                     } else {
+        //                         map.removeLayer(lineGroup);
+        //                     }
+        //                 });
 
-                        if (map.getZoom() >= zoomThreshold) {
-                            map.addLayer(lineGroup);
-                        } else {
-                            map.removeLayer(lineGroup);
-                        }
-                    })
-                    .catch(error => console.error('Error loading MRT/LRT data:', error));
-            })
-            .catch(error => console.error('Error loading restaurant data:', error));
+        //                 if (map.getZoom() >= zoomThreshold) {
+        //                     map.addLayer(lineGroup);
+        //                 } else {
+        //                     map.removeLayer(lineGroup);
+        //                 }
+        //             })
+        //             .catch(error => console.error('Error loading MRT/LRT data:', error));
+        //     })
+        //     .catch(error => console.error('Error loading restaurant data:', error));
     </script>
 </body>
 </html>
