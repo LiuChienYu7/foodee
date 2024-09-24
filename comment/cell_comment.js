@@ -119,7 +119,7 @@ function handleButtonClick(button, svg, category, blockWidth) {
   d3.selectAll(".block-group").select("text").attr("fill", "black").attr("font-weight", "normal");
 
   // 選中當前的總評並改變顏色
-  d3.select(button).select("rect").attr("fill", "#FFD700"); // 選中總評變為亮色
+  d3.select(button).select("rect").attr("fill", "#EA9B00"); // 選中總評變為亮色
   d3.select(button).select("text").attr("fill", "white").attr("font-weight", "bold");
 
   showReviews(svg, category, button, blockWidth); // 顯示評論
