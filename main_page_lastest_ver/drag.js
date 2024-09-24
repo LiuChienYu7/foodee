@@ -513,8 +513,10 @@ function dragElement(circles, circleRadius, x, y) {
 
           if (selectedRestaurantIds.length === 3) {
             // 恰好選擇了三家餐廳，按鈕可用
-            compareBtn.style.opacity = "1";
-            compareBtn.disabled = false;
+            compareBtn.classList.add('enabled');  // 使用 'enabled' 類來設置樣式
+            compareBtn.disabled = false;  // 啟用按鈕
+            // compareBtn.style.opacity = "1";
+            // compareBtn.disabled = false;
 
             // 設置點擊事件，跳轉到比較頁面
             compareBtn.onclick = function () {
@@ -523,8 +525,10 @@ function dragElement(circles, circleRadius, x, y) {
             };
           } else {
             // 非三家餐廳，按鈕不可用，設置為半透明
-            compareBtn.style.opacity = "0.5";
-            compareBtn.disabled = true;
+            compareBtn.classList.remove('enabled');  // 移除 'enabled' 類
+            compareBtn.disabled = true; 
+            // compareBtn.style.opacity = "0.5";
+            // compareBtn.disabled = true;
 
             // 禁止點擊事件
             compareBtn.onclick = null;

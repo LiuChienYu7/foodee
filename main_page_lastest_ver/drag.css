@@ -292,10 +292,11 @@ h5 {
 
 }
 
-#compare-btn:enabled {
+#compare-btn.enabled {
     cursor: pointer;
     background-color: #EA9B00;
     color: #fff;
+    opacity : 1;
     /* 當按鈕可點擊時，顯示正常指針 */
 }
 

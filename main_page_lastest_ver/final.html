@@ -847,8 +847,7 @@
                     .attr("y", d => d.y - 10) // 調整 y 坐標
                     .attr("dy", "0.35em")
                     .attr("text-anchor", "start")
-                    .attr("font-size", "12px")
-                    .attr("font-weight", "bold")
+                    .attr("font-size", ".9rem")
                     .attr("fill", "black") // 添加顏色以確保文本可見
                     .text(d => `用餐時間: ${d.r_time_low === '' ? '無限制' : d.r_time_low}`);
 
@@ -888,7 +887,9 @@
                             const closestInterval = currentIntervals[i];
                             return closestInterval ? closestInterval : '';
                         })
-                    );
+                    )
+                    .selectAll("text")  // 選擇所有軸上的文本
+                    .style("font-size", ".9rem");  // 設置文本大小
 
 
                 // 向左移动的箭头
