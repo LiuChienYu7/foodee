@@ -134,7 +134,7 @@ if ($link) {
     </div>-->
 
     <div class="comment-form">
-        <h2>Leave a Comment</h2>
+        <h2>說說你的想法吧！</h2>
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . '?' . $_SERVER['QUERY_STRING']); ?>" method="post">
             <select name="r_id" onchange="updateRestaurantName(this)">
                 <?php foreach ($restaurant_names as $r_id => $r_name): ?>
@@ -142,9 +142,9 @@ if ($link) {
                 <?php endforeach; ?>
             </select>
             <input type="hidden" name="r_name" id="r_name_input" value="<?php echo htmlspecialchars(reset($restaurant_names)); ?>"> <!-- 默認的餐廳名稱 -->
-            <input type="text" name="user" placeholder="Your Name" required>
-            <textarea name="comment" placeholder="Your Comment" required></textarea>
-            <button type="submit">Submit Comment</button>
+            <input type="text" name="user" placeholder="你的名字" required>
+            <textarea name="comment" placeholder="你的想法..." required></textarea>
+            <button type="submit">送出</button>
         </form>
     </div>
 

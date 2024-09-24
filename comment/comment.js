@@ -172,7 +172,7 @@ function initializeReviews(reviewData) {
     .attr("fill", "black")
     .text((d) => d.text);
 
-  const colors = ["#ffc6df86", "#acccff8c", "#ffeab089"]; // 定義顏色陣列
+  const colors = ["#ffc6df", "#acccff", "#ffeab0"]; // 定義顏色陣列
     
 
   // 一開始就顯示第一個類別的總評和第一家餐廳的評論細節
@@ -195,7 +195,7 @@ function showReviews(svg, d, blockGroup) {
   const blockX = 20;
   const blockY = 30; // 這裡可以根據需要調整Y座標 一開始高度
   const blockWidth = 150;
-  const colors = ["#ffc6dfef", "#acccffea", "#ffeab0ee"]; // 定義顏色陣列
+  const colors = ["#ffc6df", "#acccff", "#ffeab0"]; // 定義顏色陣列
 
   // 獲取總評區塊的位置，作為連線的起點
   const blockTransform = d3.select(blockGroup).attr("transform");
