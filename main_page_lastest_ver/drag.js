@@ -5,7 +5,8 @@ let selectedRestaurantIds = [];
 
 function dragElement(circles, circleRadius, x, y) {
   circles.call(
-    d3.drag()
+    d3
+      .drag()
       .on("start", function (event, d) {
         // save the starting position of the element
         d.originalX = event.x;
@@ -57,8 +58,9 @@ function dragElement(circles, circleRadius, x, y) {
           parking.className = "drag-parking";
 
           const parkingSvg = `
-          <svg fill="${d.r_has_parking == 1 ? "#0000FF" : "#A9A9A9"
-            }" width="20px" height="20px" viewBox="0 0 454 454" xmlns="http://www.w3.org/2000/svg">
+          <svg fill="${
+            d.r_has_parking == 1 ? "#0000FF" : "#A9A9A9"
+          }" width="20px" height="20px" viewBox="0 0 454 454" xmlns="http://www.w3.org/2000/svg">
               <g>
                   <g>
                       <path d="M228.062,154.507h-34.938v65.631h34.938c18.094,0,32.814-14.72,32.814-32.814
@@ -99,7 +101,7 @@ function dragElement(circles, circleRadius, x, y) {
             d.r_photo_food4,
             d.r_photo_food5,
           ];
-          
+
           // for (let i = 0; i < foodPhotos.length; i++) {
           //   if (foodPhotos[i]) {
           //     console.log(`Image ${i + 1} URL: `, foodPhotos[i]);
@@ -250,7 +252,7 @@ function dragElement(circles, circleRadius, x, y) {
           priceAndDiningTime.className = "price-diningTime";
 
           const diningTimeElement = document.createElement("div");
-          diningTimeElement.className = 'drag-dingingTime';
+          diningTimeElement.className = "drag-dingingTime";
           const diningTime = d.time ? `${d.time} 分鐘` : "未限時";
           diningTimeElement.innerHTML = `
             <svg fill="#ED8A19" width="20px" height="20px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -382,12 +384,12 @@ function dragElement(circles, circleRadius, x, y) {
           // 監聽外部按鈕切換圖片類型
 
           const element = document.getElementById("environment");
-              console.log(element);  // 如果是 null，表示元素不存在
+          console.log(element); // 如果是 null，表示元素不存在
           document
             .getElementById("environment")
             .addEventListener("click", function () {
               currentImageType = "environment";
-            
+
               currentImageIndex = 0; // 切換到 environment 類型時顯示第一張圖片
               updateImage();
             });
@@ -418,8 +420,10 @@ function dragElement(circles, circleRadius, x, y) {
             });
         }
 
-        d3.select(this)
-          .attr("transform", d => `translate(${d.x + circleRadius}, ${d.y + circleRadius})`);
+        d3.select(this).attr(
+          "transform",
+          (d) => `translate(${d.x + circleRadius}, ${d.y + circleRadius})`
+        );
         // 全部清除功能
         // 設置 clear-btn 的點擊事件來清除所有餐廳
         document
@@ -441,7 +445,11 @@ function dragElement(circles, circleRadius, x, y) {
             circles.each(function (d) {
               d3.select(this)
                 .style("visibility", "visible") // 恢復圓圈的可見性
-                .attr("transform", d => `translate(${d.x + circleRadius}, ${d.y + circleRadius})`); // 回到原始位置
+                .attr(
+                  "transform",
+                  (d) =>
+                    `translate(${d.x + circleRadius}, ${d.y + circleRadius})`
+                ); // 回到原始位置
             });
 
             // 清空 selectedRestaurantIds 陣列
@@ -513,20 +521,27 @@ function dragElement(circles, circleRadius, x, y) {
 
           if (selectedRestaurantIds.length === 3) {
             // 恰好選擇了三家餐廳，按鈕可用
-            compareBtn.classList.add('enabled');  // 使用 'enabled' 類來設置樣式
-            compareBtn.disabled = false;  // 啟用按鈕
+            compareBtn.classList.add("enabled"); // 使用 'enabled' 類來設置樣式
+            compareBtn.disabled = false; // 啟用按鈕
             // compareBtn.style.opacity = "1";
             // compareBtn.disabled = false;
 
             // 設置點擊事件，跳轉到比較頁面
             compareBtn.onclick = function () {
+              // 操作父页面的左边 iframe，隐藏左边的 filter iframe
               const url = `http://localhost/foodee/compare/0807.php?r_id1=${selectedRestaurantIds[0]}&r_id2=${selectedRestaurantIds[1]}&r_id3=${selectedRestaurantIds[2]}`;
-              window.location.href = url;
+              parent.document.getElementById("left-panel").style.display =
+                "none";
+
+              // 設置延遲，等filter被隱藏後再連到比較頁面
+              setTimeout(function () {
+                window.location.href = url;
+              }, 2000);
             };
           } else {
             // 非三家餐廳，按鈕不可用，設置為半透明
-            compareBtn.classList.remove('enabled');  // 移除 'enabled' 類
-            compareBtn.disabled = true; 
+            compareBtn.classList.remove("enabled"); // 移除 'enabled' 類
+            compareBtn.disabled = true;
             // compareBtn.style.opacity = "0.5";
             // compareBtn.disabled = true;
 
