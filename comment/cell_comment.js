@@ -115,11 +115,11 @@ function initializeReviews(reviewData) {
 
 // 點擊按鈕後處理顯示評論的函數
 function handleButtonClick(button, svg, category, blockWidth) {
-  d3.selectAll(".block-group").select("rect").attr("fill", "#e2e1e1"); // 恢復預設背景顏色
+  d3.selectAll(".block-group").select("rect").attr("fill", "#c3d4cc"); // 恢復預設背景顏色
   d3.selectAll(".block-group").select("text").attr("fill", "black").attr("font-weight", "normal");
 
   // 選中當前的總評並改變顏色
-  d3.select(button).select("rect").attr("fill", "rgb(255, 240, 179)"); // 選中總評變為亮色
+  d3.select(button).select("rect").attr("fill", "rgb(148, 168, 158)"); // 選中總評變為亮色
   d3.select(button).select("text").attr("fill", "black").attr("font-weight", "bold");
 
   showReviews(svg, category, button, blockWidth); // 顯示評論
