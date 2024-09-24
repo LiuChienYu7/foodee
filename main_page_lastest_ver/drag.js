@@ -8,13 +8,36 @@ function dragElement(circles, circleRadius, x, y) {
     d3
       .drag()
       .on("start", function (event, d) {
-        // save the starting position of the element
-        d.originalX = event.x;
-        d.originalY = event.y;
+        // Get the current transform attribute
+        const transform = d3.select(this).attr("transform");
+
+        // Check if the transform contains a translate function and extract the values
+        const translate =
+          transform && transform.includes("translate")
+            ? transform.match(/translate\(([^,]+),\s*([^)]+)\)/)
+            : [null, 0, 0]; // Use default values if no translate is found
+
+        // Save the element's original position
+        d.originalX = translate && translate[1] ? parseFloat(translate[1]) : 0;
+        d.originalY = translate && translate[2] ? parseFloat(translate[2]) : 0;
+
+        // Log to check the extracted values
+        console.log("Translate values:", translate[1], translate[2]);
+
+        // Save the mouse's starting position
+        d.startX = event.x;
+        d.startY = event.y;
       })
       .on("drag", function (event, d) {
-        // update the current position of the element
-        d3.select(this).attr("transform", `translate(${event.x}, ${event.y})`);
+        // Calculate the mouse movement
+        const dx = event.x - d.startX;
+        const dy = event.y - d.startY;
+
+        // Update the current position of the element
+        d3.select(this).attr(
+          "transform",
+          `translate(${d.originalX + dx}, ${d.originalY + dy})`
+        );
       })
       .on("end", function (event, d) {
         const box4 = document.getElementById("box4");

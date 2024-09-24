@@ -324,6 +324,7 @@ function calculatePositions(data, intervalWidths, rowHeight, rectSpacing, margin
                     r_rate_service: restaurant.r_rate_service,  // 添加服务评分
                     r_rating_food: restaurant.r_rating_food,// 添加食物评分
                     r_days: restaurant.r_hours_weekday,
+                    r_hours_periods:restaurant.r_hours_periods,
                     r_atmosphere: restaurant.r_vibe,
                     r_id: restaurant.r_id,
                     r_price_high: restaurant.r_price_high,
