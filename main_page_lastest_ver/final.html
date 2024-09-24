@@ -47,7 +47,7 @@
         <div id="popup-content">
             <button id="left-arrow" style="display: none;">←</button>
             <div class="btn">
-                <button id="clear-btn" style="background-color: #ccc;">清除全部</button>
+                <button id="clear-btn" style="background-color: #ddd;">清除全部</button>
             </div>
             <!-- show the detailed info of restaurants -->
             <div id="restaurant-info-wrapper">
@@ -285,121 +285,121 @@
                 drawChart(intervalWidths, intervalPositions, total, totalHeightValue, newPositions2);
             }
 
-           function updateIntervals() {
-    const minIntervalWidth = 65;
-    
-    // 移除重複的區間
-    currentIntervals = Array.from(new Set(currentIntervals));
-    console.log("Current intervals after deduplication:", currentIntervals);
+            function updateIntervals() {
+                const minIntervalWidth = 65;
 
-    if (!currentIntervals || currentIntervals.length === 0) {
-    console.warn("currentIntervals 为空或未定义，跳过更新。");
-    const maxIntervalSet = findMaxIntervalWithNeighbors();  // 找到最多餐廳的區間集
-    if (!maxIntervalSet) {
-        console.log("所有区间没有数据，重置视图。");
-        resetToDefaultView();
-        return;
-    }
-    currentIntervals = maxIntervalSet;
-} else {
-    // 計算當前區間的餐廳總數
-    const intervalTotals = getCurrentIntervalTotals(currentIntervals, circleRadius, data, width, margin, intervalWidths);
-    const total = d3.sum(Object.values(intervalTotals));
+                // 移除重複的區間
+                currentIntervals = Array.from(new Set(currentIntervals));
+                console.log("Current intervals after deduplication:", currentIntervals);
 
-    if (isNaN(total) || total === 0) {
-        console.warn("Total 餐厅数为 NaN 或 0，跳过更新。");
-        resetToDefaultView();
-        return;
-    }
+                if (!currentIntervals || currentIntervals.length === 0) {
+                    console.warn("currentIntervals 为空或未定义，跳过更新。");
+                    const maxIntervalSet = findMaxIntervalWithNeighbors();  // 找到最多餐廳的區間集
+                    if (!maxIntervalSet) {
+                        console.log("所有区间没有数据，重置视图。");
+                        resetToDefaultView();
+                        return;
+                    }
+                    currentIntervals = maxIntervalSet;
+                } else {
+                    // 計算當前區間的餐廳總數
+                    const intervalTotals = getCurrentIntervalTotals(currentIntervals, circleRadius, data, width, margin, intervalWidths);
+                    const total = d3.sum(Object.values(intervalTotals));
 
-    // 獲取當前篩選條件的最左側區間
-    const firstInterval = currentIntervals[0];
-    const firstIntervalIndex = intervals.indexOf(firstInterval);
+                    if (isNaN(total) || total === 0) {
+                        console.warn("Total 餐厅数为 NaN 或 0，跳过更新。");
+                        resetToDefaultView();
+                        return;
+                    }
 
-    // 檢查當前篩選條件下是否有餐廳數量
-    const hasData = currentIntervals.some(interval => intervalTotals[interval] > 10);
+                    // 獲取當前篩選條件的最左側區間
+                    const firstInterval = currentIntervals[0];
+                    const firstIntervalIndex = intervals.indexOf(firstInterval);
 
-    // 如果當前區間篩選結果沒有餐廳，將 startIndex 設置為最多餐廳的區間
-    if (!hasData) {
-        const maxInterval = currentIntervals.reduce((a, b) => (intervalTotals[a] > intervalTotals[b] ? a : b));
-        const maxIntervalIndex = intervals.indexOf(maxInterval);
+                    // 檢查當前篩選條件下是否有餐廳數量
+                    const hasData = currentIntervals.some(interval => intervalTotals[interval] > 10);
 
-        // 顯示最多餐廳的區間作為新的 `startIndex`
-        let startIndex = Math.max(maxIntervalIndex - 1, 0);  // 向左顯示最多餐廳的前一個區間
-        let endIndex = startIndex + 2;  // 保證顯示三個區間
+                    // 如果當前區間篩選結果沒有餐廳，將 startIndex 設置為最多餐廳的區間
+                    if (!hasData) {
+                        const maxInterval = currentIntervals.reduce((a, b) => (intervalTotals[a] > intervalTotals[b] ? a : b));
+                        const maxIntervalIndex = intervals.indexOf(maxInterval);
 
-        if (endIndex >= intervals.length) {
-            endIndex = intervals.length - 1;  // 確保不超過總長度
-            startIndex = Math.max(0, endIndex - 2);  // 保證顯示三個區間
-        }
+                        // 顯示最多餐廳的區間作為新的 `startIndex`
+                        let startIndex = Math.max(maxIntervalIndex - 1, 0);  // 向左顯示最多餐廳的前一個區間
+                        let endIndex = startIndex + 2;  // 保證顯示三個區間
 
-        currentIntervals = intervals.slice(startIndex, endIndex + 1);  // 更新 currentIntervals 顯示最多餐廳的區間
-    } else {
-        // 當篩選結果有餐廳時，使用當前篩選條件的最左側區間作為 `startIndex`
-        let startIndex = firstIntervalIndex;  // 從最左側區間開始
-        if (startIndex < 0) {
-            startIndex = 0;
-        }
+                        if (endIndex >= intervals.length) {
+                            endIndex = intervals.length - 1;  // 確保不超過總長度
+                            startIndex = Math.max(0, endIndex - 2);  // 保證顯示三個區間
+                        }
 
-        let endIndex = startIndex + 2;  // 保證顯示三個區間
-        if (endIndex >= intervals.length) {
-            endIndex = intervals.length - 1;
-            startIndex = Math.max(0, endIndex - 2);
-        }
+                        currentIntervals = intervals.slice(startIndex, endIndex + 1);  // 更新 currentIntervals 顯示最多餐廳的區間
+                    } else {
+                        // 當篩選結果有餐廳時，使用當前篩選條件的最左側區間作為 `startIndex`
+                        let startIndex = firstIntervalIndex;  // 從最左側區間開始
+                        if (startIndex < 0) {
+                            startIndex = 0;
+                        }
 
-        currentIntervals = intervals.slice(startIndex, endIndex + 1);  // 更新 currentIntervals 顯示當
-        }
-    }
+                        let endIndex = startIndex + 2;  // 保證顯示三個區間
+                        if (endIndex >= intervals.length) {
+                            endIndex = intervals.length - 1;
+                            startIndex = Math.max(0, endIndex - 2);
+                        }
 
-    console.log("Interval widths before update:", currentIntervals);
-    let totalUsedWidth = 0;
+                        currentIntervals = intervals.slice(startIndex, endIndex + 1);  // 更新 currentIntervals 顯示當
+                    }
+                }
 
-    // 計算每個區間的寬度
-    currentIntervals.forEach(interval => {
-        const intervalTotals = getCurrentIntervalTotals(currentIntervals, circleRadius, data, width, margin, intervalWidths);
-        const total = d3.sum(Object.values(intervalTotals));
-        
-        // 使用比例計算區間寬度，確保不小於最小寬度
-        intervalWidths[interval] = Math.max((intervalTotals[interval] / total) * (width - margin.left - margin.right), minIntervalWidth);
-        totalUsedWidth += intervalWidths[interval];
-    });
+                console.log("Interval widths before update:", currentIntervals);
+                let totalUsedWidth = 0;
 
-    // 確保總寬度不超過畫布寬度
-    if (totalUsedWidth > (width - margin.left - margin.right)) {
-        const scaleFactor = (width - margin.left - margin.right) / totalUsedWidth;
-        currentIntervals.forEach(interval => {
-            intervalWidths[interval] *= scaleFactor;
-        });
-    }
+                // 計算每個區間的寬度
+                currentIntervals.forEach(interval => {
+                    const intervalTotals = getCurrentIntervalTotals(currentIntervals, circleRadius, data, width, margin, intervalWidths);
+                    const total = d3.sum(Object.values(intervalTotals));
 
-    // 計算每個區間的x位置
-    let currentPosition = margin.left;
-    currentIntervals.forEach(interval => {
-        intervalPositions[interval] = currentPosition;
-        currentPosition += intervalWidths[interval];
-    });
+                    // 使用比例計算區間寬度，確保不小於最小寬度
+                    intervalWidths[interval] = Math.max((intervalTotals[interval] / total) * (width - margin.left - margin.right), minIntervalWidth);
+                    totalUsedWidth += intervalWidths[interval];
+                });
 
-    console.log("Interval widths after update:", intervalWidths);
-    console.log("Interval positions after update:", intervalPositions);
+                // 確保總寬度不超過畫布寬度
+                if (totalUsedWidth > (width - margin.left - margin.right)) {
+                    const scaleFactor = (width - margin.left - margin.right) / totalUsedWidth;
+                    currentIntervals.forEach(interval => {
+                        intervalWidths[interval] *= scaleFactor;
+                    });
+                }
 
-    // 清空當前顯示，重繪圖表和 Minimap
-    d3.select("#chart").selectAll("*:not(.left)").remove();
-    d3.select("#x-axis-svg").selectAll("*").remove();
+                // 計算每個區間的x位置
+                let currentPosition = margin.left;
+                currentIntervals.forEach(interval => {
+                    intervalPositions[interval] = currentPosition;
+                    currentPosition += intervalWidths[interval];
+                });
 
-    const totalHeightValue = calculateTotalHeight(data, intervalWidths, rowHeight, groupSpacing, margin, sortedTimes, currentIntervals, circleRadius, rectSpacing);
-    
-    if (isNaN(totalHeightValue) || totalHeightValue <= 0 || !isFinite(totalHeightValue)) {
-        console.error("Total height 计算失败，跳过绘图。");
-        return;
-    }
+                console.log("Interval widths after update:", intervalWidths);
+                console.log("Interval positions after update:", intervalPositions);
 
-    drawChart(intervalWidths, intervalPositions, total, totalHeightValue, filteredIds);
-    
-    const redBox = drawMinimap(intervalPositions, totalHeightValue, intervalWidths, intervals, sortedTimes, data, currentIntervals);
-    const midIndex = Math.floor(currentIntervals.length / 2);
-    const midInterval = currentIntervals[midIndex];
-    const targetXPosition = intervalPositions[midInterval] + intervalWidths[midInterval] / 2;
-}
+                // 清空當前顯示，重繪圖表和 Minimap
+                d3.select("#chart").selectAll("*:not(.left)").remove();
+                d3.select("#x-axis-svg").selectAll("*").remove();
+
+                const totalHeightValue = calculateTotalHeight(data, intervalWidths, rowHeight, groupSpacing, margin, sortedTimes, currentIntervals, circleRadius, rectSpacing);
+
+                if (isNaN(totalHeightValue) || totalHeightValue <= 0 || !isFinite(totalHeightValue)) {
+                    console.error("Total height 计算失败，跳过绘图。");
+                    return;
+                }
+
+                drawChart(intervalWidths, intervalPositions, total, totalHeightValue, filteredIds);
+
+                const redBox = drawMinimap(intervalPositions, totalHeightValue, intervalWidths, intervals, sortedTimes, data, currentIntervals);
+                const midIndex = Math.floor(currentIntervals.length / 2);
+                const midInterval = currentIntervals[midIndex];
+                const targetXPosition = intervalPositions[midInterval] + intervalWidths[midInterval] / 2;
+            }
 
 
             function resetToDefaultView() {
@@ -526,11 +526,17 @@
                 let intervalId;
 
                 circles.on("mouseover", function (event, d) {
-                    tooltip.style("display", "block");
+                    if (isDragging) {
+                        return;
+                    }
+                    else {
 
-                    // 更新 tooltip 内容
-                    tooltip.select("#tooltip-title").text(d.r_name || "");
-                    tooltip.select("#tooltip-food-dishes").html(`
+
+                        tooltip.style("display", "block");
+
+                        // 更新 tooltip 内容
+                        tooltip.select("#tooltip-title").text(d.r_name || "");
+                        tooltip.select("#tooltip-food-dishes").html(`
                         <div style="display: flex; flex-wrap: wrap; margin-bottom: 5px;">
                             ${d.r_food_dishes.split('、').slice(0, 3).map(dish => `
                                 <div style="background-color: #FFD700; padding: 3px 5px; margin-right: 5px; margin-bottom: 5px; font-size: 12px; border-radius: 5px; white-space: nowrap;">
@@ -540,11 +546,11 @@
                         </div>
                     `);
 
-                    tooltip.select("#tooltip-rating")
-                        .style("font-size", "15px")
-                        .text(`評分: ${d.r_rating} 星`);
-                    //懸浮訊息
-                    tooltip.select("#tooltip-ratings").html(`
+                        tooltip.select("#tooltip-rating")
+                            .style("font-size", "15px")
+                            .text(`評分: ${d.r_rating} 星`);
+                        //懸浮訊息
+                        tooltip.select("#tooltip-ratings").html(`
                         <div style="display: flex; align-items: center; margin-bottom: 0px; font-size: 12px; max-width: 200px;">
                             <span style="width: 40px;">服務:</span>
                             <div style="background-color: #ccc; width: 100px; height: 8px; border-radius: 5px; overflow: hidden; position: relative;">
@@ -576,31 +582,32 @@
                     `);
 
 
-                    const images = [d.r_photo_env1, d.r_photo_env2, d.r_photo_env3];
-                    let currentImageIndex = 0;
-                    const carouselImages = tooltip.select("#carousel-images");
+                        const images = [d.r_photo_env1, d.r_photo_env2, d.r_photo_env3];
+                        let currentImageIndex = 0;
+                        const carouselImages = tooltip.select("#carousel-images");
 
-                    // 清空舊圖片
-                    carouselImages.html("");
+                        // 清空舊圖片
+                        carouselImages.html("");
 
-                    // 添加新的圖片進carousel
-                    images.forEach(imgUrl => {
-                        carouselImages.append("img")
-                            .attr("src", imgUrl)
-                            .attr("style", "width: 100%; height: auto; object-fit: cover; border-radius: 8px;"); // 确保图片填满容器并保持比例
-                    });
+                        // 添加新的圖片進carousel
+                        images.forEach(imgUrl => {
+                            carouselImages.append("img")
+                                .attr("src", imgUrl)
+                                .attr("style", "width: 100%; height: auto; object-fit: cover; border-radius: 8px;"); // 确保图片填满容器并保持比例
+                        });
 
-                    // carousel運轉
-                    const intervalId = setInterval(() => {
-                        currentImageIndex = (currentImageIndex + 1) % images.length;
-                        carouselImages.style("transform", `translateX(-${currentImageIndex * 100}%)`);
-                    }, 3000); // 每3秒切換
+                        // carousel運轉
+                        const intervalId = setInterval(() => {
+                            currentImageIndex = (currentImageIndex + 1) % images.length;
+                            carouselImages.style("transform", `translateX(-${currentImageIndex * 100}%)`);
+                        }, 3000); // 每3秒切換
 
-                    d3.select(this).on("mouseout", function () {
-                        // 隱藏訊息
-                        clearInterval(intervalId);
-                        tooltip.style("display", "none");
-                    });
+                        d3.select(this).on("mouseout", function () {
+                            // 隱藏訊息
+                            clearInterval(intervalId);
+                            tooltip.style("display", "none");
+                        });
+                    }
                 })
                     .on("mousemove", function (event) {
                         // 获取 tooltip 的寬度或高度
@@ -657,11 +664,11 @@
                     }));
 
                 const arc = d3.arc()
-                        .innerRadius(innerRadius)
-                        .outerRadius(radius) 
-                        .cornerRadius(2);
+                    .innerRadius(innerRadius)
+                    .outerRadius(radius)
+                    .cornerRadius(2);
 
-                 // 创建圆圈和左右 path
+                // 创建圆圈和左右 path
                 filteredPositions.forEach(position => {
                     // 每个 position 对应的 <g> 元素，这个组将包含所有的子元素（圆圈和路径）
                     const circleGroup = circles.filter(d => d === position)
@@ -672,7 +679,7 @@
                         .startAngle(-Math.PI)
                         .endAngle(0)
                         .value(() => 1);
-                        
+
                     const leftDataForThisPosition = leftPie(leftData); // 每个 position 都有专属的 leftData
 
                     // 在 circleGroup 内添加左侧 path
@@ -692,7 +699,7 @@
                         })
                         .attr('stroke', 'white')
                         .style('stroke-width', '1px');
-                    
+
                 });
 
 
@@ -703,7 +710,7 @@
                 filteredPositions.forEach(position => {
                     // 創建一個獨立的 circleGroup，來包含此餐廳的 path-right
                     const circleGroup = circles.filter(d => d === position)
-                                        .append('g');
+                        .append('g');
 
                     // 解析餐廳的營業時間資料 r_days
                     let r_hours_weekday = [];
@@ -835,7 +842,7 @@
                     return map;
                 }, {});
 
-                    svg.append("g")
+                svg.append("g")
                     .selectAll("text")
                     .data(positions.filter(d => d.label))
                     .enter()
@@ -890,35 +897,35 @@
 
 
                 // 向左移动的箭头
-            d3.select("body").append("div")
-                .attr("class", "arrow arrow-left")
-                .text("◀")
-                .on("click", () => {
-                    const firstIndex = intervals.indexOf(currentIntervals[0]);
+                d3.select("body").append("div")
+                    .attr("class", "arrow arrow-left")
+                    .text("◀")
+                    .on("click", () => {
+                        const firstIndex = intervals.indexOf(currentIntervals[0]);
 
-                    if (firstIndex > 0) {
-                        // Calculate new interval set to shift left by one
-                        const prevStartIndex = Math.max(firstIndex - 1, 0) - 1;
-                        const prevEndIndex = Math.min(prevStartIndex + 2, intervals.length - 1); // 保证仍然显示三个区间
+                        if (firstIndex > 0) {
+                            // Calculate new interval set to shift left by one
+                            const prevStartIndex = Math.max(firstIndex - 1, 0) - 1;
+                            const prevEndIndex = Math.min(prevStartIndex + 2, intervals.length - 1); // 保证仍然显示三个区间
 
-                        // Update currentIntervals to ensure it always contains 3 intervals
-                        currentIntervals = intervals.slice(prevStartIndex+1 , prevEndIndex);  // +1 是为了确保包含 endIndex
+                            // Update currentIntervals to ensure it always contains 3 intervals
+                            currentIntervals = intervals.slice(prevStartIndex + 1, prevEndIndex);  // +1 是为了确保包含 endIndex
 
-                        console.log("Updated intervals after left click:", currentIntervals);
+                            console.log("Updated intervals after left click:", currentIntervals);
 
-                        // Call update function
-                        updateIntervals();
-                    } else {
-                        console.log("已经到达第一个区间，无法继续向左移动。");
-                    }
-                });
+                            // Call update function
+                            updateIntervals();
+                        } else {
+                            console.log("已经到达第一个区间，无法继续向左移动。");
+                        }
+                    });
 
                 // 向右移动的箭头
                 d3.select("body").append("div")
                     .attr("class", "arrow arrow-right")
                     .text("▶")
                     .on("click", () => {
-                        const lastIndex = intervals.indexOf(currentIntervals[currentIntervals.length - 2 ]);
+                        const lastIndex = intervals.indexOf(currentIntervals[currentIntervals.length - 2]);
 
                         if (lastIndex < intervals.length - 1) {
                             // Calculate new interval set to shift right by one 
@@ -976,7 +983,7 @@
                 function removeAllColors() {
                     const buttons = document.querySelectorAll('.color-button'); // 假設所有按鈕有相同的 class
                     buttons.forEach(button => button.classList.remove('active-color')); // 移除所有按鈕的顏色
-                }  
+                }
 
                 // environment 按鈕點擊事件
                 document.getElementById("environment").addEventListener("click", function () {

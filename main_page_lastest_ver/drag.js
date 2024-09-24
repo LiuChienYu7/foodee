@@ -3,11 +3,14 @@ const restaurantsPerPage = 3;
 // 記錄選中的餐廳ID
 let selectedRestaurantIds = [];
 
+let isDragging = false;
+
 function dragElement(circles, circleRadius, x, y) {
   circles.call(
     d3
       .drag()
       .on("start", function (event, d) {
+        isDragging = true;
         // Get the current transform attribute
         const transform = d3.select(this).attr("transform");
 
@@ -40,6 +43,7 @@ function dragElement(circles, circleRadius, x, y) {
         );
       })
       .on("end", function (event, d) {
+        isDragging = false;
         const box4 = document.getElementById("box4");
         const box4Rect = box4.getBoundingClientRect();
         const circleBounds = this.getBoundingClientRect();
