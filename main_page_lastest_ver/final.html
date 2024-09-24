@@ -487,6 +487,20 @@
                     .attr("stroke-width", 6)
                     .attr("opacity", 0.5);
 
+                // 為每個區間的右邊界繪製分隔線
+                svg.append("g")
+                    .selectAll(".interval-separator")
+                    .data(currentIntervals.filter((d, i) => i < currentIntervals.length - 1))  // 過濾掉最後一個區間
+                    .enter()
+                    .append("line")
+                    .attr("class", "interval-separator")
+                    .attr("x1", d => intervalPositions[d] + intervalWidths[d])  // 計算右邊界
+                    .attr("y1", margin.top)
+                    .attr("x2", d => intervalPositions[d] + intervalWidths[d])  // 計算右邊界
+                    .attr("y2", totalHeight - margin.bottom)
+                    .attr("stroke", "white")
+                    .attr("stroke-width", 2);
+
 
                 // 過濾沒有positions 的數據，僅繪製 circle 相關的元素
                 const filteredPositions = positions.filter(d => d.r_photo_env1 !== undefined && d.r_photo_env1 !== null && d.r_photo_env1 !== '');
@@ -508,8 +522,6 @@
                     .append("g")
                     .attr("class", "circle-group")
                     .attr("transform", d => `translate(${d.x + circleRadius}, ${d.y + circleRadius})`);  // 使用 calculatePositions 的 x 和 y
-
-
 
                 let intervalId;
 
@@ -823,21 +835,6 @@
                     return map;
                 }, {});
 
-                // 為每個區間的右邊界繪製分隔線
-                svg.append("g")
-                    .selectAll(".interval-separator")
-                    .data(currentIntervals.filter((d, i) => i < currentIntervals.length - 1))  // 過濾掉最後一個區間
-                    .enter()
-                    .append("line")
-                    .attr("class", "interval-separator")
-                    .attr("x1", d => intervalPositions[d] + intervalWidths[d])  // 計算右邊界
-                    .attr("y1", margin.top)
-                    .attr("x2", d => intervalPositions[d] + intervalWidths[d])  // 計算右邊界
-                    .attr("y2", totalHeight - margin.bottom)
-                    .attr("stroke", "white")
-                    .attr("stroke-width", 2);
-
-
                     svg.append("g")
                     .selectAll("text")
                     .data(positions.filter(d => d.label))
@@ -847,8 +844,7 @@
                     .attr("y", d => d.y - 10) // 調整 y 坐標
                     .attr("dy", "0.35em")
                     .attr("text-anchor", "start")
-                    .attr("font-size", "12px")
-                    .attr("font-weight", "bold")
+                    .attr("font-size", ".9rem")
                     .attr("fill", "black") // 添加顏色以確保文本可見
                     .text(d => `用餐時間: ${d.r_time_low === '' ? '無限制' : d.r_time_low}`);
 
@@ -888,7 +884,9 @@
                             const closestInterval = currentIntervals[i];
                             return closestInterval ? closestInterval : '';
                         })
-                    );
+                    )
+                    .selectAll("text")  // 選擇所有軸上的文本
+                    .style("font-size", ".9rem");  // 設置文本大小
 
 
                 // 向左移动的箭头
