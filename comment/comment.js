@@ -109,7 +109,7 @@ function initializeReviews(reviewData) {
           .selectAll(".link, .review-block, .detail-link, .detail-block")
           .remove();
         //標籤變化 - 背景
-        d3.select(this).select("rect").attr("fill", "#E0D4C2"); // 當滑鼠懸停時變深
+        d3.select(this).select("rect").attr("fill", "#94a89e"); // 當滑鼠懸停時變深
         // - 文字
         d3.select(this)
           .select("text")
@@ -123,7 +123,7 @@ function initializeReviews(reviewData) {
     .on("mouseout", function () {
       if (!Fixed) {
         svg.selectAll(`.detail-group`).remove();
-        d3.select(this).select("rect").attr("fill", "#F8EDE3"); // 恢復原背景顏色
+        d3.select(this).select("rect").attr("fill", "#c3d4cc"); // 恢復原背景顏色
         d3.select(this)
           .select("text")
           .attr("fill", "black") // 恢復原文字顏色
@@ -137,7 +137,7 @@ function initializeReviews(reviewData) {
       if (Fixed) {
         //要收起來時
         //全部標籤變正常
-        d3.selectAll(".block-group").select("rect").attr("fill", "#F8EDE3"); // 恢復原背景顏色
+        d3.selectAll(".block-group").select("rect").attr("fill", "#c3d4cc"); // 恢復原背景顏色
         d3.selectAll(".block-group")
           .select("text")
           .attr("fill", "black") // 恢復原文字顏色
@@ -160,7 +160,7 @@ function initializeReviews(reviewData) {
     .attr("height", 30)
     .attr("rx", 15) // 圓角矩形的半徑
     .attr("ry", 15)
-    .attr("fill", "#F8EDE3"); // 正確設定背景顏色
+    .attr("fill", "#c3d4cc"); // 正確設定背景顏色
 
   groups
     .append("text")
@@ -172,7 +172,8 @@ function initializeReviews(reviewData) {
     .attr("fill", "black")
     .text((d) => d.text);
 
-  const colors = ["#FF70AE", "#85B4FF", "#FFCE47"]; // 定義顏色陣列
+  const colors = ["#ffc6df86", "#acccff8c", "#ffeab089"]; // 定義顏色陣列
+    
 
   // 一開始就顯示第一個類別的總評和第一家餐廳的評論細節
   const firstCategory = data[0];
@@ -194,7 +195,7 @@ function showReviews(svg, d, blockGroup) {
   const blockX = 20;
   const blockY = 30; // 這裡可以根據需要調整Y座標 一開始高度
   const blockWidth = 150;
-  const colors = ["#FF70AE", "#85B4FF", "#FFCE47"]; // 定義顏色陣列
+  const colors = ["#ffc6dfef", "#acccffea", "#ffeab0ee"]; // 定義顏色陣列
 
   // 獲取總評區塊的位置，作為連線的起點
   const blockTransform = d3.select(blockGroup).attr("transform");

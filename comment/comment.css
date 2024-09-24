@@ -14,10 +14,13 @@
 }
 
 .block {
-    background-color: #F8EDE3;
+    background-color: #c3d4cc;
     border-radius: 15px;
     text-align: center;
     transition: fill 0.3s ease;
+    /* color:#ffc6dfef;
+    color:#acccffea; 
+    color:#ffeab0ee; */
 }
 
 .block-text {
