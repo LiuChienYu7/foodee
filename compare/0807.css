@@ -10,8 +10,7 @@ body, html {
     max-width: 1366px;
     margin-left: 10px;
     padding-top: 10px;
-    align-items: center;
-    text-align: center;
+    align-items: flex-start;
 }
 
 .gallery-container {
