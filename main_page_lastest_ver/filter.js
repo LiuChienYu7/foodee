@@ -266,14 +266,7 @@ document.addEventListener('DOMContentLoaded', function () {
         slideMin();
         slideMax();
     
-        // 重置时间过滤器到默认状态
-        // minTimeVal.value = minTimeVal.min;
-        // maxTimeVal.value = maxTimeVal.max;
-        // timeInputMin.value = minTimeVal.min;
-        // timeInputMax.value = maxTimeVal.max;
-        // slideTimeMin();
-        // slideTimeMax();
-        // 重置 selectedTimes 并选中所有时间按钮
+
         selectedTimes = [];  // 清空数组，确保重新选择
         timeButtons.forEach(button => {
             const timeValue = button.innerText.trim();

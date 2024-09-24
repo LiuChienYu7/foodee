@@ -487,6 +487,20 @@
                     .attr("stroke-width", 6)
                     .attr("opacity", 0.5);
 
+                // 為每個區間的右邊界繪製分隔線
+                svg.append("g")
+                    .selectAll(".interval-separator")
+                    .data(currentIntervals.filter((d, i) => i < currentIntervals.length - 1))  // 過濾掉最後一個區間
+                    .enter()
+                    .append("line")
+                    .attr("class", "interval-separator")
+                    .attr("x1", d => intervalPositions[d] + intervalWidths[d])  // 計算右邊界
+                    .attr("y1", margin.top)
+                    .attr("x2", d => intervalPositions[d] + intervalWidths[d])  // 計算右邊界
+                    .attr("y2", totalHeight - margin.bottom)
+                    .attr("stroke", "white")
+                    .attr("stroke-width", 2);
+
 
                 // 過濾沒有positions 的數據，僅繪製 circle 相關的元素
                 const filteredPositions = positions.filter(d => d.r_photo_env1 !== undefined && d.r_photo_env1 !== null && d.r_photo_env1 !== '');
@@ -508,8 +522,6 @@
                     .append("g")
                     .attr("class", "circle-group")
                     .attr("transform", d => `translate(${d.x + circleRadius}, ${d.y + circleRadius})`);  // 使用 calculatePositions 的 x 和 y
-
-
 
                 let intervalId;
 
@@ -822,21 +834,6 @@
                     map[time] = colors(index);
                     return map;
                 }, {});
-
-                // 為每個區間的右邊界繪製分隔線
-                svg.append("g")
-                    .selectAll(".interval-separator")
-                    .data(currentIntervals.filter((d, i) => i < currentIntervals.length - 1))  // 過濾掉最後一個區間
-                    .enter()
-                    .append("line")
-                    .attr("class", "interval-separator")
-                    .attr("x1", d => intervalPositions[d] + intervalWidths[d])  // 計算右邊界
-                    .attr("y1", margin.top)
-                    .attr("x2", d => intervalPositions[d] + intervalWidths[d])  // 計算右邊界
-                    .attr("y2", totalHeight - margin.bottom)
-                    .attr("stroke", "white")
-                    .attr("stroke-width", 2);
-
 
                     svg.append("g")
                     .selectAll("text")
