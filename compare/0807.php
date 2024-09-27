@@ -1127,16 +1127,15 @@ if ($link) {
         }
 
 
-        function changeImage(arrow, direction, index) {
-            const displayedImg = document.querySelector(`.displayed-img-${index}`);
-            if (displayedImg) { // 检查元素是否存在
-                let images = JSON.parse(displayedImg.dataset.images || '[]');
-                let currentIndex = parseInt(displayedImg.dataset.index, 10);
-                currentIndex = (currentIndex + direction + images.length) % images.length;
-                displayedImg.src = images[currentIndex] || 'default.jpg';
-                displayedImg.dataset.index = currentIndex;
-            }
+        function changeImage(arrow, direction) {
+            const section = arrow.closest('.image-container');
+            const images = section.querySelectorAll('img');
+            let currentIndex = Array.from(images).findIndex(img => img.classList.contains('active'));
+            images[currentIndex].classList.remove('active');
+            currentIndex = (currentIndex + direction + images.length) % images.length;
+            images[currentIndex].classList.add('active');
         }
+
     </script>
 </body>
 
