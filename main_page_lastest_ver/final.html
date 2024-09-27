@@ -847,10 +847,10 @@
                     .enter()
                     .append("text")
                     .attr("x", margin.left) // 調整 x 坐標
-                    .attr("y", d => d.y - 10) // 調整 y 坐標
+                    .attr("y", d => d.y - 12) // 調整 y 坐標
                     .attr("dy", "0.35em")
                     .attr("text-anchor", "start")
-                    .attr("font-size", "1.1rem")
+                    .attr("font-size", "1rem")
                     .attr("fill", "black") // 添加顏色以確保文本可見
                     .text(d => `用餐時間: ${d.r_time_low === '' ? '無限制' : d.r_time_low} 分鐘`);
 
