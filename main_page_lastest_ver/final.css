@@ -24,10 +24,12 @@ html, body {
     fill: none;
 }
 
-#chart {
-    padding-top: 10%;
+#chart{
+    overflow: visible; /* 允許內容超出容器顯示 */
+    padding-top: 10%; 
     /* 将主图表下移，避免与顶部的按钮和控制项重叠 */
 }
+
 
 .x-axis-container {
     position: fixed;

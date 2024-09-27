@@ -118,7 +118,7 @@
             const rectHeight = 60;
             const rectSpacing = 20;
             const rowHeight = rectHeight + rectSpacing;
-            const groupSpacing = 30;
+            const groupSpacing = 40;
             const circleRadius = 60;
             const intervalWidths = {};
             let leftData = [
@@ -434,6 +434,8 @@
                     .append("svg")
                     .attr("width", "100%")
                     .attr("height", totalHeight);
+                    // .attr("viewBox", `0 0 ${desiredWidth} ${desiredHeight}`)  // 添加 viewBox
+                    // .attr("preserveAspectRatio", "xMidYMid meet");  // 確保比例保持不變;
 
                 // 清除舊pattern
                 svg.select('defs').selectAll('pattern').remove();
@@ -841,19 +843,34 @@
                     return map;
                 }, {});
 
-                svg.append("g")
-                    .selectAll("text")
+                const textGroup = svg.append("g");
+
+                // 添加背景矩形
+                textGroup.selectAll("rect")
+                    .data(positions.filter(d => d.label))
+                    .enter()
+                    .append("rect")
+                    .attr("x", margin.left - 3) // 調整 x 坐標，留點間距
+                    .attr("y", d => d.y - 25) // 調整 y 坐標，讓矩形在文字後面
+                    .attr("width", d => `用餐時間: ${d.r_time_low === '' ? '無限制' : d.r_time_low} 分鐘`.length * 14) // 根據文字長度調整矩形寬度
+                    .attr("height", 23) // 高度設置為20px
+                    .attr("fill", (d, i) => colors(d.r_time_low)) // 使用 colors 陣列或 scaleOrdinal 填充背景顏色
+                    .style("opacity", 0.5)
+                    .attr("rx", 5) // 添加圓角
+                    .attr("ry", 5); // 同樣設置圓角
+
+                // 添加文字
+                textGroup.selectAll("text")
                     .data(positions.filter(d => d.label))
                     .enter()
                     .append("text")
                     .attr("x", margin.left) // 調整 x 坐標
-                    .attr("y", d => d.y - 12) // 調整 y 坐標
+                    .attr("y", d => d.y - 11) // 調整 y 坐標
                     .attr("dy", "0.35em")
                     .attr("text-anchor", "start")
                     .attr("font-size", "1rem")
-                    .attr("fill", "black") // 添加顏色以確保文本可見
+                    .attr("fill", "black") // 確保文本可見
                     .text(d => `用餐時間: ${d.r_time_low === '' ? '無限制' : d.r_time_low} 分鐘`);
-
 
 
                 // 设置 SVG 宽度为窗口宽度
@@ -979,7 +996,7 @@
                 buttons.append("rect")
                     .attr("class", "map-button")
                     .attr("width", 50)
-                    .attr("height", 20)
+                    .attr("height", 17)
                     .attr("fill", "lightblue")
                     .attr("rx", 5)  // 圆角矩形
                     .attr("ry", 5)
@@ -1087,7 +1104,7 @@
                 // 在按钮中添加文字
                 buttons.append("text")
                     .attr("x", 25)
-                    .attr("y", 20)
+                    .attr("y", 15)
                     .attr("text-anchor", "middle")
                     .attr("fill", "black")
                     .style("cursor", "pointer")
@@ -1183,7 +1200,7 @@
                         const restaurantsInInterval = data.filter(restaurant => categorizePrice(restaurant.r_price_low) === d.interval);
                         const restaurantIds = restaurantsInInterval.map(r => r.r_id);
                         const restaurantIdsParam = restaurantIds.join(",");
-                        window.location.href = `map_background.php?restaurant_ids=${restaurantIdsParam}`;
+                        window.location.href = `map.php?restaurant_ids=${restaurantIdsParam}`;
                     });
 
                 function removeAllColors() {
