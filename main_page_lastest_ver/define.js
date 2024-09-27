@@ -334,7 +334,8 @@ function calculatePositions(data, intervalWidths, rowHeight, rectSpacing, margin
                     r_photo_food2: restaurant.r_photo_food2,
                     r_photo_food3: restaurant.r_photo_food3,
                     r_photo_food4: restaurant.r_photo_food4,
-                    r_photo_food5: restaurant.r_photo_food5
+                    r_photo_food5: restaurant.r_photo_food5,
+                    r_photo_door: restaurant.r_photo_door
                 });
 
 
