@@ -42,6 +42,25 @@ function dragElement(circles, circleRadius, x, y) {
           "transform",
           `translate(${d.originalX + dx}, ${d.originalY + dy})`
         );
+
+        // 獲取放置區域和當前物件的邊界框
+        const box4Header = document.querySelector(".box4-header");
+        const box4Rect = box4Header.getBoundingClientRect();
+        const circleBounds = this.getBoundingClientRect();
+
+        // 檢查是否重疊
+        const isOverlapping =
+          circleBounds.left < box4Rect.right &&
+          circleBounds.right > box4Rect.left &&
+          circleBounds.top < box4Rect.bottom &&
+          circleBounds.bottom > box4Rect.top;
+
+        // 如果重疊，改變 box4-header 的樣式
+        if (isOverlapping) {
+          box4Header.style.backgroundColor = "rgb(170, 170, 170)"; // 加深背景顏色
+        } else {
+          box4Header.style.backgroundColor = ""; // 重置背景顏色
+        }
       })
       .on("end", function (event, d) {
         isDragging = false;
@@ -52,6 +71,7 @@ function dragElement(circles, circleRadius, x, y) {
         const defaultText = document.getElementById("defaultText");
         const box4Header = document.querySelector(".box4-header");
         const compareBtn = document.getElementById("compare-btn");
+        const popupContent = document.getElementById("popup-content");
 
         // check if the element is in box4
         if (
@@ -60,6 +80,9 @@ function dragElement(circles, circleRadius, x, y) {
           circleBounds.bottom > box4Rect.top &&
           circleBounds.top < box4Rect.bottom
         ) {
+          // 結束拖動後重置 box4-header 的樣式
+          box4Header.style.backgroundColor = ""; // 重置為原始顏色
+
           box4.classList.add("expanded");
           defaultText.style.display = "none";
 
@@ -524,9 +547,17 @@ function dragElement(circles, circleRadius, x, y) {
           // Handle arrow buttons visibility
           const leftArrow = document.getElementById("left-arrow");
           const rightArrow = document.getElementById("right-arrow");
-          leftArrow.style.display = currentPage > 1 ? "block" : "none";
-          rightArrow.style.display =
-            currentPage < totalPages ? "block" : "none";
+          if (
+            popupContent.style.display === "none" ||
+            popupContent.style.visibility === "hidden"
+          ) {
+            leftArrow.style.display = "none";
+            rightArrow.style.display = "none";
+          } else {
+            leftArrow.style.display = currentPage > 1 ? "block" : "none";
+            rightArrow.style.display =
+              currentPage < totalPages ? "block" : "none";
+          }
 
           leftArrow.onclick = () => {
             if (currentPage > 1) {
