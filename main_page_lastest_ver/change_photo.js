@@ -1,15 +1,18 @@
 // Change Photo
 // Function to update the patterns with either environment or food images
-// change_photo.js
+
 function updatePatterns(buttonId, data, svg) {
-    data.forEach((d, i) => {
+    data.forEach((d) => {
         let imageUrl;
         if (buttonId === "environment") {
             imageUrl = d.r_photo_env1;
         } else if (buttonId === "food") {
             imageUrl = d.r_photo_food1;
         }
-        svg.select(`#pattern-${i} image`).attr("xlink:href", imageUrl);
+        const patternId = `pattern-${d.r_id}`;
+        
+        // 根據 patternId 更新對應的圖片 URL
+        svg.select(`#${patternId} image`).attr("xlink:href", imageUrl);
     });
 }
 

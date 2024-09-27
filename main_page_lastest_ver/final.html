@@ -511,11 +511,11 @@
                     .append('g')
                     .attr('class', 'patternGroup');
 
-                filteredPositions.forEach((d, i) => {
-                    const patternId = `pattern-${i}`;
-                    createPattern(defs, patternId, d.r_photo_env1);
+                filteredPositions.forEach((d) => {
+                    const patternId = `pattern-${d.r_id}`;  // 使用資料中的 r_id 作為 patternId
+                    createPattern(defs, patternId, d.r_photo_env1);  // 使用 r_id 對應的環境照片
                 });
-
+                
                 const tooltip = d3.select("#tooltip");
                 const circles = svg.append('g')
                     .selectAll("g.circle-group")
@@ -643,11 +643,11 @@
                 // 繪製圓圈並填充初始圖片
                 circles.append("circle")
                     .attr("r", innerRadius)
-                    .style("fill", function (d, i) {
-                        const patternId = `pattern-${i}`;
-                        return `url(#${patternId})`;
+                    .style("fill", function (d) {
+                        const patternId = `pattern-${d.r_id}`;  // 使用 r_id 作為 patternId
+                        return `url(#${patternId})`;  // 填充對應的照片
                     });
-
+                
                 const radius = 60;
                 // 確保 colorClass 是具體的顏色值
                 const color = d3.scaleOrdinal()
