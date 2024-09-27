@@ -7,7 +7,7 @@ function toggleCircles(innerRadius, circleRadius) {
             const circleGroup = d3.select(this);
 
             // 使用每個 circle 對應的 patternId
-            const patternId = `pattern-${i}`; // 假設 patternId 與 circle 順序相關聯
+            const patternId = `pattern-${d.r_id}`;
             const patternGroup = d3.select(`#${patternId}`);  // 選擇對應的 pattern
 
             if (isHidden) {
