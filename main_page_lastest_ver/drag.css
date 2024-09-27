@@ -58,18 +58,18 @@
 
 #left-arrow,
 #right-arrow {
+    display: none;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    /* 垂直居中 */
     background-color: rgba(0, 0, 0, 0.5);
-    /* 半透明背景 */
     color: white;
     border: none;
     padding: 5px 10px 10px 10px;
     font-size: 24px;
     cursor: pointer;
 }
+
 
 #left-arrow {
     left: 20px;

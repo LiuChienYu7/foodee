@@ -71,8 +71,8 @@ function dragElement(circles, circleRadius, x, y) {
         const defaultText = document.getElementById("defaultText");
         const box4Header = document.querySelector(".box4-header");
         const compareBtn = document.getElementById("compare-btn");
-        const arrowLeft = document.getElementById("left-arrow");
-        const arrowRight = document.getElementById("right-arrow");
+        const leftArrow = document.getElementById("left-arrow");
+        const rightArrow = document.getElementById("right-arrow");
 
         // check if the element is in box4
         if (
@@ -86,15 +86,6 @@ function dragElement(circles, circleRadius, x, y) {
 
           box4.classList.add("expanded");
           defaultText.style.display = "none";
-
-          // if the content pops up, make the arrow invisible
-          if (box4.classList.contains("expanded")) {
-            arrowLeft.style.display = "none";
-            arrowRight.style.display = "none";
-          } else {
-            arrowLeft.style.display = "block";
-            arrowRight.style.display = "block";
-          }
 
           const restaurant = document.createElement("div");
           restaurant.className = "restaurant";
@@ -558,20 +549,17 @@ function dragElement(circles, circleRadius, x, y) {
           const leftArrow = document.getElementById("left-arrow");
           const rightArrow = document.getElementById("right-arrow");
 
-          leftArrow.style.display = currentPage > 1 ? "block" : "none";
-          rightArrow.style.display =
-            currentPage < totalPages ? "block" : "none";
-          // if (
-          //   popupContent.style.display === "none" ||
-          //   popupContent.style.visibility === "hidden"
-          // ) {
-          //   leftArrow.style.display = "none";
-          //   rightArrow.style.display = "none";
-          // } else {
-          // leftArrow.style.display = currentPage > 1 ? "block" : "none";
-          // rightArrow.style.display =
-          //   currentPage < totalPages ? "block" : "none";
-          // }
+          // if the content pops up, make the arrow invisible
+          if (box4.classList.contains("expanded")) {
+            // 根據頁數狀態顯示或隱藏箭頭
+            leftArrow.style.display = currentPage > 1 ? "block" : "none";
+            rightArrow.style.display =
+              currentPage < totalPages ? "block" : "none";
+          } else {
+            // 隱藏箭頭
+            leftArrow.style.display = "none";
+            rightArrow.style.display = "none";
+          }
 
           leftArrow.onclick = () => {
             if (currentPage > 1) {

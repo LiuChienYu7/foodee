@@ -172,7 +172,7 @@ function initializeReviews(reviewData) {
     .attr("fill", "black")
     .text((d) => d.text);
 
-  const colors = ["#ffc6df", "#acccff", "#ffeab0"]; // 定義顏色陣列
+  const colors = ["#FF70AE", "#85B4FF", "#FFCE47"]; // 定義顏色陣列
     
 
   // 一開始就顯示第一個類別的總評和第一家餐廳的評論細節
@@ -195,7 +195,7 @@ function showReviews(svg, d, blockGroup) {
   const blockX = 20;
   const blockY = 30; // 這裡可以根據需要調整Y座標 一開始高度
   const blockWidth = 150;
-  const colors = ["#ffc6df", "#acccff", "#ffeab0"]; // 定義顏色陣列
+  const colors = ["#FF70AE", "#85B4FF", "#FFCE47"]; // 定義顏色陣列
 
   // 獲取總評區塊的位置，作為連線的起點
   const blockTransform = d3.select(blockGroup).attr("transform");
@@ -287,7 +287,7 @@ function showReviews(svg, d, blockGroup) {
           svg.selectAll(`.detail-group`).remove();
           drawCommentDetails(svg, d, i, colors, endX, endY);
           d3.select(this).style("cursor", "pointer");
-          d3.select(this).select("rect").attr("fill-opacity", 0.8);
+          d3.select(this).select("rect").attr("fill-opacity", 0.7);
           d3.select(this)
             .select("text")
             .attr("fill", "#7B6F5A")
@@ -324,7 +324,7 @@ function showReviews(svg, d, blockGroup) {
       .attr("rx", 10)
       .attr("ry", 10)
       .attr("fill", colors[i]) // 使用顏色陣列中的顏色作為背景
-      .attr("fill-opacity", 0.5)
+      .attr("fill-opacity", 0.4)
       .attr("transform", "translate(-30, 0)") // 向左移動區塊20像素
       .transition() // 動畫過渡
       .duration(300) // 持續時間300ms
@@ -433,7 +433,7 @@ function drawCommentDetails(svg, d, i, colors, endX, endY) {
       .attr("width", 0) // 初始寬度為0
       .transition() // 動畫過渡
       .duration(300) // 持續時間300ms
-      .attr("fill-opacity", 0.5)
+      .attr("fill-opacity", 0.4)
       .attr("width", 170); // 最终宽度为200
 
     // 添加评论文本
@@ -449,7 +449,7 @@ function drawCommentDetails(svg, d, i, colors, endX, endY) {
       .call(wrapText, 150) // 自動換行
       .transition() // 添加動畫過渡
       .duration(300) // 設定持續時間
-      .attr("opacity", 1); // 最終透明度為1
+      .attr("opacity", 0.7); // 最終透明度為1
   });
 }
 

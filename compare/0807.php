@@ -151,7 +151,7 @@ if ($link) {
                 if ($isFirst) {
                     echo "<h3 style='cursor: default;'>環境</h3>";
                 } else {
-                    echo "<h3 style='color: white; cursor: default;'>我</h3>";
+                    echo "<h3 style='color: white; cursor: default;'>環境</h3>";
                 }
                 echo "<div class='vibe-tags'>";
                 if (!empty($restaurant_data['r_vibe'])) {
@@ -181,7 +181,7 @@ if ($link) {
                 if ($isFirst) {
                     echo "<h3 style='cursor: default;'>食物</h3>";
                 } else {
-                    echo "<h3 style='color: white; cursor: default;'>我</h3>";
+                    echo "<h3 style='color: white; cursor: default;'>食物</h3>";
                 }
                 echo "<div class='food-tags'>";
                 if (!empty($restaurant_data['r_food_dishes'])) {
@@ -211,7 +211,7 @@ if ($link) {
                 if ($isFirst) {
                     echo "<h3 style='cursor: default;'>菜單</h3>";
                 } else {
-                    echo "<h3 style='color: white; cursor: default;'>我</h3>";
+                    echo "<h3 style='color: white; cursor: default;'>菜單</h3>";
                 }
                 echo "<div class='vibe-tags'>";
                 if (!empty($restaurant_data['r_price_low']) && !empty($restaurant_data['r_price_high'])) {

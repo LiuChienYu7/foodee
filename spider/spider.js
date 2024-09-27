@@ -298,7 +298,7 @@ const addButtons = (restaurantNames) => {
           d3.select(`.levels_rate.restaurant-${i + 1} path`)
             .transition()
             .duration(100)
-            .style("fill-opacity", 0.5);
+            .style("fill-opacity", 0.4);
 
           // 修改其他雷達圖樣式
           d3.selectAll(`.levels_rate:not(.restaurant-${i + 1}) path`).style(
@@ -333,7 +333,7 @@ const addButtons = (restaurantNames) => {
           // 恢復樣式
           d3.select(this)
             .select("rect")
-            .style("fill-opacity", 0.5)
+            .style("fill-opacity", 0.4)
             .style("cursor", "default")
             .attr("width", buttonWidth);
 
@@ -405,7 +405,7 @@ const addButtons = (restaurantNames) => {
           d3.select(`.levels_rate.restaurant-${i + 1} path`)
             .transition()
             .duration(100)
-            .style("fill-opacity", 0.5);
+            .style("fill-opacity", 0.4);
 
           // 修改其他雷達圖樣式
           d3.selectAll(`.levels_rate:not(.restaurant-${i + 1}) path`).style(
@@ -440,7 +440,7 @@ const addButtons = (restaurantNames) => {
           // 恢復樣式
           d3.select(this)
             .select("rect")
-            .style("fill-opacity", 0.5)
+            .style("fill-opacity", 0.4)
             .style("cursor", "default")
             .attr("width", buttonWidth);
 
@@ -476,7 +476,7 @@ const addButtons = (restaurantNames) => {
       .attr("width", buttonWidth)
       .attr("height", buttonHeight)
       .attr("fill", buttonColors[i])
-      .style("fill-opacity", 0.5)
+      .style("fill-opacity", 0.4)
       .attr("rx", 5) // 設置圓角半徑
       .attr("ry", 5) // 設置圓角半徑
       .style("cursor", "pointer"); // 設置游標為默認樣式
