@@ -260,11 +260,11 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <span style="margin-left: 5px; white-space: nowrap;">${restaurant.r_rating_food} 星</span>
                             </div>
                             <div style="display: flex; align-items: center; margin-bottom: 0px; font-size: 12px; max-width: 200px;">
-                                <span style="width: 40px;">環境:</span>
+                                <span style="width: 40px;">划算度:</span>
                                 <div style="background-color: #ccc; width: 100px; height: 8px; border-radius: 5px; overflow: hidden; position: relative;">
-                                    <div style="background-color: gold; width: ${restaurant.r_rate_atmosphere * 20}px; height: 8px;"></div>
+                                    <div style="background-color: gold; width: ${restaurant.r_rate_value * 20}px; height: 8px;"></div>
                                 </div>
-                                <span style="margin-left: 5px; white-space: nowrap;">${restaurant.r_rate_atmosphere} 星</span>
+                                <span style="margin-left: 5px; white-space: nowrap;">${restaurant.r_rate_value} 星</span>
                             </div>
                             <div style="display: flex; align-items: center; font-size: 12px; max-width: 200px;">
                                 <span style="width: 40px;">衛生:</span>
@@ -456,11 +456,11 @@ function drawMinimap(data) {
                             <span style="margin-left: 5px; white-space: nowrap;">${restaurant.r_rating_food} 星</span>
                         </div>
                         <div style="display: flex; align-items: center; margin-bottom: 0px; font-size: 12px; max-width: 200px;">
-                            <span style="width: 40px;">環境:</span>
+                            <span style="width: 40px;">划算度:</span>
                             <div style="background-color: #ccc; width: 100px; height: 8px; border-radius: 5px; overflow: hidden; position: relative;">
-                                <div style="background-color: gold; width: ${restaurant.r_rate_atmosphere * 20}px; height: 8px;"></div>
+                                <div style="background-color: gold; width: ${restaurant.r_rate_value * 20}px; height: 8px;"></div>
                             </div>
-                            <span style="margin-left: 5px; white-space: nowrap;">${restaurant.r_rate_atmosphere} 星</span>
+                            <span style="margin-left: 5px; white-space: nowrap;">${restaurant.r_rate_value} 星</span>
                         </div>
                         <div style="display: flex; align-items: center; font-size: 12px; max-width: 200px;">
                             <span style="width: 40px;">衛生:</span>

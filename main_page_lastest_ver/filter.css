@@ -86,7 +86,7 @@ iframe{
     display: -webkit-flex;            
     justify-content: center;            
     align-items: center;   
-    font-size: .9rem;
+    font-size: 1rem;
     box-sizing: border-box;
     transition: width .8s ease;
     flex-direction: column;

@@ -102,7 +102,7 @@ const generateAndDrawLevels = (levelsCount, sideCount) => {
 };
 
 //餐廳顏色
-const color = d3.scaleOrdinal().range(["#ffc6dfef", "#acccffea", "#ffeab0ee"]); //紅、藍、黃
+const color = d3.scaleOrdinal().range(["#FF70AE", "#85B4FF", "#FFCE47"]); //紅、藍、黃
 // .range(["#84C1FF", "#96FED1", "#FFA5A0"]); //藍色、紫色、粉紅色
 
 //餐廳評分
@@ -138,7 +138,7 @@ const DrawRate = (levelsCount, sideCount, ratingsData, index) => {
     .attr("cy", (d) => d.y)
     .attr("r", 3) // 小點點的半徑
     .attr("fill", color(index - 1)) // 顏色與對應的多邊形相同
-    .style("fill-opacity", 1);
+    .style("fill-opacity", 0.7);
 };
 
 // 1~5顆星 刻度
@@ -237,7 +237,7 @@ import { highlightRestaurant, resetHighlight } from "../openTime/openTime.js";
 
 //添加button到左上角 要把button跟文字包在一起 動態才會正常
 const addButtons = (restaurantNames) => {
-  const buttonColors = ["#ffc6dfef", "#acccffea", "#ffeab0ee"];
+  const buttonColors = ["#FF70AE", "#85B4FF", "#FFCE47"];
   const buttonGroup = svg_spider
     .append("g")
     .attr("transform", `translate(${margin},${margin})`);
@@ -267,7 +267,7 @@ const addButtons = (restaurantNames) => {
             .select("rect")
             .transition()
             .duration(100)
-            .style("fill-opacity", 1)
+            .style("fill-opacity", 0.7)
             .style("cursor", "default")
             .attr("width", expandedWidth);
 
@@ -310,7 +310,7 @@ const addButtons = (restaurantNames) => {
           d3.selectAll(`.levels_rate.restaurant-${i + 1} circle`)
             .transition()
             .duration(100)
-            .style("fill-opacity", 1);
+            .style("fill-opacity", 0.7);
 
           // 其他雷達圖和小點點變淡
           d3.selectAll(`.levels_rate:not(.restaurant-${i + 1}) path`).style(
@@ -363,7 +363,7 @@ const addButtons = (restaurantNames) => {
           d3.selectAll(`.levels_rate circle`)
             .transition()
             .duration(100)
-            .style("fill-opacity", 1);
+            .style("fill-opacity", 0.9);
           resetHighlight();
         }
       })
@@ -374,7 +374,7 @@ const addButtons = (restaurantNames) => {
             .select("rect")
             .transition()
             .duration(100)
-            .style("fill-opacity", 1)
+            .style("fill-opacity", 0.9)
             .style("cursor", "default")
             .attr("width", expandedWidth);
 
@@ -417,7 +417,7 @@ const addButtons = (restaurantNames) => {
           d3.selectAll(`.levels_rate.restaurant-${i + 1} circle`)
             .transition()
             .duration(100)
-            .style("fill-opacity", 1);
+            .style("fill-opacity", 0.9);
 
           // 其他雷達圖和小點點變淡
           d3.selectAll(`.levels_rate:not(.restaurant-${i + 1}) path`).style(
@@ -465,7 +465,7 @@ const addButtons = (restaurantNames) => {
           d3.selectAll(`.levels_rate circle`)
             .transition()
             .duration(100)
-            .style("fill-opacity", 1);
+            .style("fill-opacity", 0.9);
           isLocked = false;
           resetHighlight();
         }
