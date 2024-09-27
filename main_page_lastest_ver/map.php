@@ -230,7 +230,7 @@
                                 </div>
                                 <div style="flex: 1;">
                                     <b style="font-size: 16px;">${restaurant.r_name}</b><br>
-                                    <b style="font-size: 14px; color: #FFD700;">評分: ${restaurant.r_rating} 星</b><br>
+                                    <b style="font-size: 14px; color: rgba(196, 127, 0, 0.716);">評分: ${restaurant.r_rating} 星</b><br>
                                     <div style="margin-top: 5px; word-wrap: break-word;">
                                         ${restaurant.r_food_dishes.split('、').slice(0, 3).map(dish => `
                                             <span style="background-color: #FFD700; padding: 2px 5px; margin-right: 3px; margin-bottom: 3px; font-size: 12px; border-radius: 5px; display: inline-block;">
@@ -425,7 +425,7 @@
                             </div>
                             <div style="flex: 1;">
                                 <b style="font-size: 16px;">${restaurant.r_name}</b><br>
-                                <b style="font-size: 14px; color: #FFD700;">評分: ${restaurant.r_rating} 星</b><br>
+                                <b style="font-size: 14px; color: rgba(196, 127, 0, 0.716);">評分: ${restaurant.r_rating} 星</b><br>
                                 <div style="margin-top: 5px; word-wrap: break-word;">
                                     ${restaurant.r_food_dishes.split('、').slice(0, 3).map(dish => `
                                         <span style="background-color: #FFD700; padding: 2px 5px; margin-right: 3px; margin-bottom: 3px; font-size: 12px; border-radius: 5px; display: inline-block;">
