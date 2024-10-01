@@ -62,24 +62,26 @@ function initializeReviews(reviewData) {
       id: 5,
       text: "朋友評論",
       reviews: reviewData.map((d) => {
-        if (d.friend_reviews.length > 0) {
-          return d.friend_reviews.map((f) => f.user).join(", ");
+        // 確認 friend_reviews 是一個有效的陣列並且包含評論
+        if (d.friend_reviews && Object.keys(d.friend_reviews).length > 0) {
+          return Object.values(d.friend_reviews).map((f) => f.user).join(", ");
         } else {
           return "尚無朋友評論";
         }
       }),
       details: reviewData.map((d) => {
-        if (d.friend_reviews.length > 0) {
-          return d.friend_reviews.map((f) => f.user + ": " + f.comment);
+        // 確認 friend_reviews 是一個有效的陣列並且包含評論
+        if (d.friend_reviews && Object.keys(d.friend_reviews).length > 0) {
+          return Object.values(d.friend_reviews).map((f) => f.user + ": " + f.comment);
         } else {
           return ["尚無朋友評論"];
         }
       }),
-    },
+    }
   ];
   // 在初始化時调取函数
   //   initializeReviews(data);
-  console.log(data);
+  console.log("看這裡",data);
   d3.select(".comment_comment")
     .on("mouseover", function () {
       d3.select(this).style("cursor", "pointer").style("color", "#DC8686"); // 使用 style 来设置颜色
