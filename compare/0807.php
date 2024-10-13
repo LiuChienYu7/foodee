@@ -128,21 +128,14 @@ if ($link) {
                 $vote_count = isset($restaurant_data['vote']) ? $restaurant_data['vote'] : 0;
 
                 // 餐廳名稱和投票次數部分
-                echo "<div class='restaurant-container' style='background-color: {$backgroundColor}; padding: 10px; border-radius: 10px; margin-right: 10px; display: inline-block; width: 200px;'>"; // 整個區塊背景和設計
+                echo "<div class='restaurant-container' style='background-color: {$backgroundColor}; padding: 10px; border-radius: 10px; display: flex; width: auto;justify-content: space-between;align-items: center;'>"; // 整個區塊背景和設計
                 echo "<div style='display: flex; align-items: center;'>"; // 使用flex排列名稱和勾選框
                 echo "<input type='checkbox' class='restaurant-checkbox' data-id='{$r_id}' style='margin-right: 10px; cursor: pointer; width: 18px; height: 18px;' onchange='handleCheckboxChange(this)'>";
                 echo "<div style='cursor: default; font-weight:bold;'>" . htmlspecialchars($restaurant_data['r_name']) . "</div>"; // 餐廳名稱在勾選框右邊
                 echo "</div>";
                 // 投票次數換行顯示
-                echo "<div style='cursor: default; right:0'>投票次數: " . htmlspecialchars($vote_count) . "</div>";
+                echo "<div style='cursor: default; right:0'>票數: " . htmlspecialchars($vote_count) . "</div>";
                 echo "</div>";
-
-
-                // 顯示投票數，移動到餐廳名稱的下方
-                //$vote_count = isset($restaurant_data['vote']) ? $restaurant_data['vote'] : 0;
-                //echo "<div class='vote-count' style='cursor: default; margin-top: 5px;'>投票數: " . htmlspecialchars($vote_count) . "</div>";
-                // $vote_count = isset($restaurant_data['vote']) ? $restaurant_data['vote'] : 0;
-                // echo "<div class='vote-count' style='cursor: default; margin-top: 5px;'>投票數: " . htmlspecialchars($vote_count) . "</div>";
 
                 // 更新計數器
                 $counter++;
@@ -151,7 +144,7 @@ if ($link) {
                 if ($isFirst) {
                     echo "<h3 style='cursor: default;'>環境</h3>";
                 } else {
-                    echo "<h3 style='color: white; cursor: default;'>環境</h3>";
+                    echo "<h3 style='color: white; cursor: default;'>我</h3>";
                 }
                 echo "<div class='vibe-tags'>";
                 if (!empty($restaurant_data['r_vibe'])) {
@@ -181,7 +174,7 @@ if ($link) {
                 if ($isFirst) {
                     echo "<h3 style='cursor: default;'>食物</h3>";
                 } else {
-                    echo "<h3 style='color: white; cursor: default;'>食物</h3>";
+                    echo "<h3 style='color: white; cursor: default;'>我</h3>";
                 }
                 echo "<div class='food-tags'>";
                 if (!empty($restaurant_data['r_food_dishes'])) {
@@ -211,7 +204,7 @@ if ($link) {
                 if ($isFirst) {
                     echo "<h3 style='cursor: default;'>菜單</h3>";
                 } else {
-                    echo "<h3 style='color: white; cursor: default;'>菜單</h3>";
+                    echo "<h3 style='color: white; cursor: default;'>我</h3>";
                 }
                 echo "<div class='vibe-tags'>";
                 if (!empty($restaurant_data['r_price_low']) && !empty($restaurant_data['r_price_high'])) {
@@ -1127,15 +1120,16 @@ if ($link) {
         }
 
 
-        function changeImage(arrow, direction) {
-            const section = arrow.closest('.image-container');
-            const images = section.querySelectorAll('img');
-            let currentIndex = Array.from(images).findIndex(img => img.classList.contains('active'));
-            images[currentIndex].classList.remove('active');
-            currentIndex = (currentIndex + direction + images.length) % images.length;
-            images[currentIndex].classList.add('active');
+        function changeImage(arrow, direction, index) {
+            const displayedImg = document.querySelector(`.displayed-img-${index}`);
+            if (displayedImg) { // 检查元素是否存在
+                let images = JSON.parse(displayedImg.dataset.images || '[]');
+                let currentIndex = parseInt(displayedImg.dataset.index, 10);
+                currentIndex = (currentIndex + direction + images.length) % images.length;
+                displayedImg.src = images[currentIndex] || 'default.jpg';
+                displayedImg.dataset.index = currentIndex;
+            }
         }
-
     </script>
 </body>
 
