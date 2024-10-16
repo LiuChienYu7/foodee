@@ -133,7 +133,7 @@ if ($link) {
                 echo "<div class='restaurant-container' style='background-color: {$backgroundColor}; padding: 10px; border-radius: 10px; display: flex; width: auto;justify-content: space-between;align-items: center;'>"; // 整個區塊背景和設計
                 echo "<div style='display: flex; align-items: center;'>"; // 使用flex排列名稱和勾選框
                 echo "<input type='checkbox' class='restaurant-checkbox' data-id='{$r_id}' style='margin-right: 10px; cursor: pointer; width: 18px; height: 18px;' onchange='handleCheckboxChange(this)'>";
-                echo "<a href='" . htmlspecialchars($restaurant_data['r_website']) . "' target='_blank' style='cursor: pointer; font-weight:bold; color: black; text-decoration: underline;' onmouseover=\"this.style.color='#ffcc00';\" onmouseout=\"this.style.color='black';\">" . htmlspecialchars($restaurant_data['r_name']) . "</a>";
+                echo "<a href='" . htmlspecialchars($restaurant_data['r_website']) . "' target='_blank' style='cursor: pointer; font-weight:bold; color: black; text-decoration: underline;' onmouseover=\"this.style.color='#0072E3';\" onmouseout=\"this.style.color='black';\">" . htmlspecialchars($restaurant_data['r_name']) . "</a>";
                 echo "</div>";
                 // 投票次數換行顯示
                 echo "<div style='background-color:#FFF;padding:2%;border-radius: 10px;cursor: default; right:0'>票數: " . htmlspecialchars($vote_count) . "</div>";
@@ -463,6 +463,15 @@ if ($link) {
             <button class="share-button" id="finalShareButton">分享</button>
         </div>
     </div>
+    <div id="shareModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span id="closeBtn">&times;</span>
+            <p id="shareLink"></p>
+            <button id="copyBtn">复制链接</button>
+            <button id="openBtn">在新窗口打开</button>
+        </div>
+    </div>
+
 
 
     <!-- The Modal -->
@@ -1066,7 +1075,7 @@ if ($link) {
             console.log('Selected Restaurants:', selectedItems);
 
             // 重定向用户到生成的 URL
-            window.open(shareLink, '_blank');
+            //window.open(shareLink, '_blank');
         });
 
         function generateShareLink(selectedItems, selectedRestaurants) {
@@ -1074,7 +1083,6 @@ if ($link) {
 
             // 遍历所有被选中的餐厅
             selectedRestaurants.forEach((id, index) => {
-                // 将r_id也添加到查询字符串中
                 queryString += `r_id${index + 1}=${id}&`;
             });
 
@@ -1091,8 +1099,37 @@ if ($link) {
             // 将这些字符串合并到一个查询字符串中
             queryString += `${vibeString}&${foodString}&${priceString}&${diningTimeString}&${parkingString}&${spiderString}&${commentString}&${openTimeString}`;
 
+            // 输出完整的 URL
+            const fullURL = `../cellphone/cellphone.php?${queryString}`;
+            console.log(fullURL);  // 输出到控制台
+
+            // 显示自定义弹窗
+            const modal = document.getElementById("shareModal");
+            const shareLink = document.getElementById("shareLink");
+            //shareLink.textContent = fullURL;
+            modal.style.display = "block";
+
+            // 关闭弹窗
+            document.getElementById("closeBtn").onclick = function() {
+                modal.style.display = "none";
+            };
+
+            // 复制链接到剪贴板
+            document.getElementById("copyBtn").onclick = function() {
+                navigator.clipboard.writeText(fullURL).then(function() {
+                    alert("链接已复制！");
+                }, function() {
+                    alert("复制失败！");
+                });
+            };
+
+            // 在新窗口中打开链接
+            document.getElementById("openBtn").onclick = function() {
+                window.open(fullURL, '_blank');
+            };
+            
             // 返回完整的 URL
-            return `../cellphone/cellphone.php?${queryString}`;
+            return fullURL;
         }
 
         function updateImage(category, restaurantData, index) {
