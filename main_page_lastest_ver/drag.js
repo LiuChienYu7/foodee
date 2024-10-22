@@ -599,7 +599,28 @@ function dragElement(circles, circleRadius, x, y) {
                 window.location.href = url;
               }, 2000);
             };
-          } else {
+          } 
+          else if (selectedRestaurantIds.length === 2) {
+            // 恰好選擇了三家餐廳，按鈕可用
+            compareBtn.classList.add("enabled"); // 使用 'enabled' 類來設置樣式
+            compareBtn.disabled = false; // 啟用按鈕
+            // compareBtn.style.opacity = "1";
+            // compareBtn.disabled = false;
+
+            // 設置點擊事件，跳轉到比較頁面
+            compareBtn.onclick = function () {
+              // 操作父页面的左边 iframe，隐藏左边的 filter iframe
+              const url = `http://localhost/foodee/compare/0807.php?r_id1=${selectedRestaurantIds[0]}&r_id2=${selectedRestaurantIds[1]}`;
+              parent.document.getElementById("left-panel").style.display =
+                "none";
+
+              // 設置延遲，等filter被隱藏後再連到比較頁面
+              setTimeout(function () {
+                window.location.href = url;
+              }, 2000);
+            };
+          }
+          else {
             // 非三家餐廳，按鈕不可用，設置為半透明
             compareBtn.classList.remove("enabled"); // 移除 'enabled' 類
             compareBtn.disabled = true;
