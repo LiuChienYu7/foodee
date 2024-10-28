@@ -683,6 +683,7 @@ if ($link) {
                 const colorIndex = restaurantColorIndices[id];
                 const backgroundColor = colors[colorIndex];
                 const rgbaBackgroundColor = hexToRgba(backgroundColor, 0.5);
+                const selectedRestaurantId = id;  // id 來自 selectedRestaurants.forEach 的循環
 
                 if (restaurantData) {
                     const restaurantTitle = document.createElement('div');
@@ -927,7 +928,7 @@ if ($link) {
 
                     // 定义 SVG 图标
                     const addSvg = `
-                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="256" height="256" viewBox="0 0 256 256" xml:space="preserve">
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="256" height="256" viewBox="0 0 256 256" xml:space="preserve" id = "addSvg-${id}">
                         <defs>
                         </defs>
                         <g style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;" transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)">
@@ -983,7 +984,6 @@ if ($link) {
                     setTimeout(() => {
                         updateImage('環境', restaurantData, index);
                     }, 100); // 延遲 100 毫秒更新圖片
-
 
 
                     const imageToggleButtons = ['環境', '食物', '菜單', '地圖'].map(category => {

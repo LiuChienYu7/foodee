@@ -522,7 +522,7 @@ function dragElement(circles, circleRadius, x, y) {
         function updateRestaurantCount() {
           const count = restaurantInfo.children.length - 1; // Exclude the defaultText element
           box4Header.textContent = `拖移餐廳看更多餐廳資訊 已選${count}間餐廳`;
-          compareBtn.textContent = `去比較(${count}/3)`;
+          compareBtn.textContent = `去比較(${count}/2-3)`;
         }
 
         // 換頁
