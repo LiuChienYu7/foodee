@@ -136,8 +136,9 @@ function dragElement(circles, circleRadius, x, y) {
 
           // Create and append the restaurant image
           // 變數來追蹤當前顯示的圖片類型（environment 或 food）和當前圖片索引
-          let currentImageType = "food";
-          let currentImageIndex = 0;
+          let currentImageType = window.currentImageType_final;
+          let currentImageIndex = window.currentImageIndex_final;
+          console.log("drag.js看這裡?????", window.currentImageType_final);
 
           // 照片數組
           const environmentPhotos = [
@@ -174,7 +175,12 @@ function dragElement(circles, circleRadius, x, y) {
 
           const restaurantImage = document.createElement("img");
           restaurantImage.className = "drag-image";
-          restaurantImage.src = foodPhotos[currentImageIndex]; // 預設顯示 food 類型的第一張圖片
+          const photoArray =
+              currentImageType === "environment"
+                ? environmentPhotos
+                : foodPhotos;
+          restaurantImage.src = photoArray[currentImageIndex];
+          // restaurantImage.src = environmentPhotos[currentImageIndex]; // 預設顯示 environment 類型的第一張圖片
           restaurantImage.alt = d.r_name;
           restaurantImage.style.width = "320px";
           restaurantImage.style.height = "200px";
@@ -599,8 +605,7 @@ function dragElement(circles, circleRadius, x, y) {
                 window.location.href = url;
               }, 2000);
             };
-          } 
-          else if (selectedRestaurantIds.length === 2) {
+          } else if (selectedRestaurantIds.length === 2) {
             // 恰好選擇了三家餐廳，按鈕可用
             compareBtn.classList.add("enabled"); // 使用 'enabled' 類來設置樣式
             compareBtn.disabled = false; // 啟用按鈕
@@ -619,8 +624,7 @@ function dragElement(circles, circleRadius, x, y) {
                 window.location.href = url;
               }, 2000);
             };
-          }
-          else {
+          } else {
             // 非三家餐廳，按鈕不可用，設置為半透明
             compareBtn.classList.remove("enabled"); // 移除 'enabled' 類
             compareBtn.disabled = true;
