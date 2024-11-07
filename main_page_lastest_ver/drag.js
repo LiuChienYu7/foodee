@@ -596,7 +596,8 @@ function dragElement(circles, circleRadius, x, y) {
             // 設置點擊事件，跳轉到比較頁面
             compareBtn.onclick = function () {
               // 操作父页面的左边 iframe，隐藏左边的 filter iframe
-              const url = `http://140.117.71.52/foodeess/compare/0807.php?r_id1=${selectedRestaurantIds[0]}&r_id2=${selectedRestaurantIds[1]}&r_id3=${selectedRestaurantIds[2]}`;
+              // const url = `http://140.117.71.52/foodeess/compare/0807.php?r_id1=${selectedRestaurantIds[0]}&r_id2=${selectedRestaurantIds[1]}&r_id3=${selectedRestaurantIds[2]}`;
+              const url = `../compare/0807.php?r_id1=${selectedRestaurantIds[0]}&r_id2=${selectedRestaurantIds[1]}&r_id3=${selectedRestaurantIds[2]}`;
               parent.document.getElementById("left-panel").style.display =
                 "none";
 
@@ -615,7 +616,8 @@ function dragElement(circles, circleRadius, x, y) {
             // 設置點擊事件，跳轉到比較頁面
             compareBtn.onclick = function () {
               // 操作父页面的左边 iframe，隐藏左边的 filter iframe
-              const url = `http://140.117.71.52//foodee/compare/0807.php?r_id1=${selectedRestaurantIds[0]}&r_id2=${selectedRestaurantIds[1]}`;
+              // const url = `http://140.117.71.52//foodee/compare/0807.php?r_id1=${selectedRestaurantIds[0]}&r_id2=${selectedRestaurantIds[1]}`;
+              const url = `../compare/0807.php?r_id1=${selectedRestaurantIds[0]}&r_id2=${selectedRestaurantIds[1]}`;
               parent.document.getElementById("left-panel").style.display =
                 "none";
 
