@@ -1111,7 +1111,7 @@ if ($link) {
             queryString += `${vibeString}&${foodString}&${priceString}&${diningTimeString}&${parkingString}&${spiderString}&${commentString}&${openTimeString}`;
 
             // 输出完整的 URL
-            const fullURL = `../cellphone/cellphone.php?${queryString}`;
+            const fullURL = `http://localhost/foodee2/cellphone/cellphone.php?${queryString}`;
             console.log(fullURL);  // 输出到控制台
 
             // 显示自定义弹窗
