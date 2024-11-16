@@ -134,6 +134,21 @@
             const intervalTotals = getCurrentIntervalTotals(currentIntervals, circleRadius, data, width, margin, intervalWidths);//獲得該曲間總餐廳數(FOR WIDTH計算)
             const total = d3.sum(Object.values(intervalTotals));
 
+            // 處理drag圖片
+            window.currentImageType_final = "environment";
+            window.currentImageIndex_final = 0;
+
+            document.getElementById("environment").addEventListener("click", function () {
+                window.currentImageType_final = "environment";
+                window.currentImageIndex_final = 0;
+            });
+
+            document.getElementById("food").addEventListener("click", function () {
+                window.currentImageType_final = "food";
+                window.currentImageIndex_final = 0;
+            });
+
+
             if (isNaN(total) || total === 0) {
                 console.warn("Total 餐厅数为 NaN 或 0，跳过更新。");
                 return;
@@ -434,8 +449,8 @@
                     .append("svg")
                     .attr("width", "100%")
                     .attr("height", totalHeight);
-                    // .attr("viewBox", `0 0 ${desiredWidth} ${desiredHeight}`)  // 添加 viewBox
-                    // .attr("preserveAspectRatio", "xMidYMid meet");  // 確保比例保持不變;
+                // .attr("viewBox", `0 0 ${desiredWidth} ${desiredHeight}`)  // 添加 viewBox
+                // .attr("preserveAspectRatio", "xMidYMid meet");  // 確保比例保持不變;
 
                 // 清除舊pattern
                 svg.select('defs').selectAll('pattern').remove();
@@ -515,7 +530,7 @@
                     const patternId = `pattern-${d.r_id}`;  // 使用資料中的 r_id 作為 patternId
                     createPattern(defs, patternId, d.r_photo_env1);  // 使用 r_id 對應的環境照片
                 });
-                
+
                 const tooltip = d3.select("#tooltip");
                 const circles = svg.append('g')
                     .selectAll("g.circle-group")
@@ -647,7 +662,7 @@
                         const patternId = `pattern-${d.r_id}`;  // 使用 r_id 作為 patternId
                         return `url(#${patternId})`;  // 填充對應的照片
                     });
-                
+
                 const radius = 60;
                 // 確保 colorClass 是具體的顏色值
                 const color = d3.scaleOrdinal()
