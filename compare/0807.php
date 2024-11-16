@@ -440,7 +440,7 @@ if ($link) {
                 </div>
             </div>
             <div class="button_container"><!-- 分享和BACK按钮 -->
-                <button id="backButton" class="map-button">BACK</button>
+                <button id="backButton" class="map-button">返回</button>
                 <button id="shareButton" class="map-button">分享</button>
             </div>
 
