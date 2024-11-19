@@ -52,7 +52,18 @@ if ($link) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
+<script>
+    function changeImage(arrow, direction, index) {
+            const displayedImg = document.querySelector(`.displayed-img-${index}`);
+            if (displayedImg) { // 检查元素是否存在
+                let images = JSON.parse(displayedImg.dataset.images || '[]');
+                let currentIndex = parseInt(displayedImg.dataset.index, 10);
+                currentIndex = (currentIndex + direction + images.length) % images.length;
+                displayedImg.src = images[currentIndex] || 'default.jpg';
+                displayedImg.dataset.index = currentIndex;
+            }
+        }
+</script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -429,7 +440,7 @@ if ($link) {
                 </div>
             </div>
             <div class="button_container"><!-- 分享和BACK按钮 -->
-                <button id="backButton" class="map-button">BACK</button>
+                <button id="backButton" class="map-button">返回</button>
                 <button id="shareButton" class="map-button">分享</button>
             </div>
 
@@ -466,8 +477,8 @@ if ($link) {
     <div id="shareModal" class="modal" style="display: none;">
         <div class="modal-content">
             <span id="closeBtn" style="cursor: default;" onmouseover="this.style.cursor='pointer';">&times;</span>
-            <p id="shareLink"></p>
-            <button id="copyBtn">複製連結</button>
+            <p id="shareLink" style="margin: 2%;"></p>
+            <button id="copyBtn">複製連結給朋友</button>
             <button id="openBtn">在新視窗打開</button>
         </div>
     </div>
@@ -683,7 +694,6 @@ if ($link) {
                 const colorIndex = restaurantColorIndices[id];
                 const backgroundColor = colors[colorIndex];
                 const rgbaBackgroundColor = hexToRgba(backgroundColor, 0.5);
-                const selectedRestaurantId = id;  // id 來自 selectedRestaurants.forEach 的循環
 
                 if (restaurantData) {
                     const restaurantTitle = document.createElement('div');
@@ -928,7 +938,7 @@ if ($link) {
 
                     // 定义 SVG 图标
                     const addSvg = `
-                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="256" height="256" viewBox="0 0 256 256" xml:space="preserve" id = "addSvg-${id}">
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="256" height="256" viewBox="0 0 256 256" xml:space="preserve">
                         <defs>
                         </defs>
                         <g style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;" transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)">
@@ -972,9 +982,9 @@ if ($link) {
 
                     const imageContainer = document.createElement('div');
                     imageContainer.className = 'image-container-share';
-                    imageContainer.innerHTML = `<span class="nav-arrow prev" onclick="changeImage(this, -1, ${index})">‹</span>
+                    imageContainer.innerHTML = `<span class="nav-arrow prev" onclick="changeImage2(this, -1, ${index})">‹</span>
                             <img src="default.jpg" class="displayed-img displayed-img-${index}" style="object-fit: cover;">
-                            <span class="nav-arrow next" onclick="changeImage(this, 1, ${index})">›</span>`;
+                            <span class="nav-arrow next" onclick="changeImage2(this, 1, ${index})">›</span>`;
 
                     const cornerSvgContainer = document.createElement('div');
                     cornerSvgContainer.className = 'corner-svg';
@@ -984,6 +994,7 @@ if ($link) {
                     setTimeout(() => {
                         updateImage('環境', restaurantData, index);
                     }, 100); // 延遲 100 毫秒更新圖片
+
 
 
                     const imageToggleButtons = ['環境', '食物', '菜單', '地圖'].map(category => {
@@ -1100,7 +1111,7 @@ if ($link) {
             queryString += `${vibeString}&${foodString}&${priceString}&${diningTimeString}&${parkingString}&${spiderString}&${commentString}&${openTimeString}`;
 
             // 输出完整的 URL
-            const fullURL = `../cellphone/cellphone.php?${queryString}`;
+            const fullURL = `http://localhost/foodee2/cellphone/cellphone.php?${queryString}`;
             console.log(fullURL);  // 输出到控制台
 
             // 显示自定义弹窗
@@ -1157,9 +1168,8 @@ if ($link) {
                 displayedImg.dataset.index = 0;
             }
         }
-
-
-        function changeImage(arrow, direction, index) {
+    
+        function changeImage2(arrow, direction, index) {
             const displayedImg = document.querySelector(`.displayed-img-${index}`);
             if (displayedImg) { // 检查元素是否存在
                 let images = JSON.parse(displayedImg.dataset.images || '[]');
@@ -1169,6 +1179,7 @@ if ($link) {
                 displayedImg.dataset.index = currentIndex;
             }
         }
+    
     </script>
 </body>
 
