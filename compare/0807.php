@@ -477,8 +477,8 @@ if ($link) {
     <div id="shareModal" class="modal" style="display: none;">
         <div class="modal-content">
             <span id="closeBtn" style="cursor: default;" onmouseover="this.style.cursor='pointer';">&times;</span>
-            <p id="shareLink"></p>
-            <button id="copyBtn">複製連結</button>
+            <p id="shareLink" style="margin: 2%;"></p>
+            <button id="copyBtn">複製連結給朋友</button>
             <button id="openBtn">在新視窗打開</button>
         </div>
     </div>
