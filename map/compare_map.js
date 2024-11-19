@@ -141,7 +141,7 @@ fetch("../connect_sql/get_data_map_json.php")
         ).addTo(map);
       }
 
-      circle.bindPopup(transportation.name).openPopup();
+      circle.bindPopup(transportation.name);
     });
   })
   .catch((error) => console.error("Error loading restaurant data:", error));

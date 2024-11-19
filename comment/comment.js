@@ -139,6 +139,7 @@ function initializeReviews(reviewData) {
       if (Fixed) {
         //要收起來時
         //全部標籤變正常
+        svg.selectAll(`.detail-group`).remove();
         d3.selectAll(".block-group").select("rect").attr("fill", "#c3d4cc"); // 恢復原背景顏色
         d3.selectAll(".block-group")
           .select("text")
@@ -149,6 +150,7 @@ function initializeReviews(reviewData) {
         svg.selectAll(".link, .review-group").remove();
         Fixed = false; // 切換固定狀態
       } else {
+        svg.selectAll(`.detail-group`).remove();
         // 點擊時保留已顯示的評論細節
         showReviews(svg, d, this);
         Fixed = true;
