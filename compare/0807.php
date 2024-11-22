@@ -470,7 +470,7 @@ if ($link) {
             <!-- 动态生成餐厅信息 -->
         </div>
         <div class="panel-buttons">
-            <button class="share-button" id="closePanelButton">BACK</button>
+            <button class="share-button" id="closePanelButton">返回</button>
             <button class="share-button" id="finalShareButton">分享</button>
         </div>
     </div>
