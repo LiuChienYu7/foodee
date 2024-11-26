@@ -487,7 +487,7 @@ if ($link) {
 
 
 
-    <!-- The Modal -->
+    <!-- The Modal --->
     <div id="imageModal" class="modal">
         <span class="modal-close" onclick="closeModal()">&times;</span>
         <img class="modal-content" id="modalImg">
