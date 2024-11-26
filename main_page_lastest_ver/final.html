@@ -107,7 +107,7 @@
         let filteredPositions2 = [];
 
         d3.json('./data.php?').then(function (data) {
-            console.log('Loaded data:', data);  // 查看加载的数据
+            // console.log('Loaded data:', data);  // 查看加载的数据
             loaded = data;
             newPositions2 = data;
             const width = window.innerWidth;
@@ -199,12 +199,12 @@
             document.getElementById('sort-button').addEventListener('click', function () {
                 // 將資料rating重新按照高到低排
 
-                console.log("Data sorted by rating:", data);
+                //console.log("Data sorted by rating:", data);
 
                 // 然后更新此區間
                 updateIntervals();
 
-                console.log("Intervals updated, starting to filter and display current interval circles...");
+                ("Intervals updated, starting to filter and display current interval circles...");
 
                 // 清空當前顯示
                 d3.select("#chart").selectAll("*").remove();
@@ -212,7 +212,7 @@
                 // 重新安排圓圈位置
                 const newPositions = calculateSortedPositions(data, intervalWidths, rowHeight, rectSpacing, margin, intervalPositions, circleRadius, sortedTimes, currentIntervals, groupSpacing);
 
-                console.log("Sorted positions for the current interval:", newPositions);
+                //console.log("Sorted positions for the current interval:", newPositions);
 
 
                 // 計算svg總高度
@@ -224,7 +224,7 @@
 
                 drawChart(intervalWidths, intervalPositions, total, totalHeightValue, newPositions);
 
-                console.log("Chart updated successfully after sorting by rating.");
+                //console.log("Chart updated successfully after sorting by rating.");
             });
 
             let selectedRestaurantIds = [];  // 用于存储接收到的餐厅ID
@@ -235,7 +235,7 @@
                 if (event.data.type === 'vibesWithColors') {
                     // 更新氛围按钮的选择
                     selectedVibesWithColors = event.data.data;
-                    console.log('Received selectedVibesWithColors:', selectedVibesWithColors);
+                    //console.log('Received selectedVibesWithColors:', selectedVibesWithColors);
                 } else {
                     // 更新餐厅ID的选择
                     const receivedRestaurantData = event.data;
@@ -246,7 +246,7 @@
                             selectedRestaurantIds.push(Number(receivedRestaurantData[i]));
                         }
                     }
-                    console.log('Received Restaurant IDs:', selectedRestaurantIds);
+                    //console.log('Received Restaurant IDs:', selectedRestaurantIds);
                 }
 
                 // 调用筛选和更新图表的函数
@@ -305,13 +305,13 @@
 
                 // 移除重複的區間
                 currentIntervals = Array.from(new Set(currentIntervals));
-                console.log("Current intervals after deduplication:", currentIntervals);
+                //console.log("Current intervals after deduplication:", currentIntervals);
 
                 if (!currentIntervals || currentIntervals.length === 0) {
                     console.warn("currentIntervals 为空或未定义，跳过更新。");
                     const maxIntervalSet = findMaxIntervalWithNeighbors();  // 找到最多餐廳的區間集
                     if (!maxIntervalSet) {
-                        console.log("所有区间没有数据，重置视图。");
+                        //console.log("所有区间没有数据，重置视图。");
                         resetToDefaultView();
                         return;
                     }
@@ -366,7 +366,7 @@
                     }
                 }
 
-                console.log("Interval widths before update:", currentIntervals);
+                //console.log("Interval widths before update:", currentIntervals);
                 let totalUsedWidth = 0;
 
                 // 計算每個區間的寬度
@@ -394,8 +394,8 @@
                     currentPosition += intervalWidths[interval];
                 });
 
-                console.log("Interval widths after update:", intervalWidths);
-                console.log("Interval positions after update:", intervalPositions);
+                //console.log("Interval widths after update:", intervalWidths);
+                //console.log("Interval positions after update:", intervalPositions);
 
                 // 清空當前顯示，重繪圖表和 Minimap
                 d3.select("#chart").selectAll("*:not(.left)").remove();
@@ -910,7 +910,7 @@
                 }, margin.left);  // 初始化累积宽度为 margin.left
 
                 // 调试输出检查 tickValues
-                console.log("Calculated tickValues:", tickValues);
+                //console.log("Calculated tickValues:", tickValues);
 
                 // 使用 tickValues 来绘制 X 轴
                 xAxisSvg.append("g")
@@ -942,12 +942,12 @@
                             // Update currentIntervals to ensure it always contains 3 intervals
                             currentIntervals = intervals.slice(prevStartIndex + 1, prevEndIndex);  // +1 是为了确保包含 endIndex
 
-                            console.log("Updated intervals after left click:", currentIntervals);
+                            //console.log("Updated intervals after left click:", currentIntervals);
 
                             // Call update function
                             updateIntervals();
                         } else {
-                            console.log("已经到达第一个区间，无法继续向左移动。");
+                            //console.log("已经到达第一个区间，无法继续向左移动。");
                         }
                     });
 
@@ -966,12 +966,12 @@
                             // Update currentIntervals to ensure it always contains 3 intervals
                             currentIntervals = intervals.slice(nextStartIndex, nextEndIndex);
 
-                            console.log("Updated intervals after right click:", currentIntervals);
+                            //console.log("Updated intervals after right click:", currentIntervals);
 
                             // Call update function
                             updateIntervals();
                         } else {
-                            console.log("已经到达最后一个区间，无法继续向右移动。");
+                            //console.log("已经到达最后一个区间，无法继续向右移动。");
                         }
                     });
 

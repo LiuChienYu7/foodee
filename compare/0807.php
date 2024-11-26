@@ -64,6 +64,8 @@ if ($link) {
             }
         }
 </script>
+
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -470,15 +472,15 @@ if ($link) {
             <!-- 动态生成餐厅信息 -->
         </div>
         <div class="panel-buttons">
-            <button class="share-button" id="closePanelButton">返回</button>
+            <button class="share-button" id="closePanelButton">BACK</button>
             <button class="share-button" id="finalShareButton">分享</button>
         </div>
     </div>
     <div id="shareModal" class="modal" style="display: none;">
         <div class="modal-content">
             <span id="closeBtn" style="cursor: default;" onmouseover="this.style.cursor='pointer';">&times;</span>
-            <p id="shareLink" style="margin: 2%;"></p>
-            <button id="copyBtn">複製連結給朋友</button>
+            <p id="shareLink"></p>
+            <button id="copyBtn">複製連結</button>
             <button id="openBtn">在新視窗打開</button>
         </div>
     </div>
@@ -1111,7 +1113,7 @@ if ($link) {
             queryString += `${vibeString}&${foodString}&${priceString}&${diningTimeString}&${parkingString}&${spiderString}&${commentString}&${openTimeString}`;
 
             // 输出完整的 URL
-            const fullURL = `../cellphone/cellphone.php?${queryString}`;
+            const fullURL = `http://140.117.71.158//foodee/cellphone/cellphone.php?${queryString}`;
             console.log(fullURL);  // 输出到控制台
 
             // 显示自定义弹窗
@@ -1182,13 +1184,12 @@ if ($link) {
     
     </script>
 
-    // 引入cookie
     <script type="module">
         import { setCookie } from '../main_page_lastest_ver/storage.js';
 
         document.getElementById("backButton").addEventListener("click", function () {
-            const selectedRestaurants = getSelectedRestaurants(); // 目前的餐廳選擇
-            const filterConditions = getCurrentFilters(); // 目前的篩選條件
+            const selectedRestaurants = getSelectedRestaurants(); // 獲取目前的餐廳選擇
+            const filterConditions = getCurrentFilters(); // 獲取目前的篩選條件
 
             // 儲存選擇和篩選條件
             setCookie("selectedRestaurants", selectedRestaurants, 1);
@@ -1217,7 +1218,7 @@ if ($link) {
             console.log("恢復的篩選條件:", filterConditions);
 
             if (selectedRestaurants.length > 0) {
-                renderSelectedRestaurants(selectedRestaurants); 
+                renderSelectedRestaurants(selectedRestaurants); // 自行實現渲染邏輯
             }
         });
 
