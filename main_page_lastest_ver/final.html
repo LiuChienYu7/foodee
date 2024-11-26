@@ -1223,19 +1223,20 @@
                     buttons.forEach(button => button.classList.remove('active-color')); // 移除所有按鈕的顏色
                 }
 
-                // environment 按鈕點擊事件
-                document.getElementById("environment").addEventListener("click", function () {
-                    removeAllColors();  // 移除所有按鈕的顏色
-                    this.classList.add('active-color');  // 為當前按鈕添加顏色
-                    updatePatterns("environment", data, svg); // 傳遞當前點擊按鈕的ID
-                });
+                // // environment 按鈕點擊事件
+                // document.getElementById("environment").addEventListener("click", function () {
+                //     removeAllColors();  // 移除所有按鈕的顏色
+                //     this.classList.add('active-color');  // 為當前按鈕添加顏色
+                //     updatePatterns("environment", data, svg); // 傳遞當前點擊按鈕的ID
+                // });
 
-                // food 按鈕點擊事件
-                document.getElementById("food").addEventListener("click", function () {
-                    removeAllColors();  // 移除所有按鈕的顏色
-                    this.classList.add('active-color');  // 為當前按鈕添加顏色
-                    updatePatterns("food", data, svg); // 傳遞當前點擊按鈕的ID
-                });
+                // // food 按鈕點擊事件
+                // document.getElementById("food").addEventListener("click", function () {
+                //     removeAllColors();  // 移除所有按鈕的顏色
+                //     this.classList.add('active-color');  // 為當前按鈕添加顏色
+                //     updatePatterns("food", data, svg); // 傳遞當前點擊按鈕的ID
+                // });
+                switchPhoto(data, svg);
 
             }
 

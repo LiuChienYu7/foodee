@@ -141,8 +141,21 @@ fetch("../connect_sql/get_data_map_json.php")
         ).addTo(map);
       }
 
-      circle.bindPopup(transportation.name).openPopup();
+      circle.bindPopup(transportation.name);
     });
+    // 第一站輕軌與最後一站相連
+    // 繪製最後一個點到第一個點的連線
+    if (LRT_points.length > 1) {
+      // 取出第一個點和最後一個點
+      const firstPoint = LRT_points[0];
+      const lastPoint = LRT_points[LRT_points.length - 1];
+
+      // 繪製首尾相連的線段
+      L.polyline([lastPoint, firstPoint], {
+        color: "green", // 可使用不同顏色區分
+        weight: 2,
+      }).addTo(map);
+    }
   })
   .catch((error) => console.error("Error loading restaurant data:", error));
 

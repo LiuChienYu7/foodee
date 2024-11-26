@@ -470,7 +470,7 @@ if ($link) {
             <!-- 动态生成餐厅信息 -->
         </div>
         <div class="panel-buttons">
-            <button class="share-button" id="closePanelButton">BACK</button>
+            <button class="share-button" id="closePanelButton">返回</button>
             <button class="share-button" id="finalShareButton">分享</button>
         </div>
     </div>
@@ -1111,7 +1111,7 @@ if ($link) {
             queryString += `${vibeString}&${foodString}&${priceString}&${diningTimeString}&${parkingString}&${spiderString}&${commentString}&${openTimeString}`;
 
             // 输出完整的 URL
-            const fullURL = `http://localhost/foodee2/cellphone/cellphone.php?${queryString}`;
+            const fullURL = `../cellphone/cellphone.php?${queryString}`;
             console.log(fullURL);  // 输出到控制台
 
             // 显示自定义弹窗
@@ -1181,6 +1181,53 @@ if ($link) {
         }
     
     </script>
+
+    // 引入cookie
+    <script type="module">
+        import { setCookie } from '../main_page_lastest_ver/storage.js';
+
+        document.getElementById("backButton").addEventListener("click", function () {
+            const selectedRestaurants = getSelectedRestaurants(); // 目前的餐廳選擇
+            const filterConditions = getCurrentFilters(); // 目前的篩選條件
+
+            // 儲存選擇和篩選條件
+            setCookie("selectedRestaurants", selectedRestaurants, 1);
+            setCookie("filterConditions", filterConditions, 1);
+
+            // 返回 filter.html
+            window.location.href = "../main_page_lastest_ver/filter.html";
+        });
+
+    </script>
+
+    <script type="module">
+        document.getElementById("backButton").addEventListener("click", function () {
+            window.location.href = "../main_page_lastest_ver/filter.html"; // 返回 filter 頁面
+        });
+    </script>
+
+    <script type="module">
+        import { getCookie } from '../main_page_lastest_ver/storage.js';
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const selectedRestaurants = getCookie("selectedRestaurants") || [];
+            const filterConditions = getCookie("filterConditions") || {};
+
+            console.log("恢復的餐廳:", selectedRestaurants);
+            console.log("恢復的篩選條件:", filterConditions);
+
+            if (selectedRestaurants.length > 0) {
+                renderSelectedRestaurants(selectedRestaurants); 
+            }
+        });
+
+        function renderSelectedRestaurants(ids) {
+            ids.forEach(id => {
+                console.log(`餐廳 ID: ${id}`);
+            });
+        }
+    </script>
+
 </body>
 
 </html>
